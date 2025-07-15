@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.scoula.security.account.mapper.UserDetailsMapper">
+
+    <!-- 권한(AuthVO) 매핑 -->
+    <resultMap id="authMap" type="org.scoula.security.account.domain.AuthVO">
+        <result property="username" column="username"/>
+        <result property="auth" column="auth"/>
+    </resultMap>
+
+    <!-- 사용자(UserVO) 매핑 -->
+    <resultMap id="userMap" type="org.scoula.security.account.domain.UserVO">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="name"/>
+        <result property="email" column="email"/>
+        <result property="password" column="password"/>
+        <result property="phone" column="phone"/>
+        <result property="userType" column="user_type"/>
+        <collection property="authList" ofType="org.scoula.security.account.domain.AuthVO" resultMap="authMap"/>
+    </resultMap>
+
+    <!-- 회원정보 + 권한 리스트를 username(로그인 ID) 기준으로 조회 -->
+    <select id="get" parameterType="string" resultMap="userMap">
+        SELECT
+            u.user_id,
+            u.name,
+            u.email,
+            u.password,
+            u.phone,
+            u.user_type,
+            a.auth,
+            a.user_id AS auth_username
+        FROM
+            user u
+                LEFT OUTER JOIN user_member_auth a ON u.user_id = a.user_id
+        WHERE
+            u.name = #{username}
+    </select>
+</mapper>
