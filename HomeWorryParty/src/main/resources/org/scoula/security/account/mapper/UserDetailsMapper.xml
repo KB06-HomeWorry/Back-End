@@ -7,7 +7,7 @@
 
     <!-- 권한(AuthVO) 매핑 -->
     <resultMap id="authMap" type="org.scoula.security.account.domain.AuthVO">
-        <result property="username" column="username"/>
+        <result property="userId" column="username"/>
         <result property="auth" column="auth"/>
     </resultMap>
 

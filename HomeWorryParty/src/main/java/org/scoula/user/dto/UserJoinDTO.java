@@ -15,6 +15,8 @@ public class UserJoinDTO {
     private String username;
     private String password;
     private String email;
+    private String phone;
+    private String userType;
 
     private MultipartFile avatar;
 
@@ -23,6 +25,8 @@ public class UserJoinDTO {
                 .username(username)
                 .password(password)
                 .email(email)
+                .phone(phone)
+                .userType(userType)
                 .build();
     }
 }

@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
         mapper.insertUser(member);
 
         AuthVO auth = new AuthVO();
-        auth.setUsername(member.getUsername());
+        auth.setUserId(member.getUserId());
         auth.setAuth("ROLE_MEMBER");
         mapper.insertAuth(auth);
 
