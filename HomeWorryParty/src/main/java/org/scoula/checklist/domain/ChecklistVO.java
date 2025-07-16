@@ -15,7 +15,7 @@ public class ChecklistVO {
     private long templateId;
     private String content;
     private String effectiveness;
-    private long order_num;
-    private long risk_weight;
+    private long orderNum;
+    private long riskWeight;
 
 }
