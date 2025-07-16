@@ -19,7 +19,7 @@ import java.io.File;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
-public class MemberController {
+public class UserController {
 
     final UserService service;
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.scoula.checklist.mapper.ChecklistTemplateMapper">
+
+    <!-- ResultMap: ChecklistVO -->
+    <resultMap id="checklistMap" type="org.scoula.checklist.domain.ChecklistTemplateVO">
+        <id property="templateId" column="template_id"/>
+        <result property="templateName" column="name"/>
+        <result property="templateSaleType" column="sale_type"/>
+        <result property="templateStage" column="stage"/>
+    </resultMap>
+
+
+
+    <!-- 1. 회원 단건 조회 (username) -->
+    <select id="findByTypeAndStage" parameterType="string" resultMap="checklistMap">
+        SELECT * FROM home_test.checklisttemplate WHERE sale_type = #{type} and stage = #{stage}
+    </select>
+
+
+
+</mapper>

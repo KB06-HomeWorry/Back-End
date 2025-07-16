@@ -15,6 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
         "org.scoula.exception",
         "org.scoula.controller",
         "org.scoula.user.controller",
+        "org.scoula.checklist.controller",
 })
 public class ServletConfig implements WebMvcConfigurer {
 
