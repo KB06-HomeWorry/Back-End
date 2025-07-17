@@ -12,7 +12,7 @@ import java.util.List;
 public interface ChecklistService {
 
 
-    List<ChecklistDTO> getChecklist(String stage, String type);
+    List<ChecklistDTO> getChecklist(ChecklistTemplateDTO checklistTemplateDTO);
     ChecklistTemplateDTO getChecklistTemplate(String stage, String type);
 
 

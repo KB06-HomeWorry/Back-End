@@ -4,12 +4,29 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.scoula.checklist.mapper.ChecklistUserAnswerMapper">
+    <insert id="insertAnswerList">
+        Insert Into home_test.checklistuseranswer(checklist_id, question_id, user_id, answer)
+        VALUES (#{checklistId}, #{questionId}, #{userId}, false)
+    </insert>
 
     <select id="findByChecklistIdAndUserId" resultType="org.scoula.checklist.domain.ChecklistUserAnswerVO">
         SELECT *
-        FROM ChecklistUserAnswer
+        FROM home_test.checklistuseranswer
         WHERE checklist_id = #{checklistId}
           AND user_id = #{userId}
     </select>
+
+    <select id="getCheckListId" resultType="java.lang.Long">
+        SELECT checklist_id
+        FROM home_test.checklist
+        WHERE user_id = #{userId}
+          AND template_id = #{templateId}
+    </select>
+
+
+    <insert id="insertCheckList">
+        Insert Into home_test.checklist(user_id, template_id)
+        VALUES (#{userId}, #{templateId})
+    </insert>
 
 </mapper>

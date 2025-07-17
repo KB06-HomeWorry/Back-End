@@ -25,9 +25,9 @@ public class ChecklistServiceImpl implements ChecklistService {
 
 
     @Override
-    public List<ChecklistDTO> getChecklist(String type, String stage) {
-        ChecklistTemplateDTO templateDTO = getChecklistTemplate(type, stage);
-        long templateId = templateDTO.getTemplateId();
+    public List<ChecklistDTO> getChecklist(ChecklistTemplateDTO checklistTemplateDTO) {
+
+        long templateId = checklistTemplateDTO.getTemplateId();
 
         List<ChecklistVO> checklistVOList = Optional
                 .ofNullable(checklistMapper.get(templateId))

@@ -350,3 +350,15 @@ VALUES
     ('Low', 0, 30, '안전합니다.', '위험 요소가 없습니다.', '/img/low.png'),
     ('Medium', 31, 70, '주의가 필요합니다.', '일부 위험 신호가 있습니다.', '/img/medium.png'),
     ('High', 71, 100, '전문가 상담이 필요합니다.', '위험도가 높습니다.', '/img/high.png');
+
+
+SELECT checklist_id
+FROM home_test.checklist
+WHERE user_id = 1 AND template_id = 1;
+
+SELECT * FROM home_test.checklist WHERE user_id = 1 AND template_id = 1;
+
+SELECT checklist_id FROM home_test.checklist WHERE user_id = 1 AND template_id = 4;
+
+DELETE from home_test.checklistuseranswer where checklist_id = 13 and user_id = 1;
+DELETE  from home_test.checklist where checklist_id = 15;

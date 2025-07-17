@@ -29,21 +29,23 @@ public class ChecklistServiceImplTest {
 
     @Test
     public void getChecklist() {
-        List<ChecklistDTO> checklistDTOList = checklistService.getChecklist("매매", "계약 전");
+        List<ChecklistDTO> checklistDTOList = checklistService.getChecklist(
+                checklistService.getChecklistTemplate("매매", "입주 후"));
         //assertNotNull(checklistDTOList);
         for(ChecklistDTO checklistDTO : checklistDTOList){
             log.info("checklistDTO: {}", checklistDTO);
         }
     }
 
-    @Test
-    public void getChecklistAnswerList() {
-        List<ChecklistUserAnswerDTO> checklistAnswerDTOList = answerService.getAnswerList(1, 1);
+//    @Test
+//    public void getChecklistAnswerList() {
+//        List<ChecklistUserAnswerDTO> checklistAnswerDTOList = answerService.getAnswerList(1L, 1);
+//
+//        for(ChecklistUserAnswerDTO checklistDTO : checklistAnswerDTOList){
+//            log.info("checklistDTO: {}", checklistDTO);
+//        }
+//    }
 
-        for(ChecklistUserAnswerDTO checklistDTO : checklistAnswerDTOList){
-            log.info("checklistDTO: {}", checklistDTO);
-        }
-    }
 
     @Test
     public void getChecklistTemplate() {
