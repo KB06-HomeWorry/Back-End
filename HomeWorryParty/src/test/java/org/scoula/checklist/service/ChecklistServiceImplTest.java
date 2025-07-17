@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.runner.RunWith;
 import org.scoula.checklist.dto.ChecklistDTO;
 import org.scoula.checklist.dto.ChecklistTemplateDTO;
+import org.scoula.checklist.dto.ChecklistUserAnswerDTO;
 import org.scoula.config.RootConfig;
 import org.scoula.security.config.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +24,23 @@ public class ChecklistServiceImplTest {
     @Autowired
     ChecklistService  checklistService;
 
+    @Autowired
+    ChecklistUserAnswerService answerService;
+
     @Test
     public void getChecklist() {
         List<ChecklistDTO> checklistDTOList = checklistService.getChecklist("매매", "계약 전");
         //assertNotNull(checklistDTOList);
         for(ChecklistDTO checklistDTO : checklistDTOList){
+            log.info("checklistDTO: {}", checklistDTO);
+        }
+    }
+
+    @Test
+    public void getChecklistAnswerList() {
+        List<ChecklistUserAnswerDTO> checklistAnswerDTOList = answerService.getAnswerList(1, 1);
+
+        for(ChecklistUserAnswerDTO checklistDTO : checklistAnswerDTOList){
             log.info("checklistDTO: {}", checklistDTO);
         }
     }
