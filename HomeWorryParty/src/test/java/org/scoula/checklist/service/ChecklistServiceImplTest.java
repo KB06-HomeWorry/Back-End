@@ -53,4 +53,23 @@ public class ChecklistServiceImplTest {
         //assertNotNull(checklistTemplateDTO);
         log.info(checklistTemplateDTO.toString());
     }
+
+    @Test
+    public void saveChecklistAnswerList() {
+        ChecklistUserAnswerDTO answer = new ChecklistUserAnswerDTO();
+        answer.setUserId(1L);
+        answer.setChecklistId(1L);
+        answer.setQuestionId(1L);
+        answer.setAnswer(true);
+    
+        List<ChecklistUserAnswerDTO> answerList = List.of(answer);
+        answerService.saveAnswerList(answerList);
+        List<ChecklistUserAnswerDTO> savedAnswers = answerService.getAnswerList(1L, 1, null);
+    
+        boolean saved = savedAnswers.stream()
+                .anyMatch(a -> java.util.Objects.equals(a.getQuestionId(), 1L) && a.getAnswer());
+
+        log.info(savedAnswers.toString());
+        log.info("저장된 답변 존재 여부: {}", saved);
+    }
 }

@@ -35,8 +35,6 @@ public class ChecklistController {
         ChecklistTemplateDTO templateDTO = questionService.getChecklistTemplate(type, stage);
         List<ChecklistDTO> checklist = questionService.getChecklist(templateDTO);
 
-
-
         List<ChecklistUserAnswerDTO> answers =
                 answerService.getAnswerList(templateDTO.getTemplateId(), user_id, checklist);
 
@@ -46,10 +44,20 @@ public class ChecklistController {
                 .answers(answers)
                 .build();
 
-
         log.info(answers);
 
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/answers")
+    public ResponseEntity<Void> saveAnswers(@RequestBody List<ChecklistUserAnswerDTO> answerDTOList) {
+        try {
+            log.info("저장 요청 들어옴: {}", answerDTOList);
+            answerService.saveAnswerList(answerDTOList);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("저장 중 예외 발생", e);
+            return ResponseEntity.status(500).build();
+        }
+    }
 }
