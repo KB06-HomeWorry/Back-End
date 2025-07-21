@@ -37,6 +37,6 @@
             user u
                 LEFT OUTER JOIN user_member_auth a ON u.user_id = a.user_id
         WHERE
-            u.name = #{username}
+            u.email = #{email}
     </select>
 </mapper>

@@ -102,4 +102,10 @@
         where email = #{email}
     </delete>
 
+    <!-- 12. PRT 수정 -->
+    <update id="updatePRT" parameterType="org.scoula.user.domain.PasswordResetTokenVO">
+        UPDATE PasswordResetToken
+        SET token = #{token}, expDate = NOW() + INTERVAL 10 MINUTE
+        WHERE email = #{email}
+    </update>
 </mapper>

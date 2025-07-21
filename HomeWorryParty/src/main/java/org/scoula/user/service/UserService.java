@@ -6,6 +6,8 @@ public interface UserService {
 
     boolean checkDuplicate(String username);
 
+    boolean checkNameAndEmail(String username, String email);
+
     boolean existsByEmail(String email);
 
     boolean existsByToken(String token);

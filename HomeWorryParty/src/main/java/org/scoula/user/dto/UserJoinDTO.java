@@ -18,7 +18,7 @@ public class UserJoinDTO {
     private String phone;
     private String userType;
 
-    private MultipartFile avatar;
+//    private MultipartFile avatar;
 
     public UserVO toVO() {
         return UserVO.builder()

@@ -29,6 +29,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -78,11 +80,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOriginPattern("*");
+        config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:5173")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
+            }
+        };
     }
 
     // 접근 제한무시경로설정–resource
@@ -96,13 +112,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-//        http
-//                .addFilterBefore(encodingFilter(), CsrfFilter.class)
-//                .addFilterBefore(authenticationErrorFilter, UsernamePasswordAuthenticationFilter.class)
-//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-//                .addFilterBefore(jwtUsernamePasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         http
+                .cors()
+                .and()
                 .addFilterBefore(encodingFilter(), CsrfFilter.class) // 가장 먼저
                 .addFilterBefore(jwtUsernamePasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, JwtUsernamePasswordAuthenticationFilter.class)
@@ -130,26 +143,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 일단 모든 접근 허용
                 .anyRequest().permitAll();
 
-        // 경로별 접근권한설정
-        // form-login기본 설정은 비활성화되어서 사라짐.
-        // 권한이 없으면 403에러 화면이 뜸.
-        // --> 이 에러화면보다는 로그인하는 페이지를 보여주는 것이 더 나을 것 같음.
-//        http.authorizeRequests()
-//                .antMatchers("/security/all").permitAll()
-//                .antMatchers("/security/admin").access("hasRole('ROLE_ADMIN')")
-//                .antMatchers("/security/member").access("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')");
-
-        //http.formLogin();//form-login화면 다시 활성화
-        //403에러가 발생했을 때 form-login화면으로 다시 redirect!
-
-//        http
-//                .authorizeRequests() // 경로별 접근 권한 설정
-//                .antMatchers(HttpMethod.OPTIONS).permitAll()
-//                .antMatchers("/api/security/all").permitAll()        // 모두 허용
-//                .antMatchers("/api/security/member").access("hasRole('ROLE_MEMBER')")    // ROLE_MEMBER 이상 접근 허용
-//                .antMatchers("/api/security/admin").access("hasRole('ROLE_ADMIN')")      // ROLE_ADMIN 이상 접근 허용
-//                .anyRequest().authenticated();  // 나머지는 로그인 된 경우 모두 허용
-
         http.formLogin()
                 .loginPage("/security/login")
                 .loginProcessingUrl("/security/login")
@@ -173,17 +166,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         auth.userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder());
-
-      /*  auth.inMemoryAuthentication()
-                .withUser("admin")
-                // .password("{noop}1234")
-                .password("$2a$10$EsIMfxbJ6NuvwX7MDj4WqOYFzLU9U/lddCyn0nic5dFo3VfJYrXYC")
-                .roles("ADMIN", "MEMBER"); // ROLE_ADMIN
-        auth.inMemoryAuthentication()
-                .withUser("member")
-                //.password("{noop}1234")
-                .password("$2a$10$9RvLJCvVf2FiLn/w30mkduI8329Y8XN9wjfhBH7l5soIdEVVd4SxW")
-                .roles("MEMBER");  // ROLE_MEMBER*/
-        // ROLE_MEMBER
     }
 }

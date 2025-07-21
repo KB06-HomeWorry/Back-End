@@ -47,7 +47,7 @@ public class PasswordResetService {
         userService.savePasswordResetToken(new PasswordResetTokenDTO(userEmail, resetToken, LocalDateTime.now()));
 
         // 4. 재설정 링크 생성
-        String resetLink = "http://localhost:8080/reset-password?token=" + resetToken;
+        String resetLink = "http://localhost:5173/auth/change-password/" + resetToken;
 
         // 5. 이메일 발송
         sendPasswordResetEmail(userEmail, resetLink);

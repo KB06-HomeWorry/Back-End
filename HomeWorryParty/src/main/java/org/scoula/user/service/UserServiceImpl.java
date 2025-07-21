@@ -32,6 +32,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean checkNameAndEmail(String username, String email) {
+        UserVO user = mapper.findByemail(email);
+        return user.getUsername().equals(username);
+    }
+
+    @Override
     public boolean existsByEmail(String email) {
         UserVO user = mapper.findByemail(email);
         return user != null;
@@ -47,7 +53,12 @@ public class UserServiceImpl implements UserService {
     public PasswordResetTokenDTO savePasswordResetToken(PasswordResetTokenDTO passwordResetToken) {
         PasswordResetTokenVO passwordResetTokenVO = passwordResetToken.toVO();
 
-        mapper.insertPRT(passwordResetTokenVO);
+        PasswordResetTokenVO dto = mapper.getemail(passwordResetTokenVO.getEmail());
+        if (dto != null) {
+            mapper.updatePRT(passwordResetTokenVO);
+        } else {
+            mapper.insertPRT(passwordResetTokenVO);
+        }
 
         return getemail(passwordResetTokenVO.getEmail());
     }
@@ -80,17 +91,17 @@ public class UserServiceImpl implements UserService {
         return PasswordResetTokenDTO.of(prt);
     }
 
-    private void saveAvatar(MultipartFile avatar, String username) {
-        //아바타 업로드
-        if (avatar != null && !avatar.isEmpty()) {
-            File dest = new File("c:/upload/avatar", username + ".png");
-            try {
-                avatar.transferTo(dest);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
+//    private void saveAvatar(MultipartFile avatar, String username) {
+//        //아바타 업로드
+//        if (avatar != null && !avatar.isEmpty()) {
+//            File dest = new File("c:/upload/avatar", username + ".png");
+//            try {
+//                avatar.transferTo(dest);
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//    }
 
     @Transactional
     @Override
@@ -100,14 +111,14 @@ public class UserServiceImpl implements UserService {
         member.setPassword(passwordEncoder.encode(member.getPassword())); // 비밀번호 암호화
         mapper.insertUser(member);
 
-        AuthVO auth = new AuthVO();
-        auth.setUserId(member.getUserId());
-        auth.setAuth("ROLE_MEMBER");
-        mapper.insertAuth(auth);
+//        AuthVO auth = new AuthVO();
+//        auth.setUserId(member.getUserId());
+//        auth.setAuth("ROLE_MEMBER");
+//        mapper.insertAuth(auth);
 
-        saveAvatar(dto.getAvatar(), member.getUsername());
+//        saveAvatar(dto.getAvatar(), member.getUsername());
 
-        return get(member.getUsername());
+        return getUserByEmail(member.getEmail());
     }
 
     @Override
@@ -123,7 +134,7 @@ public class UserServiceImpl implements UserService {
         mapper.update(member.toVO());
 
         //3. 아바타 저장
-        saveAvatar(member.getAvatar(), member.getUsername());
+//        saveAvatar(member.getAvatar(), member.getUsername());
 
         //4. 리턴은 검색해서 리턴
         return get(member.getUsername());

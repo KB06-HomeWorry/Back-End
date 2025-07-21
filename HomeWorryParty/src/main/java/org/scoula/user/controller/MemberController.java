@@ -22,13 +22,18 @@ public class MemberController {
     final UserService service;
     final PasswordResetService passwordResetService;
 
-    @GetMapping("/checkusername/{username}") //아이디 중복 체크
-    public ResponseEntity<Boolean> checkUsername(@PathVariable String username) {
-        return ResponseEntity.ok().body(service.checkDuplicate(username));
+    @GetMapping("/checkusername/{email}") //아이디 중복 체크
+    public ResponseEntity<Boolean> checkUsername(@PathVariable String email) {
+        return ResponseEntity.ok().body(service.existsByEmail(email));
+    }
+
+    @GetMapping("/checkNameAndEmail") // 사용자 이름과 이메일이 일치하는지 체크
+    public ResponseEntity<Boolean> checkNameAndEmail(@RequestParam String name, @RequestParam String email) {
+        return ResponseEntity.ok().body(service.checkNameAndEmail(name, email));
     }
 
     @PostMapping("") //가입해줘
-    public ResponseEntity<UserDTO> join(UserJoinDTO member) {
+    public ResponseEntity<UserDTO> join(@RequestBody UserJoinDTO member) {
         return ResponseEntity.ok(service.join(member));
     }
 
