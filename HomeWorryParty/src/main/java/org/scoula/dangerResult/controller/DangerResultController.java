@@ -24,15 +24,6 @@ public class DangerResultController {
     final DangerResultService dangerResultService;
     final ChecklistService checklistService;
 
-    @PostMapping("")
-    public ResponseEntity<ChecklistResponseDTO> getChecklist(
-            @RequestParam String type,
-            @RequestParam String stage,
-            @RequestParam Long user_id,
-            @RequestBody List<ChecklistUserAnswerDTO> answers
-    ) {
-        return null;
-    }
 
     @GetMapping("")
     public ResponseEntity<DangerResultDTO>  getDangerResult(
@@ -53,6 +44,8 @@ public class DangerResultController {
                 .description(dangerResultVO.getDescription())
                 .imageUrl(dangerResultVO.getImageUrl())
                 .build();
+
+        System.out.println(dangerResultDTO.getDescription());
 
         return ResponseEntity.ok(dangerResultDTO);
     }

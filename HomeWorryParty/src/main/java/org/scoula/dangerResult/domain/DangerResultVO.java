@@ -17,4 +17,14 @@ public class DangerResultVO {
     private String message;
     private String description;
     private String imageUrl;
+
+    public void copy(DangerResultVO dangerResultVO) {
+        this.grade = dangerResultVO.getGrade();
+        this.templateId = dangerResultVO.getTemplateId();
+        this.minScore = dangerResultVO.getMinScore();
+        this.maxScore = dangerResultVO.getMaxScore();
+        this.message = dangerResultVO.getMessage();
+        this.description = dangerResultVO.getDescription();
+        this.imageUrl = dangerResultVO.getImageUrl();
+    }
 }

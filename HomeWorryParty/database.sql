@@ -444,3 +444,4 @@ INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message,
 
 select * from RiskScoreMessage where template_id = 3;
 
+select * from checklistuseranswer where question_id = 6 and user_id = 1;

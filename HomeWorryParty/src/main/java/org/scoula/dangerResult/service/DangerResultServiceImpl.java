@@ -20,6 +20,9 @@ public class DangerResultServiceImpl implements DangerResultService {
     public DangerResultVO analysisDangerResult(Long templateId, Long userId) {
         List<DangerAnswerVO> answerDTOList = dangerResultMapper.getAnswerList(templateId, userId);
 
+        System.out.println("답안 list 개수 = " + answerDTOList.size());
+
+
         int score = 100;
         if(!answerDTOList.isEmpty()){
             for (DangerAnswerVO dangerAnswerVO : answerDTOList) {
@@ -38,15 +41,22 @@ public class DangerResultServiceImpl implements DangerResultService {
     @Override
     public DangerResultVO getMessageList(int score, Long templateId) {
         List<DangerResultVO> dangerResultVOList = dangerResultMapper.getMessageList(templateId);
-
+        DangerResultVO findDangerResultVO = new DangerResultVO();
+        StringBuilder sb = new StringBuilder();
 
         for (DangerResultVO dangerResultVO : dangerResultVOList) {
             if(score >= dangerResultVO.getMinScore() && score <= dangerResultVO.getMaxScore()){
-                return dangerResultVO;
+                findDangerResultVO.copy(dangerResultVO);
+            }else{
+                sb.append(dangerResultVO.getDescription()).append("\n").append("\n");
             }
             System.out.println(dangerResultVO);
         }
 
-        return null;
+        findDangerResultVO.setDescription(sb.toString());
+        System.out.println(findDangerResultVO.getDescription());
+
+
+        return findDangerResultVO;
     }
 }
