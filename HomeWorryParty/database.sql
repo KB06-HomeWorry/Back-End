@@ -362,3 +362,85 @@ SELECT checklist_id FROM home_test.checklist WHERE user_id = 1 AND template_id =
 
 DELETE from home_test.checklistuseranswer where checklist_id = 13 and user_id = 1;
 DELETE  from home_test.checklist where checklist_id = 15;
+
+select * from checklistuseranswer join checklistquestion
+    on checklistuseranswer.question_id = checklistquestion.question_id
+    where user_id = 1 and template_id = 3;
+
+drop table riskscoremessage;
+-- 점수/등급별 안내문구/설명/이미지 관리 테이블
+CREATE TABLE RiskScoreMessage (
+                                  grade VARCHAR(20) NOT NULL,-- 등급 (예: Low/Medium/High)
+                                  template_id BIGINT NOT NULL,                          -- 사용 템플릿 (ChecklistTemplate.template_id)
+                                  min_score FLOAT,                                      -- 등급별 최소 점수
+                                  max_score FLOAT,                                      -- 등급별 최대 점수
+                                  message TEXT,                                         -- 사용자 안내문구
+                                  description TEXT,                                     -- 상세 설명
+                                  image_url VARCHAR(255),                               -- 안내 이미지(아이콘/배너 등) URL
+                                  PRIMARY KEY (grade, template_id),                     -- 복합 기본키: 등급 + 템플릿ID
+                                  CONSTRAINT fk_riskscore_template
+                                      FOREIGN KEY (template_id)
+                                          REFERENCES ChecklistTemplate(template_id)
+                                          ON DELETE CASCADE
+);
+-- 16. 점수/등급별 안내문구
+-- 매매 계약 전 체크리스트 (template_id = 1)
+INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message, description, image_url) VALUES
+                                                                                                             ('Low', 1, 0, 39, '위험 낮음', '계약 전 체크리스트 점수가 낮아 안전한 거래가 예상됩니다.', '/images/risk_low.png'),
+                                                                                                             ('Medium', 1, 40, 59, '주의 필요', '일부 위험 요소가 있으니 꼼꼼히 확인하세요.', '/images/risk_medium.png'),
+                                                                                                             ('High', 1, 60, 79, '위험 높음', '여러 위험 신호가 있으니 전문가 상담이 필요합니다.', '/images/risk_high.png'),
+                                                                                                             ('VeryHigh', 1, 80, 100, '거래 주의', '위험 요소가 매우 많으니 거래를 신중히 결정하세요.', '/images/risk_veryhigh.png');
+
+-- 매매 중도금 납부 체크리스트 (template_id = 2)
+INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message, description, image_url) VALUES
+                                                                                                             ('Low', 2, 0, 39, '위험 낮음', '중도금 납부 단계에서 위험 신호가 적습니다.', '/images/risk_low.png'),
+                                                                                                             ('Medium', 2, 40, 59, '주의 필요', '중도금 납부 시 일부 주의사항을 확인하세요.', '/images/risk_medium.png'),
+                                                                                                             ('High', 2, 60, 79, '위험 높음', '중도금 납부 시 다수 위험 요소가 있습니다.', '/images/risk_high.png'),
+                                                                                                             ('VeryHigh', 2, 80, 100, '거래 주의', '중도금 납부 단계에서 매우 높은 위험이 감지됩니다.', '/images/risk_veryhigh.png');
+
+-- 매매 잔금 및 입주 체크리스트 (template_id = 3)
+INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message, description, image_url) VALUES
+                                                                                                             ('Low', 3, 0, 39, '위험 낮음', '잔금 및 입주 단계에서 위험 요소가 적습니다.', '/images/risk_low.png'),
+                                                                                                             ('Medium', 3, 40, 59, '주의 필요', '잔금/입주 시 몇 가지 주의사항이 필요합니다.', '/images/risk_medium.png'),
+                                                                                                             ('High', 3, 60, 79, '위험 높음', '잔금/입주 시 여러 위험 신호가 있습니다.', '/images/risk_high.png'),
+                                                                                                             ('VeryHigh', 3, 80, 100, '거래 주의', '잔금/입주 단계에서 매우 높은 위험이 감지됩니다.', '/images/risk_veryhigh.png');
+
+-- 매매 입주 후 체크리스트 (template_id = 4)
+INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message, description, image_url) VALUES
+                                                                                                             ('Low', 4, 0, 39, '위험 낮음', '입주 후 특별한 위험 신호가 없습니다.', '/images/risk_low.png'),
+                                                                                                             ('Medium', 4, 40, 59, '주의 필요', '입주 후 일부 점검이 필요합니다.', '/images/risk_medium.png'),
+                                                                                                             ('High', 4, 60, 79, '위험 높음', '입주 후 다수 위험 요소가 있습니다.', '/images/risk_high.png'),
+                                                                                                             ('VeryHigh', 4, 80, 100, '거래 주의', '입주 후 단계에서 매우 높은 위험이 감지됩니다.', '/images/risk_veryhigh.png');
+
+-- 임대차 계약 전 체크리스트 (template_id = 5)
+INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message, description, image_url) VALUES
+                                                                                                             ('Low', 5, 0, 39, '위험 낮음', '임대차 계약 전 단계에서 안전한 거래가 예상됩니다.', '/images/risk_low.png'),
+                                                                                                             ('Medium', 5, 40, 59, '주의 필요', '임대차 계약 전 단계에서 일부 주의사항이 있습니다.', '/images/risk_medium.png'),
+                                                                                                             ('High', 5, 60, 79, '위험 높음', '임대차 계약 전 단계에서 위험 신호가 감지됩니다.', '/images/risk_high.png'),
+                                                                                                             ('VeryHigh', 5, 80, 100, '거래 주의', '임대차 계약 전 단계에서 매우 높은 위험이 감지됩니다.', '/images/risk_veryhigh.png');
+
+-- 임대차 중도금 납부 체크리스트 (template_id = 6)
+INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message, description, image_url) VALUES
+                                                                                                             ('Low', 6, 0, 39, '위험 낮음', '임대차 중도금 납부 단계에서 특별한 위험 신호가 없습니다.', '/images/risk_low.png'),
+                                                                                                             ('Medium', 6, 40, 59, '주의 필요', '임대차 중도금 납부 시 주의사항이 있습니다.', '/images/risk_medium.png'),
+                                                                                                             ('High', 6, 60, 79, '위험 높음', '임대차 중도금 납부 단계에서 여러 위험 요소가 있습니다.', '/images/risk_high.png'),
+                                                                                                             ('VeryHigh', 6, 80, 100, '거래 주의', '임대차 중도금 납부 단계에서 매우 높은 위험이 감지됩니다.', '/images/risk_veryhigh.png');
+
+-- 임대차 잔금 및 입주 체크리스트 (template_id = 7)
+INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message, description, image_url) VALUES
+                                                                                                             ('Low', 7, 0, 39, '위험 낮음', '임대차 잔금 및 입주 단계에서 위험 신호가 적습니다.', '/images/risk_low.png'),
+                                                                                                             ('Medium', 7, 40, 59, '주의 필요', '임대차 잔금 및 입주 단계에서 주의사항이 필요합니다.', '/images/risk_medium.png'),
+                                                                                                             ('High', 7, 60, 79, '위험 높음', '임대차 잔금 및 입주 단계에서 다수 위험 신호가 있습니다.', '/images/risk_high.png'),
+                                                                                                             ('VeryHigh', 7, 80, 100, '거래 주의', '임대차 잔금 및 입주 단계에서 매우 높은 위험이 감지됩니다.', '/images/risk_veryhigh.png');
+
+-- 임대차 입주 후 체크리스트 (template_id = 8)
+INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message, description, image_url) VALUES
+                                                                                                             ('Low', 8, 0, 39, '위험 낮음', '임대차 입주 후 특별한 위험 신호가 없습니다.', '/images/risk_low.png'),
+                                                                                                             ('Medium', 8, 40, 59, '주의 필요', '임대차 입주 후 일부 점검이 필요합니다.', '/images/risk_medium.png'),
+                                                                                                             ('High', 8, 60, 79, '위험 높음', '임대차 입주 후 여러 위험 요소가 있습니다.', '/images/risk_high.png'),
+                                                                                                             ('VeryHigh', 8, 80, 100, '거래 주의', '임대차 입주 후 단계에서 매우 높은 위험이 감지됩니다.', '/images/risk_veryhigh.png');
+
+
+
+select * from RiskScoreMessage where template_id = 3;
+

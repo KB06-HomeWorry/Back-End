@@ -25,10 +25,12 @@ import javax.sql.DataSource;
 @MapperScan(basePackages = {
         "org.scoula.user.mapper",
         "org.scoula.checklist.mapper",
+        "org.scoula.dangerResult.mapper",
 })
 @ComponentScan(basePackages = {
         "org.scoula.user.service",
         "org.scoula.checklist.service",
+        "org.scoula.dangerResult.service",
 })
 
 @EnableTransactionManagement

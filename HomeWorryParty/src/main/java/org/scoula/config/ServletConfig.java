@@ -16,6 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
         "org.scoula.controller",
         "org.scoula.user.controller",
         "org.scoula.checklist.controller",
+        "org.scoula.dangerResult.controller",
 })
 public class ServletConfig implements WebMvcConfigurer {
 
