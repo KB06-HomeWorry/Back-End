@@ -38,6 +38,8 @@ public class DangerResultServiceImpl implements DangerResultService {
     @Override
     public DangerResultVO getMessageList(int score, Long templateId) {
         List<DangerResultVO> dangerResultVOList = dangerResultMapper.getMessageList(templateId);
+
+
         for (DangerResultVO dangerResultVO : dangerResultVOList) {
             if(score >= dangerResultVO.getMinScore() && score <= dangerResultVO.getMaxScore()){
                 return dangerResultVO;

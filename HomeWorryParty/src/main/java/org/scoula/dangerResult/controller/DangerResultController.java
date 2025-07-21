@@ -40,6 +40,7 @@ public class DangerResultController {
             @RequestParam String stage,
             @RequestParam Long user_id
     ){
+        log.info("getDangerResult");
         Long templateId = checklistService.getChecklistTemplate(type, stage).getTemplateId();
         DangerResultVO dangerResultVO = dangerResultService.analysisDangerResult(templateId, user_id);
 
