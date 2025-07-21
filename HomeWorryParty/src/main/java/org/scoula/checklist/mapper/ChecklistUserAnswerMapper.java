@@ -19,4 +19,11 @@ public interface ChecklistUserAnswerMapper {
     void insertCheckList(@Param("userId") Long userId, @Param("templateId") Long templateId);
 
     Long getCheckListId(@Param("userId") Long userId, @Param("templateId") Long templateId);
+    
+    void updateAnswer(
+            @Param("answer") Boolean answer,
+            @Param("checklistId") Long checklistId,
+            @Param("questionId") Long questionId,
+            @Param("userId") Long userId
+    );
 }

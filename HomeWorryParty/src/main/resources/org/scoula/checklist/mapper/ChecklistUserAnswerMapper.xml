@@ -5,7 +5,7 @@
 
 <mapper namespace="org.scoula.checklist.mapper.ChecklistUserAnswerMapper">
     <insert id="insertAnswerList">
-        Insert Into home_test.checklistuseranswer(checklist_id, question_id, user_id, answer)
+        INSERT INTO home_test.checklistuseranswer(checklist_id, question_id, user_id, answer)
         VALUES (#{checklistId}, #{questionId}, #{userId}, false)
     </insert>
 
@@ -23,10 +23,17 @@
           AND template_id = #{templateId}
     </select>
 
-
     <insert id="insertCheckList">
         Insert Into home_test.checklist(user_id, template_id)
         VALUES (#{userId}, #{templateId})
     </insert>
+
+    <update id="updateAnswer">
+        UPDATE home_test.checklistuseranswer
+        SET answer = #{answer}
+        WHERE checklist_id = #{checklistId}
+          AND question_id = #{questionId}
+          AND user_id = #{userId}
+    </update>
 
 </mapper>

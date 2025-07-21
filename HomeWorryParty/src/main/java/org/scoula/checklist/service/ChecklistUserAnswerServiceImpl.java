@@ -39,10 +39,8 @@ public class ChecklistUserAnswerServiceImpl implements ChecklistUserAnswerServic
                 .collect(Collectors.toList());
     }
 
-
     @Override
     public Long makeAnswerMemory(Long checkListId, Long userId, Long templateId, List<ChecklistDTO> checklist) {
-
         log.info("체크하지 않는 내용 -> 새로 생성");
 
         Long checklistId = makeNewCheckListId(userId, templateId);
@@ -61,7 +59,13 @@ public class ChecklistUserAnswerServiceImpl implements ChecklistUserAnswerServic
         return checklistUserAnswerMapper.getCheckListId(userId, templateId);
     }
 
+    @Override
+    public void saveAnswerList(List<ChecklistUserAnswerDTO> answerDTOList) {
+        for (ChecklistUserAnswerDTO dto : answerDTOList) {
+            Long checklistId = checklistUserAnswerMapper.getCheckListId(dto.getUserId(), dto.getChecklistId());
 
-
-
+            checklistUserAnswerMapper.updateAnswer(
+                    dto.getAnswer(), checklistId, dto.getQuestionId(), dto.getUserId());
+        }
+    }
 }
