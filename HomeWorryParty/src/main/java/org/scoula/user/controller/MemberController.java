@@ -3,10 +3,8 @@ package org.scoula.user.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.scoula.common.util.UploadFiles;
-import org.scoula.user.dto.ChangePasswordDTO;
-import org.scoula.user.dto.UserDTO;
-import org.scoula.user.dto.UserJoinDTO;
-import org.scoula.user.dto.UserUpdateDTO;
+import org.scoula.user.dto.*;
+import org.scoula.user.service.PasswordResetService;
 import org.scoula.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +20,7 @@ import java.io.File;
 public class MemberController {
 
     final UserService service;
+    final PasswordResetService passwordResetService;
 
     @GetMapping("/checkusername/{username}") //아이디 중복 체크
     public ResponseEntity<Boolean> checkUsername(@PathVariable String username) {
@@ -31,6 +30,17 @@ public class MemberController {
     @PostMapping("") //가입해줘
     public ResponseEntity<UserDTO> join(UserJoinDTO member) {
         return ResponseEntity.ok(service.join(member));
+    }
+
+    @GetMapping("/resetpassword/{email}") // 비밀번호 변경 이메일 보내기
+    public ResponseEntity<PasswordResetTokenDTO> passwordResetEmail(@PathVariable String email) {
+        return ResponseEntity.ok(passwordResetService.PasswordReset(email));
+    }
+
+    @PostMapping("/resetpassword")// 비밀번호 변경 신청
+    public ResponseEntity<?> passwordReset(@RequestBody PasswordRewriteDTO prdto){
+        passwordResetService.PasswordRewrite(prdto);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{username}/avatar")

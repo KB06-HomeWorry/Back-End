@@ -22,9 +22,21 @@
         <result property="auth" column="auth"/>
     </resultMap>
 
+    <!-- ResultMap: PasswordResetTokenVO -->
+    <resultMap id="prtMap" type="org.scoula.user.domain.PasswordResetTokenVO">
+        <result property="token" column="token"/>
+        <result property="email" column="email"/>
+        <result property="expDate" column="expDate"/>
+    </resultMap>
+
     <!-- 1. 회원 단건 조회 (username) -->
     <select id="get" parameterType="string" resultMap="userMap">
         SELECT * FROM user WHERE name = #{username}
+    </select>
+
+    <!--  1.5 이메일로 유저 검색  -->
+    <select id="findByemail" parameterType="string" resultMap="userMap">
+        SELECT * FROM user WHERE email = #{email}
     </select>
 
     <!-- 2. id(=username)로 중복 체크 -->
@@ -60,5 +72,34 @@
         SET password = #{newPassword}, update_date = NOW()
         WHERE user_id = #{userId}
     </update>
+
+    <!--  7. 이메일로 PRT 조회  -->
+    <select id="getemail" parameterType="string" resultMap="prtMap">
+        SELECT * FROM PasswordResetToken WHERE email = #{email}
+    </select>
+
+    <!--  8. PRT 추가  -->
+    <insert id="insertPRT" parameterType="org.scoula.user.domain.PasswordResetTokenVO" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO PasswordResetToken (email, token, expDate)
+        VALUES (#{email}, #{token}, NOW() + INTERVAL 10 MINUTE)
+    </insert>
+
+    <!--  9. 토큰으로 PRT 조회  -->
+    <select id="findByToken" parameterType="string" resultMap="prtMap">
+        SELECT * FROM PasswordResetToken WHERE token = #{token}
+    </select>
+
+    <!-- 10. 비밀번호 변경 (passwordRewrite) -->
+    <update id="passwordRewrite" parameterType="org.scoula.security.account.domain.UserVO">
+        UPDATE user
+        SET password = #{password}
+        WHERE user_id = #{userId}
+    </update>
+
+    <!--  11. 토큰 삭제  -->
+    <delete id="deleteToken" parameterType="string">
+        DELETE from passwordresettoken
+        where email = #{email}
+    </delete>
 
 </mapper>

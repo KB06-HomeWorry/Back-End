@@ -1,19 +1,32 @@
 package org.scoula.user.service;
 
-import org.scoula.user.dto.ChangePasswordDTO;
-import org.scoula.user.dto.UserDTO;
-import org.scoula.user.dto.UserJoinDTO;
-import org.scoula.user.dto.UserUpdateDTO;
+import org.scoula.user.dto.*;
 
 public interface UserService {
 
     boolean checkDuplicate(String username);
 
+    boolean existsByEmail(String email);
+
+    boolean existsByToken(String token);
+
+    PasswordResetTokenDTO savePasswordResetToken(PasswordResetTokenDTO passwordResetToken);
+
     UserDTO get(String username);
+
+    PasswordResetTokenDTO getemail(String email);
+
+    PasswordResetTokenDTO gettoken(String token);
+
+    UserDTO getUserByEmail(String email);
 
     UserDTO join(UserJoinDTO member);
 
     UserDTO update(UserUpdateDTO member);
+
+    void PasswordRewrite(UserDTO member);
+
+    void deleteToken(String email);
 
     void changePassword(ChangePasswordDTO changePassword);
 }

@@ -2,10 +2,8 @@ package org.scoula.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.scoula.user.dto.ChangePasswordDTO;
-import org.scoula.user.dto.UserDTO;
-import org.scoula.user.dto.UserJoinDTO;
-import org.scoula.user.dto.UserUpdateDTO;
+import org.scoula.user.domain.PasswordResetTokenVO;
+import org.scoula.user.dto.*;
 import org.scoula.user.exception.PasswordMissmatchException;
 import org.scoula.user.mapper.UserMapper;
 import org.scoula.security.account.domain.AuthVO;
@@ -34,10 +32,52 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean existsByEmail(String email) {
+        UserVO user = mapper.findByemail(email);
+        return user != null;
+    }
+
+    @Override
+    public boolean existsByToken(String token) {
+        PasswordResetTokenVO prvo = mapper.findByToken(token);
+        return prvo != null;
+    }
+
+    @Override
+    public PasswordResetTokenDTO savePasswordResetToken(PasswordResetTokenDTO passwordResetToken) {
+        PasswordResetTokenVO passwordResetTokenVO = passwordResetToken.toVO();
+
+        mapper.insertPRT(passwordResetTokenVO);
+
+        return getemail(passwordResetTokenVO.getEmail());
+    }
+
+    @Override
     public UserDTO get(String username) {
         UserVO member = Optional.ofNullable(mapper.get(username))
                 .orElseThrow(NoSuchElementException::new);
         return UserDTO.of(member);
+    }
+
+    @Override
+    public UserDTO getUserByEmail(String email) {
+        UserVO member = Optional.ofNullable(mapper.findByemail(email))
+                .orElseThrow(NoSuchElementException::new);
+        return UserDTO.of(member);
+    }
+
+    @Override
+    public PasswordResetTokenDTO getemail(String email) {
+        PasswordResetTokenVO prt = Optional.ofNullable(mapper.getemail(email))
+                .orElseThrow(NoSuchElementException::new);
+        return PasswordResetTokenDTO.of(prt);
+    }
+
+    @Override
+    public PasswordResetTokenDTO gettoken(String token) {
+        PasswordResetTokenVO prt = Optional.ofNullable(mapper.findByToken(token))
+                .orElseThrow(NoSuchElementException::new);
+        return PasswordResetTokenDTO.of(prt);
     }
 
     private void saveAvatar(MultipartFile avatar, String username) {
@@ -89,6 +129,15 @@ public class UserServiceImpl implements UserService {
         return get(member.getUsername());
     }
 
+    @Override
+    public void PasswordRewrite(UserDTO member) {
+        mapper.passwordRewrite(member.toVO());
+    }
+
+    @Override
+    public void deleteToken(String email) {
+        mapper.deleteToken(email);
+    }
 
     @Override
     public void changePassword(ChangePasswordDTO changePassword) {
