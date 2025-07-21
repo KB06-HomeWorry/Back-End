@@ -62,10 +62,8 @@ public class ChecklistUserAnswerServiceImpl implements ChecklistUserAnswerServic
     @Override
     public void saveAnswerList(List<ChecklistUserAnswerDTO> answerDTOList) {
         for (ChecklistUserAnswerDTO dto : answerDTOList) {
-            Long checklistId = checklistUserAnswerMapper.getCheckListId(dto.getUserId(), dto.getChecklistId());
-
             checklistUserAnswerMapper.updateAnswer(
-                    dto.getAnswer(), checklistId, dto.getQuestionId(), dto.getUserId());
+                    dto.getAnswer(), dto.getQuestionId(), dto.getUserId());
         }
     }
 }

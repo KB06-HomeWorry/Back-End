@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.runner.RunWith;
 import org.scoula.checklist.dto.ChecklistDTO;
 import org.scoula.checklist.dto.ChecklistTemplateDTO;
+import org.scoula.checklist.dto.ChecklistUserAnswerDTO;
 import org.scoula.config.RootConfig;
 import org.scoula.security.config.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,6 @@ public class ChecklistServiceImplTest {
     public void saveChecklistAnswerList() {
         ChecklistUserAnswerDTO answer = new ChecklistUserAnswerDTO();
         answer.setUserId(1L);
-        answer.setChecklistId(1L);
         answer.setQuestionId(1L);
         answer.setAnswer(true);
     

@@ -31,8 +31,7 @@
     <update id="updateAnswer">
         UPDATE home_test.checklistuseranswer
         SET answer = #{answer}
-        WHERE checklist_id = #{checklistId}
-          AND question_id = #{questionId}
+        WHERE question_id = #{questionId}
           AND user_id = #{userId}
     </update>
 

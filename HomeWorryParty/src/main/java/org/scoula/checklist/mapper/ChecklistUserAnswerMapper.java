@@ -22,7 +22,6 @@ public interface ChecklistUserAnswerMapper {
     
     void updateAnswer(
             @Param("answer") Boolean answer,
-            @Param("checklistId") Long checklistId,
             @Param("questionId") Long questionId,
             @Param("userId") Long userId
     );
