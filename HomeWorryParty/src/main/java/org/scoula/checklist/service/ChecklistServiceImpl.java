@@ -41,6 +41,20 @@ public class ChecklistServiceImpl implements ChecklistService {
     }
 
     @Override
+    public List<ChecklistDTO> getChecklist(Long templateId) {
+
+        List<ChecklistVO> checklistVOList = Optional
+                .ofNullable(checklistMapper.get(templateId))
+                .orElseThrow(NoSuchElementException::new);
+
+        List<ChecklistDTO> checklistDTOList = checklistVOList.stream()
+                .map(ChecklistDTO::of)
+                .collect(Collectors.toList());
+
+        return checklistDTOList;
+    }
+
+    @Override
     public ChecklistTemplateDTO getChecklistTemplate(String type, String stage) {
         ChecklistTemplateVO templateVO = Optional
                 .ofNullable(checklistTemplateMapper.findByTypeAndStage(type, stage))

@@ -18,6 +18,7 @@ public class ChecklistDTO {
     private long templateId;
     private String content;
     private String effectiveness;
+    private String necessity;
     private long orderNum;
     private long riskWeight;
 
@@ -28,6 +29,7 @@ public class ChecklistDTO {
                 .templateId(u.getTemplateId())
                 .content(u.getContent())
                 .effectiveness(u.getEffectiveness())
+                .necessity(u.getNecessity())
                 .orderNum(u.getOrderNum())
                 .riskWeight(u.getRiskWeight())
                 .build();
@@ -40,6 +42,7 @@ public class ChecklistDTO {
                 .templateId(templateId)
                 .content(content)
                 .effectiveness(effectiveness)
+                .necessity(necessity)
                 .orderNum(orderNum)
                 .riskWeight(riskWeight)
                 .build();

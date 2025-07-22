@@ -10,6 +10,7 @@
         <id property="dangerAnswerId" column="answer_id"/>
         <result property="answer" column="answer"/>
         <result property="riskWeight" column="risk_weight"/>
+        <result property="effectiveness" column="effectiveness"/>
     </resultMap>
 
 
@@ -28,7 +29,8 @@
     <select id="getAnswerList" resultMap="dangerMap">
         select answer_id,
                answer,
-               risk_weight
+               risk_weight,
+               effectiveness
         from checklistuseranswer join checklistquestion
                  on checklistuseranswer.question_id = checklistquestion.question_id
         where template_id = #{templateId} and user_id = #{userId};

@@ -13,6 +13,9 @@ public interface ChecklistService {
 
 
     List<ChecklistDTO> getChecklist(ChecklistTemplateDTO checklistTemplateDTO);
+
+    List<ChecklistDTO> getChecklist(Long templateId);
+
     ChecklistTemplateDTO getChecklistTemplate(String stage, String type);
 
 

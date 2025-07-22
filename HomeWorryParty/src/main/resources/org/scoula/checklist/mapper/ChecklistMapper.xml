@@ -11,13 +11,13 @@
         <result property="templateId" column="template_id"/>
         <result property="content" column="content"/>
         <result property="effectiveness" column="effectiveness"/>
+        <result property="necessity" column="necessity"/>
         <result property="orderNum" column="order_num"/>
         <result property="riskWeight" column="risk_weight"/>
     </resultMap>
 
 
 
-    <!-- 1. 회원 단건 조회 (username) -->
     <select id="get" parameterType="long" resultMap="checklistMap">
         SELECT * FROM home_test.checklistquestion WHERE template_id = #{template_id}
     </select>

@@ -23,8 +23,7 @@ public class DangerResultVO {
         this.templateId = dangerResultVO.getTemplateId();
         this.minScore = dangerResultVO.getMinScore();
         this.maxScore = dangerResultVO.getMaxScore();
-        this.message = dangerResultVO.getMessage();
-        this.description = dangerResultVO.getDescription();
-        this.imageUrl = dangerResultVO.getImageUrl();
+        this.message = new String(dangerResultVO.getMessage());
+        this.imageUrl = new String(dangerResultVO.getImageUrl());
     }
 }
