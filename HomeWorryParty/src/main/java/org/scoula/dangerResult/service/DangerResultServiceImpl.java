@@ -17,7 +17,7 @@ import java.util.List;
 public class DangerResultServiceImpl implements DangerResultService {
 
     private final DangerResultMapper dangerResultMapper;
-    private final ChecklistService  checklistService;
+    private final ChecklistService checklistService;
 
     @Override
     public DangerResultVO analysisDangerResult(Long templateId, Long userId) {
@@ -28,16 +28,17 @@ public class DangerResultServiceImpl implements DangerResultService {
 
         StringBuilder sb = new StringBuilder();
         int score = 100;
-        if(!answerDTOList.isEmpty()){
-            for (int i = 0; i < answerDTOList.size(); i++) {
-                if(answerDTOList.get(i).getAnswer() == 1){
-                    score -= answerDTOList.get(i).getRiskWeight();
-                }else{
-                    sb.append(checklistDTOList.get(i).getNecessity()).append('\n').append('\n');
-                }
 
+        if (!answerDTOList.isEmpty()) {
+            for (int i = 0; i < answerDTOList.size(); i++) {
+                if (answerDTOList.get(i).getAnswer() == 1) {
+                    score -= answerDTOList.get(i).getRiskWeight();
+                } else {
+                    sb.append(checklistDTOList.get(i).getNecessity()).append("<br><br>");
+                }
             }
         }
+
         System.out.println("사용자의 점수 = " + score);
 
         DangerResultVO dangerResultVO = getMessageList(score, templateId);
@@ -53,7 +54,7 @@ public class DangerResultServiceImpl implements DangerResultService {
 
 
         for (DangerResultVO dangerResultVO : dangerResultVOList) {
-            if(score >= dangerResultVO.getMinScore() && score <= dangerResultVO.getMaxScore()){
+            if (score >= dangerResultVO.getMinScore() && score <= dangerResultVO.getMaxScore()) {
                 findDangerResultVO.copy(dangerResultVO);
             }
             System.out.println(dangerResultVO);

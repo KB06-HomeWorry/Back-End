@@ -26,11 +26,11 @@ public class DangerResultController {
 
 
     @GetMapping("")
-    public ResponseEntity<DangerResultDTO>  getDangerResult(
+    public ResponseEntity<DangerResultDTO> getDangerResult(
             @RequestParam String type,
             @RequestParam String stage,
             @RequestParam Long user_id
-    ){
+    ) {
         log.info("getDangerResult");
         Long templateId = checklistService.getChecklistTemplate(type, stage).getTemplateId();
         DangerResultVO dangerResultVO = dangerResultService.analysisDangerResult(templateId, user_id);
