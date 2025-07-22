@@ -122,6 +122,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean withdraw(String username) {
+        return mapper.withdraw(username) == 1;
+    }
+
+    @Override
     public UserDTO update(UserUpdateDTO member) {
         //1. 패스워드가 맞지 않으면 update처리하지 않음.
         //내가 입력한 pw는 member에 들어있고.

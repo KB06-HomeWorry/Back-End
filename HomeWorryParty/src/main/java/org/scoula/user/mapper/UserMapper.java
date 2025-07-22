@@ -21,6 +21,8 @@ public interface UserMapper {
 
     PasswordResetTokenVO getemail(String email);
 
+    int withdraw(String username);
+
     int insertPRT(PasswordResetTokenVO passwordResetTokenVO);
 
     int updatePRT(PasswordResetTokenVO passwordResetTokenVO);

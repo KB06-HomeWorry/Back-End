@@ -108,4 +108,10 @@
         SET token = #{token}, expDate = NOW() + INTERVAL 10 MINUTE
         WHERE email = #{email}
     </update>
+
+    <!--  13. 회원 탈퇴  -->
+    <delete id="withdraw" parameterType="string">
+        DELETE from user
+        where name = #{username}
+    </delete>
 </mapper>

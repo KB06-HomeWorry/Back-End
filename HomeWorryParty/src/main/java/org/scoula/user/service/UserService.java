@@ -24,6 +24,8 @@ public interface UserService {
 
     UserDTO join(UserJoinDTO member);
 
+    boolean withdraw(String username);
+
     UserDTO update(UserUpdateDTO member);
 
     void PasswordRewrite(UserDTO member);
