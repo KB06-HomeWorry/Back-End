@@ -9,6 +9,7 @@ import org.scoula.dangerResult.domain.DangerResultVO;
 import org.scoula.dangerResult.mapper.DangerResultMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -24,24 +25,26 @@ public class DangerResultServiceImpl implements DangerResultService {
         List<DangerAnswerVO> answerDTOList = dangerResultMapper.getAnswerList(templateId, userId);
         List<ChecklistDTO> checklistDTOList = checklistService.getChecklist(templateId);
 
-        System.out.println("답안 list 개수 = " + answerDTOList.size());
+        log.info("답안 list 개수 = " + answerDTOList.size());
+        List<String> descriptionTitleList = new ArrayList<>();
+        List<String> descriptionContentList = new ArrayList<>();
 
-        StringBuilder sb = new StringBuilder();
         int score = 100;
         if(!answerDTOList.isEmpty()){
             for (int i = 0; i < answerDTOList.size(); i++) {
                 if(answerDTOList.get(i).getAnswer() == 1){
                     score -= answerDTOList.get(i).getRiskWeight();
                 }else{
-                    sb.append(checklistDTOList.get(i).getNecessity()).append('\n').append('\n');
+                    descriptionTitleList.add(checklistDTOList.get(i).getNecessity_title());
+                    descriptionContentList.add(checklistDTOList.get(i).getNecessity_content());
                 }
-
             }
         }
-        System.out.println("사용자의 점수 = " + score);
+        log.info("사용자의 점수 = " + score);
 
         DangerResultVO dangerResultVO = getMessageList(score, templateId);
-        dangerResultVO.setDescription(sb.toString());
+        dangerResultVO.setDescriptionContentList(descriptionContentList);
+        dangerResultVO.setDescriptionTitleList(descriptionTitleList);
 
         return dangerResultVO;
     }

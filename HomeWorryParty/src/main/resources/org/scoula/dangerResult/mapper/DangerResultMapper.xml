@@ -21,7 +21,6 @@
         <result property="minScore" column="min_score"/>
         <result property="maxScore" column="max_score"/>
         <result property="message" column="message"/>
-        <result property="description" column="description"/>
         <result property="imageUrl" column="image_url"/>
     </resultMap>
 

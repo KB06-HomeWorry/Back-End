@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,7 +17,8 @@ public class DangerResultVO {
     private float minScore;
     private float maxScore;
     private String message;
-    private String description;
+    private List<String> descriptionTitleList;
+    private List<String> descriptionContentList;
     private String imageUrl;
 
     public void copy(DangerResultVO dangerResultVO) {
@@ -23,6 +26,8 @@ public class DangerResultVO {
         this.templateId = dangerResultVO.getTemplateId();
         this.minScore = dangerResultVO.getMinScore();
         this.maxScore = dangerResultVO.getMaxScore();
+        this.descriptionTitleList = dangerResultVO.getDescriptionTitleList();
+        this.descriptionContentList = dangerResultVO.getDescriptionContentList();
         this.message = new String(dangerResultVO.getMessage());
         this.imageUrl = new String(dangerResultVO.getImageUrl());
     }

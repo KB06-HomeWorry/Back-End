@@ -11,7 +11,8 @@
         <result property="templateId" column="template_id"/>
         <result property="content" column="content"/>
         <result property="effectiveness" column="effectiveness"/>
-        <result property="necessity" column="necessity"/>
+        <result property="necessity_title" column="necessity_title"/>
+        <result property="necessity_content" column="necessity_content"/>
         <result property="orderNum" column="order_num"/>
         <result property="riskWeight" column="risk_weight"/>
     </resultMap>

@@ -2,10 +2,6 @@ package org.scoula.dangerResult.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.scoula.checklist.dto.ChecklistDTO;
-import org.scoula.checklist.dto.ChecklistResponseDTO;
-import org.scoula.checklist.dto.ChecklistTemplateDTO;
-import org.scoula.checklist.dto.ChecklistUserAnswerDTO;
 import org.scoula.checklist.service.ChecklistService;
 import org.scoula.dangerResult.domain.DangerResultVO;
 import org.scoula.dangerResult.dto.DangerResultDTO;
@@ -13,7 +9,6 @@ import org.scoula.dangerResult.service.DangerResultService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Log4j2
 @RestController
@@ -41,11 +36,10 @@ public class DangerResultController {
                 .minScore(dangerResultVO.getMinScore())
                 .maxScore(dangerResultVO.getMaxScore())
                 .message(dangerResultVO.getMessage())
-                .description(dangerResultVO.getDescription())
+                .descriptionTitleList(dangerResultVO.getDescriptionTitleList())
+                .descriptionContentList(dangerResultVO.getDescriptionContentList())
                 .imageUrl(dangerResultVO.getImageUrl())
                 .build();
-
-        System.out.println(dangerResultDTO.getDescription());
 
         return ResponseEntity.ok(dangerResultDTO);
     }
