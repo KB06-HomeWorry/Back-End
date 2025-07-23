@@ -24,7 +24,6 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     final PasswordEncoder passwordEncoder;
     final UserMapper mapper;
-    private final PasswordResetService passwordResetService;
 
     @Override
     public boolean checkDuplicate(String username) {
@@ -62,16 +61,6 @@ public class UserServiceImpl implements UserService {
         }
 
         return getemail(passwordResetTokenVO.getEmail());
-    }
-
-    @Override
-    public String passwordVerify(String password, String username) {
-        UserDTO member = get(username);
-        if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new PasswordMissmatchException();
-        }
-
-        return passwordResetService.passwordVerify(member.getEmail());
     }
 
     @Override

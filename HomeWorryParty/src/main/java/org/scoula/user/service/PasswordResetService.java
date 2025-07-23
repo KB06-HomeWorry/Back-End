@@ -6,6 +6,7 @@ import org.scoula.user.domain.PasswordRewriteVO;
 import org.scoula.user.dto.PasswordResetTokenDTO;
 import org.scoula.user.dto.PasswordRewriteDTO;
 import org.scoula.user.dto.UserDTO;
+import org.scoula.user.exception.PasswordMissmatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -54,10 +55,16 @@ public class PasswordResetService {
         return userService.getemail(userEmail);
     }
 
-    public String passwordVerify(String email){
+    public String passwordVerify(String password, String username) {
+        UserDTO member = userService.get(username);
+
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new PasswordMissmatchException();
+        }
+
         String resetToken = generateResetToken();
 
-        userService.savePasswordResetToken(new PasswordResetTokenDTO(email, resetToken, LocalDateTime.now()));
+        userService.savePasswordResetToken(new PasswordResetTokenDTO(member.getEmail(), resetToken, LocalDateTime.now()));
 
         return resetToken;
     }

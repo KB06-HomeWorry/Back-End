@@ -1,6 +1,7 @@
 package org.scoula.agent.mapper;
 
 import org.apache.ibatis.annotations.Param;
+import org.scoula.agent.domain.AgentDetailVO;
 import org.scoula.agent.model.Office;
 
 import java.time.LocalDateTime;
@@ -14,4 +15,6 @@ public interface AgentMapper {
     LocalDateTime findUpdatedAt();
 
     void saveUpdateAt();
+
+    AgentDetailVO getAgentDetail(Long officeId);
 }

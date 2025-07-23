@@ -62,7 +62,7 @@ public class MemberController {
 
     @PostMapping("/verify-password") // 비밀번호 일치 확인
     public ResponseEntity<?> passwordVerify(@RequestBody VerifyPasswordDTO pdto) {
-        return ResponseEntity.ok().body(service.passwordVerify(pdto.getPassword(), jwtProcessor.getUsername(pdto.getToken())));
+        return ResponseEntity.ok().body(passwordResetService.passwordVerify(pdto.getPassword(), jwtProcessor.getUsername(pdto.getToken())));
     }
 
     @GetMapping("/{username}/avatar")
