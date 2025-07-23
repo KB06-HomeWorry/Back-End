@@ -36,6 +36,7 @@ import javax.sql.DataSource;
 
 @EnableTransactionManagement
 @Log4j2
+@ComponentScan(basePackages = "org.scoula")
 public class RootConfig {
     @Value("${jdbc.driver}")
     String driver;
