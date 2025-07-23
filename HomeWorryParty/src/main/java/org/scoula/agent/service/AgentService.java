@@ -3,6 +3,8 @@ package org.scoula.agent.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.scoula.agent.domain.AgentDetailVO;
+import org.scoula.agent.dto.AgentDetailDTO;
 import org.scoula.agent.mapper.AgentMapper;
 import org.scoula.agent.model.Office;
 import org.scoula.agent.model.OpenApiResponse;
@@ -197,5 +199,9 @@ public class AgentService {
         // 다만, 예를 들어 "02 1234 5678" -> "02-1234-5678"로 만들고 싶다면 추가 로직 필요
         // 여기서는 숫자와 하이픈만 남기는 것으로 충분하다고 판단합니다.
         return extractedNumber;
+    }
+
+    public AgentDetailDTO getAgentDetail(Long officeId) {
+        return AgentDetailDTO.of(mapper.getAgentDetail(officeId));
     }
 }

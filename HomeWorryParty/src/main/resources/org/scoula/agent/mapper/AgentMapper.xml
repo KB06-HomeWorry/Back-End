@@ -4,6 +4,19 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.scoula.agent.mapper.AgentMapper">
+
+    <!-- ResultMap: AgentDetailVO -->
+    <resultMap id="AgentDetailMap" type="org.scoula.agent.domain.AgentDetailVO">
+        <id property="officeId" column="office_id"/>
+        <result property="gu" column="gu"/>
+        <result property="dong" column="dong"/>
+        <result property="address" column="address"/>
+        <result property="agentNumber" column="number"/>
+        <result property="agentName" column="agent_name"/>
+        <result property="officeName" column="office_name"/>
+        <result property="phone" column="phone"/>
+    </resultMap>
+
     <!-- 1. 중개사무소 정보 추가 -->
     <insert id="save" parameterType="org.scoula.agent.model.Office" useGeneratedKeys="true" keyProperty="userId">
         INSERT INTO openapiagents (office_id, gu, dong, address, number, agent_name, office_name, phone)
@@ -35,4 +48,9 @@
         ON DUPLICATE KEY UPDATE
             updated_at = NOW()
     </insert>
+
+    <!--  5. 중개사 상세 정보 조회  -->
+    <select id="getAgentDetail" parameterType="Long" resultMap="AgentDetailMap">
+        SELECT * FROM openapiagents WHERE office_id = #{officeId}
+    </select>
 </mapper>
