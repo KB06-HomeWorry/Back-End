@@ -3,10 +3,9 @@ package org.scoula.user.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.scoula.common.util.UploadFiles;
-import org.scoula.user.dto.ChangePasswordDTO;
-import org.scoula.user.dto.UserDTO;
-import org.scoula.user.dto.UserJoinDTO;
-import org.scoula.user.dto.UserUpdateDTO;
+import org.scoula.security.util.JwtProcessor;
+import org.scoula.user.dto.*;
+import org.scoula.user.service.PasswordResetService;
 import org.scoula.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,15 +21,43 @@ import java.io.File;
 public class MemberController {
 
     final UserService service;
+    final PasswordResetService passwordResetService;
+    final JwtProcessor jwtProcessor;
 
-    @GetMapping("/checkusername/{username}") //아이디 중복 체크
-    public ResponseEntity<Boolean> checkUsername(@PathVariable String username) {
-        return ResponseEntity.ok().body(service.checkDuplicate(username));
+    @GetMapping("/checkusername/{email}") //아이디 중복 체크
+    public ResponseEntity<Boolean> checkUsername(@PathVariable String email) {
+        return ResponseEntity.ok().body(service.existsByEmail(email));
+    }
+
+    @GetMapping("/checkNameAndEmail") // 사용자 이름과 이메일이 일치하는지 체크
+    public ResponseEntity<Boolean> checkNameAndEmail(@RequestParam String name, @RequestParam String email) {
+        return ResponseEntity.ok().body(service.checkNameAndEmail(name, email));
     }
 
     @PostMapping("") //가입해줘
-    public ResponseEntity<UserDTO> join(UserJoinDTO member) {
+    public ResponseEntity<UserDTO> join(@RequestBody UserJoinDTO member) {
         return ResponseEntity.ok(service.join(member));
+    }
+
+    @GetMapping("/getprofile/{token}") // 마이페이지 유저 정보 전달
+    public ResponseEntity<UserDTO> getProfile(@PathVariable String token) {
+        return ResponseEntity.ok().body(service.get(jwtProcessor.getUsername(token)));
+    }
+
+    @DeleteMapping("/withdraw/{token}") // 회원 탈퇴
+    public ResponseEntity<?> withdraw(@PathVariable String token) {
+        return ResponseEntity.ok().body(service.withdraw(jwtProcessor.getUsername(token)));
+    }
+
+    @GetMapping("/resetpassword/{email}") // 비밀번호 변경 이메일 보내기
+    public ResponseEntity<PasswordResetTokenDTO> passwordResetEmail(@PathVariable String email) {
+        return ResponseEntity.ok(passwordResetService.PasswordReset(email));
+    }
+
+    @PostMapping("/resetpassword")// 비밀번호 변경 신청
+    public ResponseEntity<?> passwordReset(@RequestBody PasswordRewriteDTO prdto){
+        passwordResetService.PasswordRewrite(prdto);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{username}/avatar")

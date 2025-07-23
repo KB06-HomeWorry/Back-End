@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 })
 @ComponentScan(basePackages = {
         "org.scoula.user.service",
+        "org.scoula.user.config",
 })
 
 @EnableTransactionManagement
