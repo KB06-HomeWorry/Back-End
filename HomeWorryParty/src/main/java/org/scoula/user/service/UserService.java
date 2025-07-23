@@ -12,6 +12,8 @@ public interface UserService {
 
     boolean existsByToken(String token);
 
+    String passwordVerify(String password, String username);
+
     PasswordResetTokenDTO savePasswordResetToken(PasswordResetTokenDTO passwordResetToken);
 
     UserDTO get(String username);

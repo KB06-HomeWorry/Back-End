@@ -1,10 +1,14 @@
 package org.scoula.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.log4j.Log4j2;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +21,8 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.sql.DataSource;
 
@@ -24,6 +30,7 @@ import javax.sql.DataSource;
 @PropertySource({"classpath:/application.properties"})
 @MapperScan(basePackages = {
         "org.scoula.user.mapper",
+        "org.scoula.agent.mapper",
         "org.scoula.checklist.mapper",
         "org.scoula.dangerResult.mapper",
 })
@@ -32,10 +39,11 @@ import javax.sql.DataSource;
         "org.scoula.checklist.service",
         "org.scoula.dangerResult.service",
         "org.scoula.user.config",
+        "org.scoula.agent.service",
 })
-
 @EnableTransactionManagement
 @Log4j2
+@EnableWebMvc
 @ComponentScan(basePackages = "org.scoula")
 public class RootConfig {
     @Value("${jdbc.driver}")
@@ -63,6 +71,19 @@ public class RootConfig {
     }
 
     @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        return mapper;
+    }
+
+    @Bean
     public SqlSessionFactory sqlSessionFactory() throws Exception {
         SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
         sqlSessionFactory.setConfigLocation(applicationContext.getResource("classpath:/mybatis-config.xml"));
@@ -72,11 +93,14 @@ public class RootConfig {
     }
 
     @Bean
+    public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
+        return new SqlSessionTemplate(sqlSessionFactory);
+    }
+
+    @Bean
     public DataSourceTransactionManager transactionManager() {
         DataSourceTransactionManager manager = new DataSourceTransactionManager(dataSource());
 
         return manager;
     }
-
-
 }
