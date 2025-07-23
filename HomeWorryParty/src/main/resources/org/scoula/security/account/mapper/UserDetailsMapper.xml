@@ -23,7 +23,7 @@
     </resultMap>
 
     <!-- 회원정보 + 권한 리스트를 username(로그인 ID) 기준으로 조회 -->
-    <select id="get" parameterType="string" resultMap="userMap">
+    <select id="getByUserEmail" parameterType="string" resultMap="userMap">
         SELECT
             u.user_id,
             u.name,
@@ -38,5 +38,10 @@
                 LEFT OUTER JOIN user_member_auth a ON u.user_id = a.user_id
         WHERE
             u.email = #{email}
+    </select>
+    <select id="getEmailByUsername" resultType="java.lang.String">
+        select email
+        from user
+        where name = #{name}
     </select>
 </mapper>

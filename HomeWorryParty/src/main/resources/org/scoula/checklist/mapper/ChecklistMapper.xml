@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.scoula.checklist.mapper.ChecklistMapper">
+
+    <!-- ResultMap: ChecklistVO -->
+    <resultMap id="checklistMap" type="org.scoula.checklist.domain.ChecklistVO">
+        <id property="checklistId" column="question_id"/>
+        <result property="templateId" column="template_id"/>
+        <result property="content" column="content"/>
+        <result property="effectiveness" column="effectiveness"/>
+        <result property="necessity_title" column="necessity_title"/>
+        <result property="necessity_content" column="necessity_content"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="riskWeight" column="risk_weight"/>
+    </resultMap>
+
+
+
+    <select id="get" parameterType="long" resultMap="checklistMap">
+        SELECT * FROM home_test.checklistquestion WHERE template_id = #{template_id}
+    </select>
+
+
+
+</mapper>

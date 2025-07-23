@@ -16,7 +16,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
         "org.scoula.controller",
         "org.scoula.user.controller",
         "org.scoula.agent.controller",
+        "org.scoula.checklist.controller",
+        "org.scoula.dangerResult.controller",
 })
+@ComponentScan(basePackages = "org.scoula")
 public class ServletConfig implements WebMvcConfigurer {
 
     @Override

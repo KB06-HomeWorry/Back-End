@@ -18,6 +18,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -29,15 +31,20 @@ import javax.sql.DataSource;
 @MapperScan(basePackages = {
         "org.scoula.user.mapper",
         "org.scoula.agent.mapper",
+        "org.scoula.checklist.mapper",
+        "org.scoula.dangerResult.mapper",
 })
 @ComponentScan(basePackages = {
         "org.scoula.user.service",
+        "org.scoula.checklist.service",
+        "org.scoula.dangerResult.service",
         "org.scoula.user.config",
         "org.scoula.agent.service",
 })
 @EnableTransactionManagement
 @Log4j2
 @EnableWebMvc
+@ComponentScan(basePackages = "org.scoula")
 public class RootConfig {
     @Value("${jdbc.driver}")
     String driver;
