@@ -43,7 +43,6 @@ public class PasswordResetService {
         String resetToken = generateResetToken();
 
         // 3. DB에 토큰 저장 (사용자 정보와 만료 시간을 함께 저장해야 함)
-        // TODO: 중복되는 이메일로 입력되었을 때 덮어쓰도록 수정
         userService.savePasswordResetToken(new PasswordResetTokenDTO(userEmail, resetToken, LocalDateTime.now()));
 
         // 4. 재설정 링크 생성
@@ -53,6 +52,14 @@ public class PasswordResetService {
         sendPasswordResetEmail(userEmail, resetLink);
 
         return userService.getemail(userEmail);
+    }
+
+    public String passwordVerify(String email){
+        String resetToken = generateResetToken();
+
+        userService.savePasswordResetToken(new PasswordResetTokenDTO(email, resetToken, LocalDateTime.now()));
+
+        return resetToken;
     }
 
     @Transactional

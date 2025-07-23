@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.scoula.agent.mapper.AgentMapper">
+    <!-- 1. 중개사무소 정보 추가 -->
+    <insert id="save" parameterType="org.scoula.agent.model.Office" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO openapiagents (office_id, gu, dong, address, number, agent_name, office_name, phone)
+        VALUES (#{sysNo}, #{gu}, #{dong}, #{address}, #{number}, #{agentName}, #{officeName}, #{phone})
+        ON DUPLICATE KEY UPDATE
+            gu = #{gu}, dong = #{dong}, address = #{address}, number = #{number}, agent_name = #{agentName}, office_name = #{officeName}, phone = #{phone}
+    </insert>
+
+    <!--  2. 중개사무소 정보 전체 추가  -->
+    <insert id="saveAll" parameterType="java.util.List">
+        INSERT INTO openapiagents (office_id, gu, dong, address, number, agent_name, office_name, phone)
+        VALUES
+            <foreach collection="Offices" item="office" separator=",">
+                (#{office.sysNo}, #{office.gu}, #{office.dong}, #{office.address}, #{office.number}, #{office.agentName}, #{office.officeName}, #{office.phone})
+            </foreach>
+        ON DUPLICATE KEY UPDATE
+            gu = VALUES(gu), dong = VALUES(dong), address = VALUES(address), number = VALUES(number), agent_name = VALUES(agent_name), office_name = VALUES(office_name), phone = VALUES(phone)
+    </insert>
+
+    <!--  3. 마지막 업데이트 날짜 확인  -->
+    <select id="findUpdatedAt" resultType="java.time.LocalDateTime">
+        SELECT updated_at FROM openApiAgentsUpdate WHERE updated_key = 1
+    </select>
+
+    <!--  4. 업데이트 날짜 수정  -->
+    <insert id="saveUpdateAt">
+        INSERT INTO openApiAgentsUpdate (updated_key, updated_at)
+        VALUES (1, NOW())
+        ON DUPLICATE KEY UPDATE
+            updated_at = NOW()
+    </insert>
+</mapper>

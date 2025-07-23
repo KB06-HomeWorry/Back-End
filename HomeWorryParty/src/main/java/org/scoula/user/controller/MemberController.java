@@ -60,6 +60,11 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/verify-password") // 비밀번호 일치 확인
+    public ResponseEntity<?> passwordVerify(@RequestBody VerifyPasswordDTO pdto) {
+        return ResponseEntity.ok().body(service.passwordVerify(pdto.getPassword(), jwtProcessor.getUsername(pdto.getToken())));
+    }
+
     @GetMapping("/{username}/avatar")
     public void getAvatar(@PathVariable String username,
                           HttpServletResponse response) {
