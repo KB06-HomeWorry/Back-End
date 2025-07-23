@@ -7,7 +7,7 @@
 
     <!-- 권한(AuthVO) 매핑 -->
     <resultMap id="authMap" type="org.scoula.security.account.domain.AuthVO">
-        <result property="username" column="username"/>
+        <result property="userId" column="username"/>
         <result property="auth" column="auth"/>
     </resultMap>
 
@@ -37,6 +37,6 @@
             user u
                 LEFT OUTER JOIN user_member_auth a ON u.user_id = a.user_id
         WHERE
-            u.name = #{username}
+            u.email = #{email}
     </select>
 </mapper>

@@ -31,6 +31,7 @@ import javax.sql.DataSource;
         "org.scoula.user.service",
         "org.scoula.checklist.service",
         "org.scoula.dangerResult.service",
+        "org.scoula.user.config",
 })
 
 @EnableTransactionManagement
