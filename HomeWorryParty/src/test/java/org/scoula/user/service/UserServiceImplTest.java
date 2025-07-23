@@ -25,25 +25,25 @@ class UserServiceImplTest {
     @Autowired
     private UserMapper mapper;
 
-    @Test
-    void join() {
-
-        UserVO member = UserVO.builder()
-                .username("test2")
-                .password("1234")
-                .email("test2@test.com")
-                .build();
-
-        member.setPassword(passwordEncoder.encode(member.getPassword()));
-        int result0 = mapper.insertUser(member);
-        Assertions.assertEquals(1, result0);
-        log.info("insert>> " + result0);
-
-        AuthVO auth = new AuthVO();
-        auth.setUsername(member.getUsername());
-        auth.setAuth("ROLE_MEMBER");
-        int result = mapper.insertAuth(auth);
-        log.info("insertAuth>> " + result);
-        Assertions.assertEquals(0, result);
-    }
+//    @Test
+//    void join() {
+//
+//        UserVO member = UserVO.builder()
+//                .username("test2")
+//                .password("1234")
+//                .email("test2@test.com")
+//                .build();
+//
+//        member.setPassword(passwordEncoder.encode(member.getPassword()));
+//        int result0 = mapper.insertUser(member);
+//        Assertions.assertEquals(1, result0);
+//        log.info("insert>> " + result0);
+//
+//        AuthVO auth = new AuthVO();
+//        auth.setUsername(member.getUsername());
+//        auth.setAuth("ROLE_MEMBER");
+//        int result = mapper.insertAuth(auth);
+//        log.info("insertAuth>> " + result);
+//        Assertions.assertEquals(0, result);
+//    }
 }

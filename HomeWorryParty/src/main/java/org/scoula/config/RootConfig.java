@@ -26,11 +26,13 @@ import javax.sql.DataSource;
         "org.scoula.user.mapper",
         "org.scoula.checklist.mapper",
         "org.scoula.dangerResult.mapper",
+        "org.scoula.documentAnalysis.mapper",
 })
 @ComponentScan(basePackages = {
         "org.scoula.user.service",
         "org.scoula.checklist.service",
         "org.scoula.dangerResult.service",
+        "org.scoula.documentAnalysis.service",
         "org.scoula.user.config",
 })
 
