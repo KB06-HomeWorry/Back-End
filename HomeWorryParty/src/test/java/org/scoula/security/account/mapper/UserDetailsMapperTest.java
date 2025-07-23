@@ -21,16 +21,16 @@ class UserDetailsMapperTest {
     @Autowired
     private UserDetailsMapper userDetailsMapper;
 
-    @Test
-    void get() {
-        UserVO memberVO = userDetailsMapper.get("홍길동");
-        log.info(memberVO);
-        //List<AuthVO) 궁금..??
-        List<AuthVO> authList = memberVO.getAuthList();
-        log.info(authList.size()); //3개
-        System.out.println("==============================");
-        for (AuthVO authVO : authList) {
-            log.info(authVO);
-        }
-    }
+//    @Test
+//    void get() {
+//        UserVO memberVO = userDetailsMapper.get("홍길동");
+//        log.info(memberVO);
+//        //List<AuthVO) 궁금..??
+//        List<AuthVO> authList = memberVO.getAuthList();
+//        log.info(authList.size()); //3개
+//        System.out.println("==============================");
+//        for (AuthVO authVO : authList) {
+//            log.info(authVO);
+//        }
+//    }
 }

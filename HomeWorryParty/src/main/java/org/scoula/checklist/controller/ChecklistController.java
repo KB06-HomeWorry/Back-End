@@ -51,8 +51,8 @@ public class ChecklistController {
 
     @PostMapping("/answers")
     public ResponseEntity<Void> saveAnswers(@RequestBody List<ChecklistUserAnswerDTO> answerDTOList) {
+        log.info("저장 요청 들어옴: {}", answerDTOList);
         try {
-            log.info("저장 요청 들어옴: {}", answerDTOList);
             answerService.saveAnswerList(answerDTOList);
             return ResponseEntity.ok().build();
         } catch (Exception e) {

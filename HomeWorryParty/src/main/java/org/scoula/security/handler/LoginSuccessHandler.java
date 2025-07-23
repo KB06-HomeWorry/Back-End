@@ -27,7 +27,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         //JsonResponse로 보낼 값들 만ㄷ르어야함.
         //성공했으므로  Authentication객체가 이미 만들어져서
         //SecuriyContextHolder에 들어가 있음.
-
         String username = user.getUsername();
         // 토큰 생성
         String token = jwtProcessor.generateToken(username);

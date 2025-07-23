@@ -62,6 +62,7 @@ public class ChecklistUserAnswerServiceImpl implements ChecklistUserAnswerServic
     @Override
     public void saveAnswerList(List<ChecklistUserAnswerDTO> answerDTOList) {
         for (ChecklistUserAnswerDTO dto : answerDTOList) {
+            log.info(dto);
             checklistUserAnswerMapper.updateAnswer(
                     dto.getAnswer(), dto.getQuestionId(), dto.getUserId());
         }

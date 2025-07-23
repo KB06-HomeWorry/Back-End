@@ -11,12 +11,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserInfoDTO {
+    Long userId;
     String username;
     String email;
     List<String> roles;
 
     public static UserInfoDTO of(UserVO user) {
         return new UserInfoDTO(
+                user.getUserId(),
                 user.getUsername(),
                 user.getEmail(),
                 user.getAuthList().stream()
