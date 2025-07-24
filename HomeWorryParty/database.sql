@@ -680,3 +680,37 @@ VALUES ('입주 전 반드시 잔금 입금 요청', 1, 8.5, '계약서에 명�
 
 
 SELECT * FROM home_test.checklistquestion WHERE template_id = 2;
+
+drop table illegal_building_check;
+use home_test;
+drop table illegal_building_judge;
+CREATE TABLE illegal_building_judge (
+                                        id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '내부 식별자',
+                                        plat_plc VARCHAR(255) COMMENT '대지위치',
+                                        sgg_cd_nm VARCHAR(50) COMMENT '시군구코드명',
+                                        stdg_cd_nm VARCHAR(50) COMMENT '법정동코드명',
+                                        bdrg_sn VARCHAR(30) NOT NULL UNIQUE COMMENT '건축물대장일련번호',
+
+                                        ldgr_se_cd_nm VARCHAR(20) COMMENT '대장구분코드명',
+                                        ldgr_kind_cd_nm VARCHAR(20) COMMENT '대장종류코드명',
+
+                                        mn_usg_cd_nm VARCHAR(50) COMMENT '주용도코드명',
+                                        etc_usg_cn VARCHAR(255) COMMENT '기타용도내용',
+
+                                        bdcvrt DECIMAL(5,2) COMMENT '건폐율',
+                                        gfa DECIMAL(18,2) COMMENT '연면적',
+                                        grnd_nofl INT COMMENT '지상층수',
+                                        udgd_nofl INT COMMENT '지하층수',
+
+                                        prmsn_ymd CHAR(15) COMMENT '허가일자(YYYYMMDD)',
+                                        use_aprv_ymd CHAR(15) COMMENT '사용승인일자(YYYYMMDD)',
+
+                                        rser_design_aplcn_yn CHAR(1) COMMENT '내진설계적용여부(Y/N)',
+                                        roof_cd_nm VARCHAR(50) COMMENT '지붕코드명',
+                                        etc_roof_nm VARCHAR(255) COMMENT '기타지붕명',
+
+                                        judge_result VARCHAR(50) COMMENT '불법여부(자동판정결과)',
+                                        judge_reason VARCHAR(300) COMMENT '불법 사유/근거'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='불법 건축물 판정에 필요한 최소 정보 테이블';
+
+
