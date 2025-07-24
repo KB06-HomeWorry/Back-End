@@ -3,10 +3,12 @@ package org.scoula.documentAnalysis.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
 public class IllegalBuildingCheckVO {
     private Long id; // 내부 PK (AUTO_INCREMENT)

@@ -13,7 +13,7 @@ public interface DocumentAnalysisMapper {
     int insert(IllegalBuildingCheckVO illegalBuildingCheckVO);
 
     // 단건 조회
-    IllegalBuildingCheckVO findById(Long id);
+    IllegalBuildingCheckVO findByAddress(String  address);
 
     // 전체 목록 조회
     List<IllegalBuildingCheckVO> findAll();

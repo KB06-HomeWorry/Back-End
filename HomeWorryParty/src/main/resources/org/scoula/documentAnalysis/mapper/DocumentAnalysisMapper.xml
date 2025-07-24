@@ -48,10 +48,10 @@
     </insert>
 
     <!-- SELECT 단건 -->
-    <select id="findById" resultMap="IllegalBuildingJudgeMap">
+    <select id="findByAddress" resultMap="IllegalBuildingJudgeMap">
         SELECT *
         FROM illegal_building_judge
-        WHERE id = #{id}
+        WHERE plat_plc = #{address}
     </select>
 
     <!-- SELECT 전체 -->
