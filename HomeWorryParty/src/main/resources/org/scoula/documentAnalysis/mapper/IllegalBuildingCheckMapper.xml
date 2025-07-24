@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        <!DOCTYPE mapper
+                PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.scoula.documentAnalysis.mapper.IllegalBuildingCheckMapper">
-
 
     <!-- ResultMap: DTO 매핑 -->
     <resultMap id="IllegalBuildingJudgeMap" type="org.scoula.documentAnalysis.dto.IllegalBuildingCheckDTO">
@@ -24,6 +23,8 @@
         <result property="prmsnYmd" column="prmsn_ymd"/>
         <result property="useAprvYmd" column="use_aprv_ymd"/>
         <result property="rserDesignAplcnYn" column="rser_design_aplcn_yn"/>
+        <result property="roofCdNm" column="roof_cd_nm"/>
+        <result property="etcRoofNm" column="etc_roof_nm"/>
         <result property="judgeResult" column="judge_result"/>
         <result property="judgeReason" column="judge_reason"/>
     </resultMap>
@@ -34,13 +35,15 @@
         (
             plat_plc, sgg_cd_nm, stdg_cd_nm, bdrg_sn, ldgr_se_cd_nm, ldgr_kind_cd_nm,
             mn_usg_cd_nm, etc_usg_cn, bdcvrt, gfa, grnd_nofl, udgd_nofl,
-            prmsn_ymd, use_aprv_ymd, rser_design_aplcn_yn, judge_result, judge_reason
+            prmsn_ymd, use_aprv_ymd, rser_design_aplcn_yn, roof_cd_nm, etc_roof_nm,
+            judge_result, judge_reason
         )
         VALUES
             (
                 #{platPlc}, #{sggCdNm}, #{stdgCdNm}, #{bdrgSn}, #{ldgrSeCdNm}, #{ldgrKindCdNm},
                 #{mnUsgCdNm}, #{etcUsgCn}, #{bdcvrt}, #{gfa}, #{grndNofl}, #{udgdNofl},
-                #{prmsnYmd}, #{useAprvYmd}, #{rserDesignAplcnYn}, #{judgeResult}, #{judgeReason}
+                #{prmsnYmd}, #{useAprvYmd}, #{rserDesignAplcnYn}, #{roofCdNm}, #{etcRoofNm},
+                #{judgeResult}, #{judgeReason}
             )
     </insert>
 

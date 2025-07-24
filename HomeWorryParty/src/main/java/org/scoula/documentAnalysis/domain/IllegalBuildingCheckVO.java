@@ -24,6 +24,9 @@ public class IllegalBuildingCheckVO {
     private final String prmsnYmd;        // 허가일자 (YYYYMMDD)
     private final String useAprvYmd;      // 사용승인일자 (YYYYMMDD)
     private final String rserDesignAplcnYn; // 내진설계적용여부(Y/N)
+    private final String roofCdNm;      // 지붕코드명
+    private final String etcRoofNm;     // 기타지붕명
     private final String judgeResult;     // 불법여부(자동판정결과)
     private final String judgeReason;     // 불법 사유/근거
+
 }

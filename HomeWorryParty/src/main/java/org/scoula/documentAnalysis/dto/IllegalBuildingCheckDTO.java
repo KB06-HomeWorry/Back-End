@@ -59,6 +59,12 @@ public class IllegalBuildingCheckDTO {
     @JsonProperty("RSER_DESIGN_APLCN_YN")
     private String rserDesignAplcnYn; // 내진설계적용여부(Y/N)
 
+    @JsonProperty("ROOF_CD_NM")
+    private String roofCdNm;      // 지붕코드명
+
+    @JsonProperty("ETC_ROOF_NM")
+    private String etcRoofNm;     // 기타지붕명
+
     private String judgeResult; // 불법여부(자동판정결과)
     private String judgeReason; // 불법 사유/근거
 
@@ -83,6 +89,8 @@ public class IllegalBuildingCheckDTO {
                 dto.getPrmsnYmd(),
                 dto.getUseAprvYmd(),
                 dto.getRserDesignAplcnYn(),
+                dto.getRoofCdNm(),
+                dto.getEtcRoofNm(),
                 dto.getJudgeResult(),
                 dto.getJudgeReason()
         );
