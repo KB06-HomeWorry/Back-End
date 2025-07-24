@@ -3,10 +3,10 @@
                 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.scoula.documentAnalysis.mapper.IllegalBuildingCheckMapper">
+<mapper namespace="org.scoula.documentAnalysis.mapper.DocumentAnalysisMapper">
 
     <!-- ResultMap: DTO 매핑 -->
-    <resultMap id="IllegalBuildingJudgeMap" type="org.scoula.documentAnalysis.dto.IllegalBuildingCheckDTO">
+    <resultMap id="IllegalBuildingJudgeMap" type="org.scoula.documentAnalysis.domain.IllegalBuildingCheckVO">
         <id property="id" column="id"/>
         <result property="platPlc" column="plat_plc"/>
         <result property="sggCdNm" column="sgg_cd_nm"/>
@@ -30,7 +30,7 @@
     </resultMap>
 
     <!-- INSERT -->
-    <insert id="insert" parameterType="org.scoula.documentAnalysis.dto.IllegalBuildingCheckDTO" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="org.scoula.documentAnalysis.domain.IllegalBuildingCheckVO" useGeneratedKeys="true" keyProperty="id">
         INSERT IGNORE INTO illegal_building_judge
         (
             plat_plc, sgg_cd_nm, stdg_cd_nm, bdrg_sn, ldgr_se_cd_nm, ldgr_kind_cd_nm,

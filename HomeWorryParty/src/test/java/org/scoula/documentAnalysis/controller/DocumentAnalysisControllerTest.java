@@ -6,12 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.scoula.config.RootConfig;
 import org.scoula.documentAnalysis.dto.IllegalBuildingCheckDTO;
-import org.scoula.documentAnalysis.mapper.IllegalBuildingCheckMapper;
 import org.scoula.documentAnalysis.service.DocumentAnalysisServiceImpl;
 import org.scoula.security.config.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,7 +22,7 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
-
+@WebAppConfiguration // ← 이 줄을 꼭 추가하세요!
 @ExtendWith(SpringExtension.class) // 꼭 추가!
 @ContextConfiguration(classes = {RootConfig.class, SecurityConfig.class})
 class DocumentAnalysisControllerTest {
@@ -119,7 +119,7 @@ class DocumentAnalysisControllerTest {
             // 여기에 DB 저장, 리스트 저장, 가공 등 원하는 처리
 
             if(checkIllegal(dto)){
-                documentAnalysisService.insert(dto);
+                documentAnalysisService.insertIllegalBuildingData(dto);
                 //System.out.println(dto);
             }
 

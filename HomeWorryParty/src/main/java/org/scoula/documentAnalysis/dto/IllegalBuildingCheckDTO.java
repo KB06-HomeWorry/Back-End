@@ -12,8 +12,7 @@ import org.scoula.documentAnalysis.domain.IllegalBuildingCheckVO;
 @AllArgsConstructor
 @Builder
 public class IllegalBuildingCheckDTO {
-    private Long id; // 내부 PK (AUTO_INCREMENT)
-
+    private Long id;                // 내부 PK (AUTO_INCREMENT)
     @JsonProperty("PLAT_PLC")
     private String platPlc; // 대지위치
 
@@ -67,7 +66,6 @@ public class IllegalBuildingCheckDTO {
 
     private String judgeResult; // 불법여부(자동판정결과)
     private String judgeReason; // 불법 사유/근거
-
     private String remark; // 추가 확인/비고 (파싱/비즈니스 로직에서
 
     // VO 변환
