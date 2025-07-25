@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.scoula.map.mapper.PriceTrendMapper">
+
+    <!-- 1. 지도에 띄울 실거래가 간단 정보 (위도, 경도, 가격) -->
+    <select id="selectPriceTrendsForMap" resultType="org.scoula.map.dto.PriceTrendMapDTO">
+        SELECT
+            id,
+            latitude,
+            longitude,
+            price
+        FROM
+            PriceTrend
+    </select>
+
+    <!-- 2. 실거래가 상세 정보 조회 (id로) -->
+    <select id="selectPriceTrendDetail" resultType="org.scoula.map.dto.PriceTrendDetailDTO">
+        SELECT
+            id,
+            building_name AS buildingName,
+            deal_type AS dealType,
+            price,
+            contract_day AS contractDay,
+            arch_area AS archArea,
+            built_year AS builtYear,
+            floor,
+            address,
+            latitude,
+            longitude
+        FROM
+            PriceTrend
+        WHERE
+            id = #{id}
+    </select>
+
+</mapper>
