@@ -2,6 +2,8 @@ package org.scoula.agent.mapper;
 
 import org.apache.ibatis.annotations.Param;
 import org.scoula.agent.domain.AgentDetailVO;
+import org.scoula.agent.domain.AgentReviewVO;
+import org.scoula.agent.dto.AgentReviewDTO;
 import org.scoula.agent.model.Office;
 
 import java.time.LocalDateTime;
@@ -17,4 +19,10 @@ public interface AgentMapper {
     void saveUpdateAt();
 
     AgentDetailVO getAgentDetail(Long officeId);
+
+    List<AgentReviewVO> getAgentReviews(Long officeId);
+
+    void writeAgentReview(AgentReviewVO agentReviewVO);
+
+    int updateAgentScore(@Param("officeId") Long officeId, @Param("trustScore") Long trustScore);
 }

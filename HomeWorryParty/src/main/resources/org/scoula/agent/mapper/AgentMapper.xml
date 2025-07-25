@@ -8,32 +8,47 @@
     <!-- ResultMap: AgentDetailVO -->
     <resultMap id="AgentDetailMap" type="org.scoula.agent.domain.AgentDetailVO">
         <id property="officeId" column="office_id"/>
-        <result property="gu" column="gu"/>
-        <result property="dong" column="dong"/>
         <result property="address" column="address"/>
-        <result property="agentNumber" column="number"/>
+        <result property="licenseNumber" column="license_number"/>
         <result property="agentName" column="agent_name"/>
         <result property="officeName" column="office_name"/>
+        <result property="profileImage" column="profile_image"/>
         <result property="phone" column="phone"/>
+        <result property="specialties" column="specialties"/>
+        <result property="description" column="description"/>
+        <result property="totalScore" column="total_score"/>
+    </resultMap>
+
+    <!-- ResultMap: AgentReviewVO -->
+    <resultMap id="AgentReviewMap" type="org.scoula.agent.domain.AgentReviewVO">
+        <id property="reviewId" column="review_id"/>
+        <result property="officeId" column="office_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="content" column="content"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="listingAccuracyScore" column="listing_accuracy_score"/>
+        <result property="costTransparencyScore" column="cost_transparency_score"/>
+        <result property="professionalismScore" column="professionalism_score"/>
+        <result property="accountabilityScore" column="accountability_score"/>
     </resultMap>
 
     <!-- 1. 중개사무소 정보 추가 -->
     <insert id="save" parameterType="org.scoula.agent.model.Office" useGeneratedKeys="true" keyProperty="userId">
-        INSERT INTO openapiagents (office_id, gu, dong, address, number, agent_name, office_name, phone)
-        VALUES (#{sysNo}, #{gu}, #{dong}, #{address}, #{number}, #{agentName}, #{officeName}, #{phone})
+        INSERT INTO agent (office_id, address, license_number, agent_name, office_name, phone)
+        VALUES (#{sysNo}, #{address}, #{number}, #{agentName}, #{officeName}, #{phone})
         ON DUPLICATE KEY UPDATE
-            gu = #{gu}, dong = #{dong}, address = #{address}, number = #{number}, agent_name = #{agentName}, office_name = #{officeName}, phone = #{phone}
+            address = #{address}, license_number = #{number}, agent_name = #{agentName}, office_name = #{officeName}, phone = #{phone}
     </insert>
 
     <!--  2. 중개사무소 정보 전체 추가  -->
     <insert id="saveAll" parameterType="java.util.List">
-        INSERT INTO openapiagents (office_id, gu, dong, address, number, agent_name, office_name, phone)
+        INSERT INTO agent (office_id, address, license_number, agent_name, office_name, phone)
         VALUES
             <foreach collection="Offices" item="office" separator=",">
-                (#{office.sysNo}, #{office.gu}, #{office.dong}, #{office.address}, #{office.number}, #{office.agentName}, #{office.officeName}, #{office.phone})
+                (#{office.sysNo}, #{office.address}, #{office.number}, #{office.agentName}, #{office.officeName}, #{office.phone})
             </foreach>
         ON DUPLICATE KEY UPDATE
-            gu = VALUES(gu), dong = VALUES(dong), address = VALUES(address), number = VALUES(number), agent_name = VALUES(agent_name), office_name = VALUES(office_name), phone = VALUES(phone)
+            address = VALUES(address), license_number = VALUES(license_number), agent_name = VALUES(agent_name), office_name = VALUES(office_name), phone = VALUES(phone)
     </insert>
 
     <!--  3. 마지막 업데이트 날짜 확인  -->
@@ -51,6 +66,24 @@
 
     <!--  5. 중개사 상세 정보 조회  -->
     <select id="getAgentDetail" parameterType="Long" resultMap="AgentDetailMap">
-        SELECT * FROM openapiagents WHERE office_id = #{officeId}
+        SELECT * FROM agent WHERE office_id = #{officeId}
     </select>
+
+    <!--  6. 중개사 리뷰 전체 조회  -->
+    <select id="getAgentReviews" parameterType="Long" resultMap="AgentReviewMap">
+        SELECT * FROM AgentReview WHERE office_id = #{officeId}
+    </select>
+
+    <!--  7. 중개사 리뷰 작성  -->
+    <insert id="writeAgentReview" parameterType="org.scoula.agent.domain.AgentReviewVO">
+        INSERT INTO AgentReview (office_id, user_id, created_at, content, listing_accuracy_score, cost_transparency_score, professionalism_score, accountability_score)
+        VALUES (#{officeId}, #{userId}, NOW(), #{content}, #{listingAccuracyScore}, #{costTransparencyScore}, #{professionalismScore}, #{accountabilityScore})
+    </insert>
+
+    <!--  8. 중개사 신뢰 점수 업데이트  -->
+    <update id="updateAgentScore" parameterType="Long">
+        UPDATE agent
+        SET total_score = #{trustScore}
+        WHERE office_id = #{officeId}
+    </update>
 </mapper>

@@ -55,6 +55,10 @@ public class PasswordResetService {
         return userService.getemail(userEmail);
     }
 
+//    public Boolean passwordVerifyCheck(String password, String username) {
+//        UserDTO member = userService.get()
+//    }
+
     public String passwordVerify(String password, String username) {
         UserDTO member = userService.get(username);
 
@@ -69,7 +73,7 @@ public class PasswordResetService {
         return resetToken;
     }
 
-    @Transactional
+    @Transactional // 비밀번호 재설정
     public void PasswordRewrite(PasswordRewriteDTO dto){
         PasswordRewriteVO vo = dto.toVO();
 

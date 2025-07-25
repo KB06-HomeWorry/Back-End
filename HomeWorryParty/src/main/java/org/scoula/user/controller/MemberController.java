@@ -34,12 +34,12 @@ public class MemberController {
         return ResponseEntity.ok().body(service.checkNameAndEmail(name, email));
     }
 
-    @PostMapping("") //가입해줘
+    @PostMapping("") //회원가입
     public ResponseEntity<UserDTO> join(@RequestBody UserJoinDTO member) {
         return ResponseEntity.ok(service.join(member));
     }
 
-    @GetMapping("/getprofile/{token}") // 마이페이지 유저 정보 전달
+    @GetMapping("/getprofile/{token}") // 마이페이지 유저 정보 조회
     public ResponseEntity<UserDTO> getProfile(@PathVariable String token) {
         return ResponseEntity.ok().body(service.get(jwtProcessor.getUsername(token)));
     }
@@ -59,6 +59,11 @@ public class MemberController {
         passwordResetService.PasswordRewrite(prdto);
         return ResponseEntity.ok().build();
     }
+
+//    @PostMapping("/verify-password-check")
+//    public ResponseEntity<?> passwordVerifyCheck(@RequestBody VerifyPasswordDTO pdto){
+//        return ResponseEntity.ok(passwordResetService.passwordVerifyCheck(pdto.getPassword(), jwtProcessor.getUsername(pdto.getToken())));
+//    }
 
     @PostMapping("/verify-password") // 비밀번호 일치 확인
     public ResponseEntity<?> passwordVerify(@RequestBody VerifyPasswordDTO pdto) {
