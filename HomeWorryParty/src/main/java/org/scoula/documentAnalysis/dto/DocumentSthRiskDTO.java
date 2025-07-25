@@ -13,8 +13,7 @@ import java.util.List;
 @Builder
 public class DocumentSthRiskDTO {
     private int optionCount;
-    private String deposit;
-    private String monthlyFee;
+    private String price;
     private List<String> selectedOptions;
     private String type;
 }

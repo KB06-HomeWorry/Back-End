@@ -31,7 +31,7 @@
 
     <resultMap id="MonthlyRentMap" type="org.scoula.documentAnalysis.domain.MonthlyRentVO">
         <result property="monthlyFee" column="avg(monthly_rent)"/>
-        <result property="securityDeposit" column="avg(deposit)"/>
+        <result property="deposit" column="avg(deposit)"/>
     </resultMap>
 
     <!-- INSERT -->

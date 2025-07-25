@@ -90,17 +90,41 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
     }
 
     public void checkDocumentSthRisk(DocumentSthRiskDTO documentSthRiskDTO, String houseAddress, DocumentAnalysisResultDTO documentAnalysisResultDTO){
+        if(houseAddress.isEmpty() || documentSthRiskDTO.getPrice().isEmpty())return;
+
         String[] tempString = houseAddress.split(" ");
         String address = "%" + tempString[1] + " " + tempString[2] + "%";
 
         //        documentSthRiskDTO.getPrice()를 파싱해서 금액을 분석
         MonthlyRentVO myPrice = new MonthlyRentVO();
+        String[] priceList = documentSthRiskDTO.getPrice().split(" ");
+        if(documentSthRiskDTO.getType().equals("월세")){
+            myPrice.setDeposit(Long.valueOf(priceList[1]));
+            myPrice.setMonthlyFee(Long.valueOf(priceList[3]));
+        }else{
+            Long uk = Long.valueOf(priceList[0].substring(0, priceList[0].length() - 1));
+            uk *= 100000000;
+            Long cheon = Long.valueOf(priceList[1].substring(0, priceList[1].length() - 1));
+            cheon *= 10000000;
+            myPrice.setDeposit(uk + cheon);
+        }
+        log.info(documentSthRiskDTO.getType() + "   " + myPrice);
+
         int percent = Math.toIntExact(calPercent(documentSthRiskDTO, address, myPrice));
+        log.info("percent : " + percent);
         if(percent > 5){
             documentAnalysisResultDTO.getDescriptionTitleList().add("시세보다 싼 가격");
             documentAnalysisResultDTO.getDescriptionContentList()
                     .add("시세보다 " + percent + "% 저렴하기에 거래시 불합리한 조건, 깡통 전세, 보증금 사기등의" +
                             "문제가 발생할 수 있기에 거래시 주의가 필요합니다." + "<br></br>");
+            documentAnalysisResultDTO.setScore(documentAnalysisResultDTO.getScore() - (percent*2));
+        }
+
+        if(documentSthRiskDTO.getOptionCount() >= 5){
+            documentAnalysisResultDTO.getDescriptionTitleList().add("평균보다 많은 옵션");
+            documentAnalysisResultDTO.getDescriptionContentList()
+                    .add("비슷한 구역, 비슷한 가격의 매물들 보다 많은 옵션을 가지고 있습니다. " +
+                            "계약서나 매물의 위험이 있을 수 있기에 주의가 필요합니다." + "<br></br>");
             documentAnalysisResultDTO.setScore(documentAnalysisResultDTO.getScore() - (percent*2));
         }
 
@@ -112,14 +136,15 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
 
         if(documentSthRiskDTO.getType().equals("전세")){
             Long price = documentAnalysisMapper.getWholeRent(address);
-            log.info(price);
+            price *= 10000;
+            log.info("평균 가격 : " + price);
             Long differ = price - myPrice.getDeposit();
             if(differ > 0){
                 percent = differ * 100 / price;
             }
         }else if(documentSthRiskDTO.getType().equals("월세")){
             MonthlyRentVO averagePrice = documentAnalysisMapper.getMonthRent(address);
-            log.info(averagePrice);
+            log.info("평균 가격 : " + averagePrice);
             Long differDeposit = averagePrice.getDeposit() - myPrice.getDeposit();
             Long differMonthly = averagePrice.getMonthlyFee() - myPrice.getMonthlyFee();
             if(differDeposit > 0)   percent = differDeposit * 100 / averagePrice.getDeposit();
@@ -132,7 +157,7 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
             if(differ > 0){
                 percent = differ * 100 / price;
             }
-            log.info(price);
+            log.info("평균 가격 : " + price);
         }
 
         return percent;

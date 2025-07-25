@@ -787,22 +787,22 @@ LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/PriceTrend.csv'
 
 
 
-SELECT * FROM illegal_building_judge WHERE plat_plc like '% 금천구 시흥동 984-33'
+SELECT * FROM illegal_building_judge WHERE plat_plc like '% 금천구 시흥동 984-33';
 
 
 
 #
-select avg(deposit), avg(monthly_rent) from listing where address like '%광진구 화양동%';
+select avg(deposit), avg(monthly_rent) from listing where address like '%광진구 자양동%';
 
 # 전세
-select avg(deposit), avg(monthly_rent) from listing where address like '%광진구 화양동%' and monthly_rent = 0;
+select avg(deposit) from listing where address like '%광진구 자양동%' and monthly_rent = 0;
+select deposit from listing where address like '%광진구 자양동%' and monthly_rent = 0;
 
 # 월세
-select avg(deposit), avg(monthly_rent) from listing where address like '%광진구 화양동%' and monthly_rent != 0;
+select avg(deposit), avg(monthly_rent) from listing where address like '%광진구 자양동%' and monthly_rent != 0;
 
 # 매매
-select * from pricetrend where address like '%광진구 화양동%';
-select avg(price) from pricetrend where address like '%광진구 화양동%';
+select avg(price) from pricetrend where address like '%광진구 자양동%';
 
 
 
