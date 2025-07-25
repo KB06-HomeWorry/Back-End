@@ -19,10 +19,12 @@ public class DocumentAnalysisController {
     final DocumentAnalysisService  documentAnalysisService;
 
 
-    @GetMapping("")
+    @PostMapping("")
     public ResponseEntity<DangerResultDTO>  getDangerResult(
             @RequestBody DocumentAnalysisDTO answerDTOList
     ){
+
+        log.info(answerDTOList);
         DocumentAnalysisResultDTO documentAnalysisResultDTO =
                 documentAnalysisService.analysis(answerDTOList);
 

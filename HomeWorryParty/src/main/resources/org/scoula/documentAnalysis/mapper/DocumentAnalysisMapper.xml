@@ -51,7 +51,7 @@
     <select id="findByAddress" resultMap="IllegalBuildingJudgeMap">
         SELECT *
         FROM illegal_building_judge
-        WHERE plat_plc = #{address}
+        WHERE plat_plc like #{address}
     </select>
 
     <!-- SELECT 전체 -->
