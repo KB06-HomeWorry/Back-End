@@ -40,3 +40,9 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+# IntelliJ dataSources 설정 파일 무시
+backend/.idea/dataSources.xml
+
+# 환경 설정 파일(application.properties) 무시
+backend/src/main/resources/application.properties
