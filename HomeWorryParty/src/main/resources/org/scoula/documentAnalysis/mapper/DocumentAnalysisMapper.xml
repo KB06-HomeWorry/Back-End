@@ -29,6 +29,11 @@
         <result property="judgeReason" column="judge_reason"/>
     </resultMap>
 
+    <resultMap id="MonthlyRentMap" type="org.scoula.documentAnalysis.domain.MonthlyRentVO">
+        <result property="monthlyFee" column="avg(monthly_rent)"/>
+        <result property="securityDeposit" column="avg(deposit)"/>
+    </resultMap>
+
     <!-- INSERT -->
     <insert id="insert" parameterType="org.scoula.documentAnalysis.domain.IllegalBuildingCheckVO" useGeneratedKeys="true" keyProperty="id">
         INSERT IGNORE INTO illegal_building_judge
@@ -60,5 +65,28 @@
         FROM illegal_building_judge
         ORDER BY id DESC
     </select>
+
+    <!-- 전세  -->
+    <select id="getWholeRent" resultType="java.lang.Long">
+        select avg(deposit)
+        from listing
+        where address like #{address} and monthly_rent = 0;
+    </select>
+
+    <!-- 월세 -->
+    <select id="getMonthRent" resultMap="MonthlyRentMap">
+        select avg(deposit), avg(monthly_rent)
+        from listing
+        where address like #{address} and monthly_rent != 0;
+    </select>
+
+    <!-- 매매 -->
+    <select id="getBuy" resultType="java.lang.Long">
+        select avg(price)
+        from pricetrend
+        where address like #{address};
+    </select>
+
+
 
 </mapper>
