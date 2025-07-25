@@ -12,8 +12,7 @@ import org.scoula.documentAnalysis.domain.IllegalBuildingCheckVO;
 @AllArgsConstructor
 @Builder
 public class IllegalBuildingCheckDTO {
-    private Long id; // 내부 PK (AUTO_INCREMENT)
-
+    private Long id;                // 내부 PK (AUTO_INCREMENT)
     @JsonProperty("PLAT_PLC")
     private String platPlc; // 대지위치
 

@@ -714,3 +714,101 @@ CREATE TABLE illegal_building_judge (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='불법 건축물 판정에 필요한 최소 정보 테이블';
 
 
+DROP TABLE IF EXISTS ListingOption;
+DROP TABLE IF EXISTS ListingPriceHistory;
+DROP TABLE IF EXISTS ListingDetail;
+DROP TABLE IF EXISTS ListingImage;
+
+DROP TABLE IF EXISTS Listing;
+DROP TABLE IF EXISTS PriceTrend;
+
+CREATE TABLE Listing (
+                         id INT PRIMARY KEY,
+                         listing VARCHAR(100) NOT NULL,
+                         rental_condition VARCHAR(50),
+                         details TEXT,
+                         agency VARCHAR(255),
+                         address VARCHAR(255),
+                         latitude DOUBLE,
+                         longitude DOUBLE,
+                         contract_type VARCHAR(10),
+                         deposit INT,
+                         monthly_rent INT,
+                         property_type VARCHAR(50),
+                         area VARCHAR(50),
+                         floor VARCHAR(20),
+                         direction VARCHAR(20)
+);
+
+CREATE TABLE PriceTrend (
+                            id INT AUTO_INCREMENT PRIMARY KEY,
+                            year INT,
+                            district_code VARCHAR(10),
+                            district_name VARCHAR(50),
+                            dong_code VARCHAR(10),
+                            dong_name VARCHAR(50),
+                            lot_type_code VARCHAR(10),
+                            lot_type VARCHAR(20),
+                            main_no VARCHAR(10),
+                            sub_no VARCHAR(10),
+                            building_name VARCHAR(255),
+                            contract_day VARCHAR(10),
+                            price BIGINT,
+                            arch_area FLOAT,
+                            land_area FLOAT,
+                            floor VARCHAR(10),
+                            built_year LONG,
+                            housing_type VARCHAR(50),
+                            deal_type VARCHAR(50),
+                            address TEXT,
+                            latitude DOUBLE,
+                            longitude DOUBLE
+);
+
+
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/listing.csv'
+    INTO TABLE listing
+    FIELDS TERMINATED BY ','
+    ENCLOSED BY '"'
+    LINES TERMINATED BY '\n'
+    IGNORE 1 ROWS
+    (id, listing, rental_condition, details, agency, address, latitude, longitude,
+     contract_type, deposit, monthly_rent, property_type, area, floor, direction);
+
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/PriceTrend.csv'
+    INTO TABLE PriceTrend
+    FIELDS TERMINATED BY ','
+    ENCLOSED BY '"'
+    LINES TERMINATED BY '\n'
+    IGNORE 1 ROWS
+    (id, year, district_code, district_name, dong_code, dong_name, lot_type_code,
+     lot_type, main_no, sub_no, building_name, contract_day, price, arch_area,
+     land_area, floor, built_year, housing_type, deal_type, address, latitude, longitude);
+
+
+
+SELECT * FROM illegal_building_judge WHERE plat_plc like '% 금천구 시흥동 984-33'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
