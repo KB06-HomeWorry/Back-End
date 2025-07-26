@@ -787,9 +787,11 @@ LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/PriceTrend.csv'
 
 
 
-SELECT * FROM illegal_building_judge WHERE plat_plc like '% 금천구 시흥동 984-33';
+SELECT * FROM illegal_building_judge WHERE plat_plc like '%광진구 화양동%';
 
+SELECT * FROM illegal_building_judge WHERE plat_plc like '%금천구 시흥동 984-33';
 
+select avg(deposit) from listing where address like '%금천구%' and monthly_rent = 0;
 
 #
 select avg(deposit), avg(monthly_rent) from listing where address like '%광진구 자양동%';

@@ -73,8 +73,11 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
 
         log.info(houseAddress.substring(3));
         IllegalBuildingCheckVO illegalBuildingCheckVO = documentAnalysisMapper.findByAddress("%"+houseAddress.substring(3));
+        log.info(illegalBuildingCheckVO);
+
 
         if(illegalBuildingCheckVO != null){
+            log.info("불법 건축물 걸렸다!");
             String[] dangerPoint = illegalBuildingCheckVO.getJudgeReason().split("<br></br>");
 
             documentAnalysisResultDTO.setScore(documentAnalysisResultDTO.getScore()
@@ -102,6 +105,8 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
             myPrice.setDeposit(Long.valueOf(priceList[1]));
             myPrice.setMonthlyFee(Long.valueOf(priceList[3]));
         }else{
+
+
             Long uk = Long.valueOf(priceList[0].substring(0, priceList[0].length() - 1));
             uk *= 100000000;
             Long cheon = Long.valueOf(priceList[1].substring(0, priceList[1].length() - 1));
@@ -133,9 +138,14 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
 
     private Long calPercent(DocumentSthRiskDTO documentSthRiskDTO, String address, MonthlyRentVO myPrice) {
         Long percent = 0L;
+        log.info(documentSthRiskDTO);
 
         if(documentSthRiskDTO.getType().equals("전세")){
+            log.info("전세");
             Long price = documentAnalysisMapper.getWholeRent(address);
+            if(price == null) return 0L;
+            log.info(price);
+
             price *= 10000;
             log.info("평균 가격 : " + price);
             Long differ = price - myPrice.getDeposit();
@@ -144,6 +154,8 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
             }
         }else if(documentSthRiskDTO.getType().equals("월세")){
             MonthlyRentVO averagePrice = documentAnalysisMapper.getMonthRent(address);
+            if(averagePrice.getDeposit() == null) return 0L;
+
             log.info("평균 가격 : " + averagePrice);
             Long differDeposit = averagePrice.getDeposit() - myPrice.getDeposit();
             Long differMonthly = averagePrice.getMonthlyFee() - myPrice.getMonthlyFee();
@@ -153,6 +165,8 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
                     Math.max(differMonthly * 100 / averagePrice.getMonthlyFee(), percent);
         }else if(documentSthRiskDTO.getType().equals("매매")){
             Long price = documentAnalysisMapper.getBuy(address);
+            if(price == null) return 0L;
+
             Long differ = price - myPrice.getDeposit();
             if(differ > 0){
                 percent = differ * 100 / price;
