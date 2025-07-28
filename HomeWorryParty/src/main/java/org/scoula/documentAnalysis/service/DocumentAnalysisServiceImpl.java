@@ -2,17 +2,23 @@ package org.scoula.documentAnalysis.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.scoula.agent.domain.AgentDetailVO;
+import org.scoula.agent.dto.AgentDetailDTO;
+import org.scoula.agent.mapper.AgentMapper;
 import org.scoula.documentAnalysis.domain.IllegalBuildingCheckVO;
 import org.scoula.documentAnalysis.domain.MonthlyRentVO;
 import org.scoula.documentAnalysis.dto.*;
 import org.scoula.documentAnalysis.mapper.DocumentAnalysisMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Log4j2
 @Service
 @RequiredArgsConstructor
 public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
     private final DocumentAnalysisMapper documentAnalysisMapper;
+    private final AgentMapper agentMapper;
 
     @Override
     public void insertIllegalBuildingData(IllegalBuildingCheckDTO illegalBuildingCheckDTO) {
@@ -22,10 +28,11 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
     @Override
     public DocumentAnalysisResultDTO analysis(DocumentAnalysisDTO answerDTOList) {
         DocumentAnalysisResultDTO documentAnalysisResultDTO = new DocumentAnalysisResultDTO();
+        answerDTOList.setHouseAddress("%"+answerDTOList.getHouseAddress().substring(3));
 
         checkCertified(answerDTOList.getRegisterCertifiedCount(), documentAnalysisResultDTO);
         checkHouseAddress(answerDTOList.getHouseAddress(), documentAnalysisResultDTO);
-        checkDocumentAgent(answerDTOList.getDocumentAgentDTO(), documentAnalysisResultDTO);
+        checkDocumentAgent(answerDTOList.getDocumentAgentDTO(), answerDTOList.getHouseAddress(), documentAnalysisResultDTO);
         checkDocumentSthRisk(answerDTOList.getDocumentSthRiskDTO(), answerDTOList.getHouseAddress(), documentAnalysisResultDTO);
 
         documentAnalysisResultDTO.setResultData();
@@ -71,13 +78,13 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
     public void checkHouseAddress(String houseAddress, DocumentAnalysisResultDTO documentAnalysisResultDTO){
         if(houseAddress.isEmpty())return;
 
-        log.info(houseAddress.substring(3));
-        IllegalBuildingCheckVO illegalBuildingCheckVO = documentAnalysisMapper.findByAddress("%"+houseAddress.substring(3));
-        log.info(illegalBuildingCheckVO);
+        log.info(houseAddress);
+        IllegalBuildingCheckVO illegalBuildingCheckVO = documentAnalysisMapper.findByAddress(houseAddress);
+        //log.info(illegalBuildingCheckVO);
 
 
         if(illegalBuildingCheckVO != null){
-            log.info("불법 건축물 걸렸다!");
+            //log.info("불법 건축물 걸렸다!");
             String[] dangerPoint = illegalBuildingCheckVO.getJudgeReason().split("<br></br>");
 
             documentAnalysisResultDTO.setScore(documentAnalysisResultDTO.getScore()
@@ -88,8 +95,14 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
 
     }
 
-    public void checkDocumentAgent(DocumentAgentDTO documentAgentDTO, DocumentAnalysisResultDTO documentAnalysisResultDTO){
+    public void checkDocumentAgent(DocumentAgentDTO documentAgentDTO, String houseAddress, DocumentAnalysisResultDTO documentAnalysisResultDTO){
+        if(documentAgentDTO == null && houseAddress == null)return;
+        if(houseAddress == null && documentAgentDTO.getAddress() != null){
+            houseAddress = "%" + documentAgentDTO.getAddress().substring(3);
+        }
 
+        List<AgentDetailVO> agentDetailDTOS = agentMapper.findAgentByHouseAddress(houseAddress);
+        log.info(agentDetailDTOS);
     }
 
     public void checkDocumentSthRisk(DocumentSthRiskDTO documentSthRiskDTO, String houseAddress, DocumentAnalysisResultDTO documentAnalysisResultDTO){
@@ -105,7 +118,6 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
             myPrice.setDeposit(Long.valueOf(priceList[1]));
             myPrice.setMonthlyFee(Long.valueOf(priceList[3]));
         }else{
-
 
             Long uk = Long.valueOf(priceList[0].substring(0, priceList[0].length() - 1));
             uk *= 100000000;
@@ -138,16 +150,12 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
 
     private Long calPercent(DocumentSthRiskDTO documentSthRiskDTO, String address, MonthlyRentVO myPrice) {
         Long percent = 0L;
-        log.info(documentSthRiskDTO);
 
         if(documentSthRiskDTO.getType().equals("전세")){
-            log.info("전세");
             Long price = documentAnalysisMapper.getWholeRent(address);
             if(price == null) return 0L;
-            log.info(price);
 
             price *= 10000;
-            log.info("평균 가격 : " + price);
             Long differ = price - myPrice.getDeposit();
             if(differ > 0){
                 percent = differ * 100 / price;
@@ -156,7 +164,6 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
             MonthlyRentVO averagePrice = documentAnalysisMapper.getMonthRent(address);
             if(averagePrice.getDeposit() == null) return 0L;
 
-            log.info("평균 가격 : " + averagePrice);
             Long differDeposit = averagePrice.getDeposit() - myPrice.getDeposit();
             Long differMonthly = averagePrice.getMonthlyFee() - myPrice.getMonthlyFee();
             if(differDeposit > 0)   percent = differDeposit * 100 / averagePrice.getDeposit();
@@ -171,7 +178,6 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
             if(differ > 0){
                 percent = differ * 100 / price;
             }
-            log.info("평균 가격 : " + price);
         }
 
         return percent;

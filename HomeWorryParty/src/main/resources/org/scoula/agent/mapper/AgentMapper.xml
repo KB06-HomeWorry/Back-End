@@ -79,4 +79,35 @@
         INSERT INTO AgentReview (office_id, user_id, created_at, content, listing_accuracy_score, cost_transparency_score, professionalism_score, accountability_score)
         VALUES (#{officeId}, #{userId}, NOW(), #{content}, #{listingAccuracyScore}, #{costTransparencyScore}, #{professionalismScore}, #{accountabilityScore})
     </insert>
+
+    <!-- 8. 매물로 중개사 탐색 -->
+    <select id="findAgentByHouseAddress" resultMap="AgentDetailMap">
+        select *
+        from listing join agent
+        where
+            listing.address like #{houseAddress}
+          and listing.agency like agent.office_name and
+            (SUBSTRING(
+                     listing.address,
+                     9,
+                     CASE
+                         WHEN SUBSTRING(listing.address, 9, 2) = '능동' THEN 2
+                         ELSE 3
+                         END
+             )  like
+             SUBSTRING(
+                     agent.address,
+                     CHAR_LENGTH(agent.address) - LOCATE('(', REVERSE(agent.address)) + 2,
+                     CASE
+                         WHEN SUBSTRING(
+                                      agent.address,
+                                      CHAR_LENGTH(agent.address) - LOCATE('(', REVERSE(agent.address)) + 2,
+                                      2
+                              ) = '능동' THEN 2
+                         ELSE 3
+                         END
+             )
+                or substring(agent.address, LOCATE('동', agent.address)-2, 3) is null);
+    </select>
+
 </mapper>

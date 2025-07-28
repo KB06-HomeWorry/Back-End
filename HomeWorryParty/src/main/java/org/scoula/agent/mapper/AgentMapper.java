@@ -23,4 +23,6 @@ public interface AgentMapper {
     List<AgentReviewVO> getAgentReviews(Long officeId); // 중개사무소 리뷰 전체 조회
 
     void writeAgentReview(AgentReviewVO agentReviewVO); // 중개사무소 리뷰 작성
+
+    List<AgentDetailVO> findAgentByHouseAddress(String houseAddress); // 매물로 담당 중개사 탐색
 }

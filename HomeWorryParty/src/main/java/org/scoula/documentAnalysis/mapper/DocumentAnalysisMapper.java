@@ -28,5 +28,7 @@ public interface DocumentAnalysisMapper {
     // 매매 평균 매물 가격 조회
     Long getBuy(String address);
 
+
+
     // (선택) 조건 검색 등 다양한 쿼리도 필요시 추가 가능
 }

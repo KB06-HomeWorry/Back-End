@@ -3,6 +3,7 @@ package org.scoula.documentAnalysis.service;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.scoula.agent.dto.AgentDetailDTO;
 import org.scoula.config.RootConfig;
 import org.scoula.documentAnalysis.dto.DocumentAnalysisDTO;
 import org.scoula.documentAnalysis.dto.DocumentAnalysisResultDTO;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,11 +33,11 @@ class DocumentAnalysisServiceImplTest {
     @Test
     void checkHouseAddress() {
         DocumentAnalysisResultDTO documentAnalysisResultDTO = new  DocumentAnalysisResultDTO();
-        documentAnalysisService.checkHouseAddress("서울특별시 성북구 동소문동4가 136",
+        documentAnalysisService.checkHouseAddress("%성북구 동소문동4가 136",
                 documentAnalysisResultDTO);
         log.info(String.valueOf(documentAnalysisResultDTO));
 
-        documentAnalysisService.checkHouseAddress("서울특별시 송파구 석촌동 37",
+        documentAnalysisService.checkHouseAddress("%송파구 석촌동 37",
                 documentAnalysisResultDTO);
         log.info(String.valueOf(documentAnalysisResultDTO));
 
@@ -42,6 +45,9 @@ class DocumentAnalysisServiceImplTest {
 
     @Test
     void checkDocumentAgent() {
+        DocumentAnalysisResultDTO documentAnalysisResultDTO = new  DocumentAnalysisResultDTO();
+        documentAnalysisService.checkDocumentAgent(null,
+                "%광진구 화양동 9-32", documentAnalysisResultDTO);
     }
 
     @Test
