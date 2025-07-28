@@ -26,6 +26,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.sql.DataSource;
 
+
 @Configuration
 @PropertySource({"classpath:/application.properties"})
 @MapperScan(basePackages = {
@@ -34,6 +35,7 @@ import javax.sql.DataSource;
         "org.scoula.checklist.mapper",
         "org.scoula.dangerResult.mapper",
         "org.scoula.documentAnalysis.mapper",
+        "org.scoula.map.mapper",
 })
 @ComponentScan(basePackages = {
         "org.scoula.user.service",
@@ -90,7 +92,9 @@ public class RootConfig {
         SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
         sqlSessionFactory.setConfigLocation(applicationContext.getResource("classpath:/mybatis-config.xml"));
         sqlSessionFactory.setDataSource(dataSource());
-
+        sqlSessionFactory.setMapperLocations(
+                applicationContext.getResources("classpath*:org/scoula/map/mapper/*.xml")
+        );
         return sqlSessionFactory.getObject();
     }
 
