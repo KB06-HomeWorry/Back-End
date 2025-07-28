@@ -18,11 +18,11 @@ public class PriceTrendServiceImpl implements PriceTrendService {
 
     @Override
     public List<PriceTrendMapDTO> getPriceTrendsForMap() {
-        return priceTrendMapper.selectPriceTrendsForMap();
+        return priceTrendMapper.getPriceTrendsForMap();
     }
 
     @Override
     public PriceTrendDetailDTO getPriceTrendDetail(Long id) {
-        return priceTrendMapper.selectPriceTrendDetail(id);
+        return priceTrendMapper.getPriceTrendDetail(id);
     }
 }
