@@ -8,11 +8,13 @@ import lombok.*;
 @Builder
 public class AgentDetailVO {
     private Long officeId;
-    private String gu;
-    private String dong;
     private String address;
-    private String agentNumber;
+    private String licenseNumber;
     private String agentName;
     private String officeName;
+    private String profileImage;
     private String phone;
+    private String specialties;
+    private String description;
+    private int totalScore;
 }

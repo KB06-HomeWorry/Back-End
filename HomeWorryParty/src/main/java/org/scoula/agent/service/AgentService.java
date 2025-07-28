@@ -1,10 +1,11 @@
 package org.scoula.agent.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.scoula.agent.domain.AgentDetailVO;
+import org.scoula.agent.domain.AgentReviewVO;
 import org.scoula.agent.dto.AgentDetailDTO;
+import org.scoula.agent.dto.AgentReviewDTO;
+import org.scoula.agent.dto.TrustScoreDTO;
 import org.scoula.agent.mapper.AgentMapper;
 import org.scoula.agent.model.Office;
 import org.scoula.agent.model.OpenApiResponse;
@@ -14,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,13 +27,13 @@ import java.util.stream.Collectors;
 public class AgentService {
     private final AgentMapper mapper;
     private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
     private final String apiKey = "6e427a636e6361723130354547546359";
     private final String openApiURL = "http://openapi.seoul.go.kr:8088/" + apiKey + "/json/landBizInfo/";
     private static final int PAGE_SIZE = 1000;
 
     private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile("(0\\d{1,3}[-\\s]?\\d{3,4}[-\\s]?\\d{4})|(\\d{3,4}[-\\s]?\\d{4})");
 
+    // OpenAPI 마지막 업데이트 날짜 반환
     public LocalDateTime getLastUpdateTime(){
         LocalDateTime updateTime = mapper.findUpdatedAt();
 
@@ -42,11 +44,11 @@ public class AgentService {
         }
     }
 
-    @Transactional
+    @Transactional // OpenAPI 데이터 저장
     public String fetchAndSaveOffice(){
 
         if (ChronoUnit.HOURS.between(getLastUpdateTime(), LocalDateTime.now()) <= 24){
-            return "마지막 업데이트로부터 하루가 지나지 않아 업데이트를 중지합니다.";
+            return "마지막 업데이트로부터 하루가 지나지 않아 업데이트를 종료합니다.";
         }
 
         int startIndex = 1;
@@ -123,6 +125,7 @@ public class AgentService {
         return "OpenAPI 데이터 전체 처리 완료. 총 저장된 필터링 데이터: " + processedCount + "개";
     }
 
+    // OpenAPI 데이터 필터링
     private List<Office> filterOffices(List<Office> offices) {
         return offices.stream()
                 .filter(office -> "광진구".equals(office.getGu()))
@@ -141,6 +144,7 @@ public class AgentService {
                 .collect(Collectors.toList());
     }
 
+    // 전화번호 정규화
     private String cleanAndStandardizePhone(String originalPhone){
         if (originalPhone == null || originalPhone.trim().isEmpty()) {
             return null;
@@ -152,8 +156,6 @@ public class AgentService {
         cleaned = cleaned.replaceAll("\\([^)]*\\)", "").trim();
 
         // 2. 불필요한 쉼표, 슬래시, 한글 괄호 등 제거 및 연속된 공백 하나로 줄이기
-        // "02-467-8289 02-462-0321" -> "02-467-8289 02-462-0321" (공백 유지)
-        // "458-8173, 456-4555" -> "458-8173 456-4555"
         cleaned = cleaned.replaceAll("[,/]", " ").replaceAll("\\s+", " ").trim();
 
         // 3. 정규 표현식으로 첫 번째 유효한 전화번호 패턴만 추출
@@ -173,20 +175,14 @@ public class AgentService {
         // 4. 하이픈이 없는 경우에 대비하여 숫자만 있는 문자열 추출
         String digitsOnly = extractedNumber.replaceAll("[^0-9]", "");
 
-        // 5. 지역번호가 생략된 경우 '02-' 추가 (서울 기준)
-        // - 총 길이가 7자리 또는 8자리 (숫자만)이고,
-        // - 일반적인 지역번호(2~3자리)+국번(3~4자리)+뒷번호(4자리) 형태가 아닌 경우 (예: "457-3004")
-        // - 이미 0으로 시작하는 지역번호가 붙어있지 않은 경우
+        // 5. 지역번호가 생략된 경우 '02-' 추가
         if (digitsOnly.length() == 7 || digitsOnly.length() == 8) {
             if (!digitsOnly.startsWith("0")) { // 0으로 시작하지 않는다면 지역번호 생략으로 간주
                 // 국번과 뒷번호 사이에 하이픈이 없는 경우 추가
                 if (!extractedNumber.contains("-")) {
                     if (digitsOnly.length() == 7) { // 3자리 국번 + 4자리 번호
                         extractedNumber = digitsOnly.substring(0,3) + "-" + digitsOnly.substring(3,7);
-                    } else { // 4자리 국번 + 4자리 번호 (ex. 1588-XXXX 같은 콜센터 번호 등)
-                        // 이 경우 02를 붙이는 것은 적절하지 않을 수 있으나, 요구사항에 맞춰 처리
-                        // 혹은 02-를 붙이는 대신 그대로 유지하는 것이 더 자연스러울 수 있음.
-                        // 여기서는 일단 "02-"를 붙이는 것으로 가정합니다.
+                    } else { // 4자리 국번 + 4자리 번호
                         extractedNumber = digitsOnly.substring(0,4) + "-" + digitsOnly.substring(4,8);
                     }
                 }
@@ -194,14 +190,77 @@ public class AgentService {
             }
         }
 
-        // 6. 최종적으로 하이픈을 사용하여 표준화 (연속된 하이픈 제거 및 숫자만 추출 후 다시 하이픈 포맷팅 가능)
-        // 현재 PHONE_NUMBER_EXTRACT_PATTERN이 이미 하이픈을 포함하므로, 추가적인 포맷팅은 필요 없을 수도 있음
-        // 다만, 예를 들어 "02 1234 5678" -> "02-1234-5678"로 만들고 싶다면 추가 로직 필요
-        // 여기서는 숫자와 하이픈만 남기는 것으로 충분하다고 판단합니다.
+        // 6. 최종적으로 하이픈을 사용하여 표준화
         return extractedNumber;
     }
 
+    // 중개사 상세 정보 조회
     public AgentDetailDTO getAgentDetail(Long officeId) {
         return AgentDetailDTO.of(mapper.getAgentDetail(officeId));
+    }
+
+    // 중개사 리뷰 전체 조회
+    public List<AgentReviewDTO> getAgentReviews(Long officeId) {
+        List<AgentReviewVO> vo = mapper.getAgentReviews(officeId);
+        List<AgentReviewDTO> list = new ArrayList<>();
+
+        if (vo == null || vo.isEmpty()) {
+            return list;
+        }
+
+        for (AgentReviewVO arvo : vo) {
+            list.add(AgentReviewDTO.of(arvo));
+        }
+
+        return  list;
+    }
+
+    // 시간 가중치 계산
+    public int calcTimeWeight(LocalDateTime created){
+        long days = ChronoUnit.DAYS.between(LocalDateTime.now(), created);
+        if (days <= 30) {
+            return 10;
+        } else if (days <= 90) {
+            return 7;
+        } else if (days <= 180) {
+            return 4;
+        } else {return 1;}
+    }
+
+    // 중개사 리뷰 저장
+    public void writeAgentReview(AgentReviewDTO agentReviewDTO) {
+        mapper.writeAgentReview(agentReviewDTO.toVO());
+    }
+
+    // 중개사 신뢰지수 계산 및 반환
+    public TrustScoreDTO getAgentScore(Long officeId) {
+        int totalWeight = 0;
+        double totalAccuracy = 0;
+        double totalTransparency = 0;
+        double totalProfessionalism = 0;
+        double totalAccountability = 0;
+
+        for (AgentReviewVO vo : mapper.getAgentReviews(officeId)){
+            int timeWeight = calcTimeWeight(vo.getCreatedAt());
+
+            totalWeight += timeWeight;
+            totalAccuracy += timeWeight * vo.getListingAccuracyScore();
+            totalTransparency += timeWeight * vo.getCostTransparencyScore();
+            totalProfessionalism += timeWeight * vo.getProfessionalismScore();
+            totalAccountability += timeWeight * vo.getAccountabilityScore();
+        }
+
+        double totalTrustScore = (totalAccuracy * 0.4 +
+                totalTransparency * 0.3 +
+                totalAccountability * 0.2 +
+                totalProfessionalism * 0.1) / totalWeight;
+
+        totalTrustScore = Math.round((totalTrustScore + 6.2) * 1000 / 9.6) / 10.0;
+        totalAccuracy = Math.round((totalAccuracy / totalWeight + 5) * 1000 / 8) / 10.0;
+        totalTransparency = Math.round((totalTransparency / totalWeight + 5) * 1000 / 8) / 10.0;
+        totalProfessionalism = Math.round((totalProfessionalism / totalWeight + 7) * 1000 / 10) / 10.0;
+        totalAccountability = Math.round((totalAccountability / totalWeight + 10) * 1000 / 15) / 10.0;
+
+        return new TrustScoreDTO(totalTrustScore, totalAccuracy, totalTransparency, totalProfessionalism, totalAccountability);
     }
 }

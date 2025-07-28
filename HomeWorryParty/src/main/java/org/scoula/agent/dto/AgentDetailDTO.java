@@ -12,37 +12,43 @@ import org.scoula.agent.domain.AgentDetailVO;
 @Builder
 public class AgentDetailDTO {
     private Long officeId;
-    private String gu;
-    private String dong;
     private String address;
-    private String agentNumber;
+    private String licenseNumber;
     private String agentName;
     private String officeName;
+    private String profileImage;
     private String phone;
+    private String specialties;
+    private String description;
+    private int totalScore;
 
     public static AgentDetailDTO of(AgentDetailVO vo){
         return AgentDetailDTO.builder()
                 .officeId(vo.getOfficeId())
-                .gu(vo.getGu())
-                .dong(vo.getDong())
                 .address(vo.getAddress())
-                .agentNumber(vo.getAgentNumber())
+                .licenseNumber(vo.getLicenseNumber())
                 .agentName(vo.getAgentName())
                 .officeName(vo.getOfficeName())
+                .profileImage(vo.getProfileImage())
                 .phone(vo.getPhone())
+                .specialties(vo.getSpecialties())
+                .description(vo.getDescription())
+                .totalScore(vo.getTotalScore())
                 .build();
     }
 
     public AgentDetailVO toVO() {
         return AgentDetailVO.builder()
                 .officeId(officeId)
-                .gu(gu)
-                .dong(dong)
                 .address(address)
-                .agentNumber(agentNumber)
+                .licenseNumber(licenseNumber)
                 .agentName(agentName)
                 .officeName(officeName)
+                .profileImage(profileImage)
                 .phone(phone)
+                .specialties(specialties)
+                .description(description)
+                .totalScore(totalScore)
                 .build();
     }
 }

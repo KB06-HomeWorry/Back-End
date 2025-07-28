@@ -22,22 +22,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PasswordResetService {
     final PasswordEncoder passwordEncoder;
+    final JavaMailSender mailSender;
+    final UserService userService;
 
-    @Autowired
-    final private JavaMailSender mailSender;
-
-    @Autowired
-    private UserService userService;
-
-    /**
-     * 비밀번호 재설정 절차를 시작하는 메서드
-     * @param userEmail 재설정을 요청한 사용자의 이메일 주소
-     */
     @Transactional
-    public PasswordResetTokenDTO PasswordReset(String userEmail) {
+    public PasswordResetTokenDTO PasswordReset(String userEmail) { // 비밀번호 재설정 이메일 발송
         // 1. 해당 이메일을 가진 사용자가 있는지 확인
          if (!userService.existsByEmail(userEmail)) {
-             throw new RuntimeException("User not found with email: " + userEmail);
+             throw new RuntimeException("해당 이메일의 유저가 존재하지 않습니다.: " + userEmail);
          }
 
         // 2. 임시 재설정 토큰 생성
@@ -55,7 +47,13 @@ public class PasswordResetService {
         return userService.getemail(userEmail);
     }
 
-    public String passwordVerify(String password, String username) {
+    public Boolean passwordVerifyCheck(String password, String username) { // 사용자 이름과 비밀번호가 일치하는지 확인
+        UserDTO member = userService.get(username);
+
+        return passwordEncoder.matches(password, member.getPassword());
+    }
+
+    public String passwordVerify(String password, String username) { // 비밀번호 재설정 토큰을 발급하고 토큰 정보 반환
         UserDTO member = userService.get(username);
 
         if (!passwordEncoder.matches(password, member.getPassword())) {
@@ -69,7 +67,7 @@ public class PasswordResetService {
         return resetToken;
     }
 
-    @Transactional
+    @Transactional // 비밀번호 재설정
     public void PasswordRewrite(PasswordRewriteDTO dto){
         PasswordRewriteVO vo = dto.toVO();
 
@@ -90,25 +88,16 @@ public class PasswordResetService {
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         userService.PasswordRewrite(user);
 
-        // 4. 사용된 토큰 정보 passwordresettoken db에서 삭제
+        // 4. 사용된 토큰 정보 db에서 삭제
         userService.deleteToken(prt.getEmail());
 
     }
 
-    /**
-     * 간단한 고유 토큰을 생성
-     * @return 생성된 UUID 문자열
-     */
     private String generateResetToken() {
         return UUID.randomUUID().toString();
-    }
+    } // 고유 토큰 생성
 
-    /**
-     * 비밀번호 재설정 링크를 이메일로 발송
-     * @param toEmail 수신자 이메일 주소
-     * @param link 재설정 링크
-     */
-    private void sendPasswordResetEmail(String toEmail, String link) {
+    private void sendPasswordResetEmail(String toEmail, String link) { // 이메일 발송
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);
         message.setSubject("[집걱정단] 비밀번호 재설정 안내");

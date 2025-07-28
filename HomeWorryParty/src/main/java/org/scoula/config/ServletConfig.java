@@ -59,24 +59,10 @@ public class ServletConfig implements WebMvcConfigurer {
                 .setViewName("forward:/resources/index.html");
     }
 
-    // jsp view resolver 설정
-//    @Override
-//    public void configureViewResolvers(ViewResolverRegistry registry) {
-//        InternalResourceViewResolver bean = new InternalResourceViewResolver();
-//
-//        bean.setViewClass(JstlView.class);
-//        bean.setPrefix("/WEB-INF/views/");
-//        bean.setSuffix(".jsp");
-//
-//        registry.viewResolver(bean);
-//    }
-
     //	Servlet 3.0 파일 업로드 사용시
     @Bean
     public MultipartResolver multipartResolver() {
         StandardServletMultipartResolver resolver = new StandardServletMultipartResolver();
         return resolver;
     }
-
-
 }
