@@ -11,6 +11,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class IllegalBuildingCheckVO {
+    // 불법 건축물 정보를 DB에서 꺼내기 위한 VO
     private Long id; // 내부 PK (AUTO_INCREMENT)
     private String platPlc;         // 대지위치
     private String sggCdNm;         // 시군구코드명

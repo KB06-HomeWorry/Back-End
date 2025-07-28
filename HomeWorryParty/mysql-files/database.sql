@@ -359,32 +359,20 @@ where
     or substring(agent.address, LOCATE('동', agent.address)-2, 3) is null)
 ;
 
-select distinct substring(listing.address, 4, 8) from listing;
-select concat(substring(agent.address, 7, 4), substring(agent.address, LOCATE('동', agent.address)-2, 3)) from agent;
-
-select  address, substring(address, 7, 4) from agent;
-
-select  address, substring(agent.address, LOCATE('동', address)-2, 3) from agent;
-
-select  substring(agent.address,
-                  char_LENGTH(agent.address) - LOCATE('(', REVERSE(agent.address)) + 2, 3) from home_test.agent;
-
-SELECT
-    address,
-    SUBSTRING(
-            address,
-            CHAR_LENGTH(address) - LOCATE('(', REVERSE(address)) + 2,
-            CASE
-                WHEN SUBSTRING(
-                             address,
-                             CHAR_LENGTH(address) - LOCATE('(', REVERSE(address)) + 2,
-                             2
-                     ) = '능동' THEN 2
-                ELSE 3
-                END
-    ) AS dong_name
-FROM home_test.agent;
+select details,
+       REGEXP_SUBSTR(details, '[0-9]+(?=m)') AS area_main
+from listing;
 
 
-select  agent.address, char_LENGTH(agent.address),
-        char_LENGTH(agent.address) - LOCATE('(', REVERSE(agent.address)), 3 from home_test.agent;
+select *
+from listing
+where REGEXP_SUBSTR(details, '[0-9]+(?=m)') between 14 and 26
+    and address like '%광진구 화양동%';
+
+select *
+from pricetrend
+where land_area between 14 and 26;
+# 5 -> 12개
+# 4 -> 12개
+# 3 -> 9개
+# 2 -> 8개

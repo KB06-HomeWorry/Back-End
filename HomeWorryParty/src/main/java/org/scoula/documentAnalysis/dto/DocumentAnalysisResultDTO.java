@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class DocumentAnalysisResultDTO {
+    // 분석한 결과를 front에 넘겨주기 위한 DTO
     private int score = 100;
     private String grade;          // 등급(예: Low/Medium/High)
     private String message;        // 사용자 안내문구

@@ -30,8 +30,8 @@
     </resultMap>
 
     <resultMap id="MonthlyRentMap" type="org.scoula.documentAnalysis.domain.MonthlyRentVO">
-        <result property="monthlyFee" column="avg(monthly_rent)"/>
-        <result property="deposit" column="avg(deposit)"/>
+        <result property="monthlyRent" column="avg(monthly_rent)"/>
+        <result property="price" column="avg(deposit)"/>
     </resultMap>
 
     <!-- INSERT -->
@@ -70,22 +70,25 @@
     <select id="getWholeRent" resultType="java.lang.Long">
         select avg(deposit)
         from listing
-        where address like #{address} and monthly_rent = 0;
+        where address like #{address} and monthly_rent = 0
+            and REGEXP_SUBSTR(details, '[0-9]+(?=m)') between #{minSize} and #{maxSize};
     </select>
 
     <!-- 월세 -->
     <select id="getMonthRent" resultMap="MonthlyRentMap">
         select avg(deposit), avg(monthly_rent)
         from listing
-        where address like #{address} and monthly_rent != 0;
+        where address like #{address} and monthly_rent != 0
+          and REGEXP_SUBSTR(details, '[0-9]+(?=m)') between #{minSize} and #{maxSize};
     </select>
 
     <!-- 매매 -->
     <select id="getBuy" resultType="java.lang.Long">
-        select avg(price)
-        from pricetrend
-        where address like #{address};
-    </select>
+    select avg(price)
+    from pricetrend
+    where address like #{address}
+      and land_area between #{minSize} and #{maxSize};
+</select>
 
 
 

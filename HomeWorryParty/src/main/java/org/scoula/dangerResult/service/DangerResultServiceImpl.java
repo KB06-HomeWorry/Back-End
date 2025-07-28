@@ -20,6 +20,7 @@ public class DangerResultServiceImpl implements DangerResultService {
     private final DangerResultMapper dangerResultMapper;
     private final ChecklistService  checklistService;
 
+    // 사용자의 정답을 불러오고 체크리스트의 정답과 비교해서 점수를 매기는 로직
     @Override
     public DangerResultVO analysisDangerResult(Long templateId, Long userId) {
         List<DangerAnswerVO> answerDTOList = dangerResultMapper.getAnswerList(templateId, userId);
@@ -49,6 +50,7 @@ public class DangerResultServiceImpl implements DangerResultService {
         return dangerResultVO;
     }
 
+    // 사용자의 점수에 따른 결과를 보여주기 위해 결과 페이지 정보를 불러오는 로직
     @Override
     public DangerResultVO getMessageList(int score, Long templateId) {
         List<DangerResultVO> dangerResultVOList = dangerResultMapper.getMessageList(templateId);
