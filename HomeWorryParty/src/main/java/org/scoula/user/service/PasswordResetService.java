@@ -53,12 +53,8 @@ public class PasswordResetService {
         return passwordEncoder.matches(password, member.getPassword());
     }
 
-    public String passwordVerify(String password, String username) { // 비밀번호 재설정 토큰을 발급하고 토큰 정보 반환
+    public String passwordVerify(String username) { // 비밀번호 재설정 토큰을 발급하고 토큰 정보 반환
         UserDTO member = userService.get(username);
-
-        if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new PasswordMissmatchException();
-        }
 
         String resetToken = generateResetToken();
 

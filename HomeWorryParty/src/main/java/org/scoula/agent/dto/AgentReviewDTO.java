@@ -16,7 +16,8 @@ public class AgentReviewDTO {
     private Long reviewId;
     private Long officeId;
     private Long userId;
-    private String content;
+    private String userToken;
+    private String comment;
     private LocalDateTime createdAt;
     private int listingAccuracyScore;
     private int costTransparencyScore;
@@ -28,7 +29,7 @@ public class AgentReviewDTO {
                 .reviewId(vo.getReviewId())
                 .officeId(vo.getOfficeId())
                 .userId(vo.getUserId())
-                .content(vo.getContent())
+                .comment(vo.getComment())
                 .createdAt(vo.getCreatedAt())
                 .listingAccuracyScore(vo.getListingAccuracyScore())
                 .costTransparencyScore(vo.getCostTransparencyScore())
@@ -42,7 +43,7 @@ public class AgentReviewDTO {
                 .reviewId(reviewId)
                 .officeId(officeId)
                 .userId(userId)
-                .content(content)
+                .comment(comment)
                 .createdAt(createdAt)
                 .listingAccuracyScore(listingAccuracyScore)
                 .costTransparencyScore(costTransparencyScore)
