@@ -79,11 +79,4 @@
         INSERT INTO AgentReview (office_id, user_id, created_at, content, listing_accuracy_score, cost_transparency_score, professionalism_score, accountability_score)
         VALUES (#{officeId}, #{userId}, NOW(), #{content}, #{listingAccuracyScore}, #{costTransparencyScore}, #{professionalismScore}, #{accountabilityScore})
     </insert>
-
-    <!--  8. 중개사 신뢰 점수 업데이트  -->
-    <update id="updateAgentScore" parameterType="Long">
-        UPDATE agent
-        SET total_score = #{trustScore}
-        WHERE office_id = #{officeId}
-    </update>
 </mapper>

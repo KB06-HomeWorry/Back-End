@@ -33,6 +33,7 @@ public class AgentService {
 
     private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile("(0\\d{1,3}[-\\s]?\\d{3,4}[-\\s]?\\d{4})|(\\d{3,4}[-\\s]?\\d{4})");
 
+    // OpenAPI 마지막 업데이트 날짜 반환
     public LocalDateTime getLastUpdateTime(){
         LocalDateTime updateTime = mapper.findUpdatedAt();
 
@@ -43,7 +44,7 @@ public class AgentService {
         }
     }
 
-    @Transactional
+    @Transactional // OpenAPI 데이터 저장
     public String fetchAndSaveOffice(){
 
         if (ChronoUnit.HOURS.between(getLastUpdateTime(), LocalDateTime.now()) <= 24){
@@ -124,6 +125,7 @@ public class AgentService {
         return "OpenAPI 데이터 전체 처리 완료. 총 저장된 필터링 데이터: " + processedCount + "개";
     }
 
+    // OpenAPI 데이터 필터링
     private List<Office> filterOffices(List<Office> offices) {
         return offices.stream()
                 .filter(office -> "광진구".equals(office.getGu()))
@@ -142,6 +144,7 @@ public class AgentService {
                 .collect(Collectors.toList());
     }
 
+    // 전화번호 정규화
     private String cleanAndStandardizePhone(String originalPhone){
         if (originalPhone == null || originalPhone.trim().isEmpty()) {
             return null;
@@ -191,10 +194,12 @@ public class AgentService {
         return extractedNumber;
     }
 
+    // 중개사 상세 정보 조회
     public AgentDetailDTO getAgentDetail(Long officeId) {
         return AgentDetailDTO.of(mapper.getAgentDetail(officeId));
     }
 
+    // 중개사 리뷰 전체 조회
     public List<AgentReviewDTO> getAgentReviews(Long officeId) {
         List<AgentReviewVO> vo = mapper.getAgentReviews(officeId);
         List<AgentReviewDTO> list = new ArrayList<>();
@@ -210,6 +215,7 @@ public class AgentService {
         return  list;
     }
 
+    // 시간 가중치 계산
     public int calcTimeWeight(LocalDateTime created){
         long days = ChronoUnit.DAYS.between(LocalDateTime.now(), created);
         if (days <= 30) {
@@ -221,11 +227,12 @@ public class AgentService {
         } else {return 1;}
     }
 
-    @Transactional
+    // 중개사 리뷰 저장
     public void writeAgentReview(AgentReviewDTO agentReviewDTO) {
         mapper.writeAgentReview(agentReviewDTO.toVO());
     }
 
+    // 중개사 신뢰지수 계산 및 반환
     public TrustScoreDTO getAgentScore(Long officeId) {
         int totalWeight = 0;
         double totalAccuracy = 0;

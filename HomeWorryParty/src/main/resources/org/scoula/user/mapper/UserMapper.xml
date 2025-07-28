@@ -15,13 +15,6 @@
         <result property="userType" column="user_type"/>
     </resultMap>
 
-    <!-- ResultMap: AuthVO -->
-    <resultMap id="authMap" type="org.scoula.security.account.domain.AuthVO">
-        <id property="authId" column="auth_id"/>
-        <result property="userId" column="user_id"/>
-        <result property="auth" column="auth"/>
-    </resultMap>
-
     <!-- ResultMap: PasswordResetTokenVO -->
     <resultMap id="prtMap" type="org.scoula.user.domain.PasswordResetTokenVO">
         <result property="token" column="token"/>
@@ -29,87 +22,59 @@
         <result property="expDate" column="expDate"/>
     </resultMap>
 
-    <!-- 1. 회원 단건 조회 (username) -->
+    <!-- 1. 유저명으로 유저 검색 -->
     <select id="get" parameterType="string" resultMap="userMap">
         SELECT * FROM user WHERE name = #{username}
     </select>
 
-    <!--  1.5 이메일로 유저 검색  -->
+    <!--  2. 이메일로 유저 검색  -->
     <select id="findByemail" parameterType="string" resultMap="userMap">
         SELECT * FROM user WHERE email = #{email}
     </select>
 
-    <!-- 2. id(=username)로 중복 체크 -->
-    <select id="findByUsername" parameterType="string" resultMap="userMap">
-        SELECT * FROM user WHERE name = #{username}
-    </select>
-
-    <!-- 3. 회원 정보 추가 (insertUser) -->
+    <!-- 3. 회원 정보 추가 -->
     <insert id="insertUser" parameterType="org.scoula.security.account.domain.UserVO" useGeneratedKeys="true" keyProperty="userId">
         INSERT INTO user (name, email, password, phone, user_type)
         VALUES (#{username}, #{email}, #{password}, #{phone}, #{userType})
     </insert>
 
-    <!-- 4. 회원 권한 정보 추가 (insertAuth) -->
-    <insert id="insertAuth" parameterType="org.scoula.security.account.domain.AuthVO" useGeneratedKeys="true" keyProperty="authId">
-        INSERT INTO user_member_auth (user_id, auth)
-        VALUES (#{userId}, #{auth})
-    </insert>
-
-    <!-- 5. 회원 정보 수정 (update) -->
-    <update id="update" parameterType="org.scoula.security.account.domain.UserVO">
-        UPDATE user
-        SET
-            email = #{email},
-            phone = #{phone},
-            user_type = #{userType}
-        WHERE user_id = #{userId}
-    </update>
-
-    <!-- 6. 비밀번호 변경 (updatePassword) -->
-    <update id="updatePassword" parameterType="org.scoula.user.dto.ChangePasswordDTO">
-        UPDATE user
-        SET password = #{newPassword}, update_date = NOW()
-        WHERE user_id = #{userId}
-    </update>
-
-    <!--  7. 이메일로 PRT 조회  -->
+    <!--  4. 이메일로 비밀번호 재설정 토큰 검색  -->
     <select id="getemail" parameterType="string" resultMap="prtMap">
         SELECT * FROM PasswordResetToken WHERE email = #{email}
     </select>
 
-    <!--  8. PRT 추가  -->
+    <!--  5. 비밀번호 재설정 토큰 추가  -->
     <insert id="insertPRT" parameterType="org.scoula.user.domain.PasswordResetTokenVO" useGeneratedKeys="true" keyProperty="userId">
         INSERT INTO PasswordResetToken (email, token, expDate)
         VALUES (#{email}, #{token}, NOW() + INTERVAL 10 MINUTE)
     </insert>
 
-    <!--  9. 토큰으로 PRT 조회  -->
+    <!--  6. 비밀번호 재설정 토큰으로 토큰 발급 정보 검색  -->
     <select id="findByToken" parameterType="string" resultMap="prtMap">
         SELECT * FROM PasswordResetToken WHERE token = #{token}
     </select>
 
-    <!-- 10. 비밀번호 변경 (passwordRewrite) -->
+    <!-- 7. 비밀번호 변경 -->
     <update id="passwordRewrite" parameterType="org.scoula.security.account.domain.UserVO">
         UPDATE user
         SET password = #{password}
         WHERE user_id = #{userId}
     </update>
 
-    <!--  11. 토큰 삭제  -->
+    <!--  8. 비밀번호 재설정 토큰 삭제  -->
     <delete id="deleteToken" parameterType="string">
         DELETE from passwordresettoken
         where email = #{email}
     </delete>
 
-    <!-- 12. PRT 수정 -->
+    <!-- 9. 비밀번호 재설정 토큰 수정 -->
     <update id="updatePRT" parameterType="org.scoula.user.domain.PasswordResetTokenVO">
         UPDATE PasswordResetToken
         SET token = #{token}, expDate = NOW() + INTERVAL 10 MINUTE
         WHERE email = #{email}
     </update>
 
-    <!--  13. 회원 탈퇴  -->
+    <!--  10. 회원 탈퇴  -->
     <delete id="withdraw" parameterType="string">
         DELETE from user
         where name = #{username}
