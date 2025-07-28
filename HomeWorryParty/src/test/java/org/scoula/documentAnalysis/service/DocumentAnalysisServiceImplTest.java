@@ -4,7 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.scoula.config.RootConfig;
+import org.scoula.documentAnalysis.dto.DocumentAnalysisDTO;
 import org.scoula.documentAnalysis.dto.DocumentAnalysisResultDTO;
+import org.scoula.documentAnalysis.dto.DocumentSthRiskDTO;
 import org.scoula.security.config.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -44,5 +46,29 @@ class DocumentAnalysisServiceImplTest {
 
     @Test
     void checkDocumentSthRisk() {
+        DocumentAnalysisResultDTO documentAnalysisResultDTO = new DocumentAnalysisResultDTO();
+        DocumentSthRiskDTO documentSthRiskDTO = new DocumentSthRiskDTO();
+        documentSthRiskDTO.setType("전세");
+        documentSthRiskDTO.setPrice("1억 3천");
+        documentSthRiskDTO.setOptionCount(6);
+        documentAnalysisService.checkDocumentSthRisk(documentSthRiskDTO,
+                "서울특별시 광진구 자양동 0229-0016 (229-16)",
+                documentAnalysisResultDTO);
+
+        documentSthRiskDTO.setType("월세");
+        documentSthRiskDTO.setPrice("보증금 1000 월세 50");
+        documentSthRiskDTO.setOptionCount(2);
+        documentAnalysisService.checkDocumentSthRisk(documentSthRiskDTO,
+                "서울특별시 광진구 자양동 0229-0016 (229-16)",
+                documentAnalysisResultDTO);
+
+        documentSthRiskDTO.setType("매매");
+        documentSthRiskDTO.setPrice("7억 5천");
+        documentSthRiskDTO.setOptionCount(3);
+        documentAnalysisService.checkDocumentSthRisk(documentSthRiskDTO,
+                "서울특별시 광진구 자양동 0229-0016 (229-16)",
+                documentAnalysisResultDTO);
+
+        log.info(String.valueOf(documentAnalysisResultDTO));
     }
 }
