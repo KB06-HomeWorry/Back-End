@@ -41,7 +41,14 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
 
     private void checkDocumentAgent(DocumentAgentDTO documentAgentDTO, DocumentAnalysisResultDTO documentAnalysisResultDTO) {
         // 여기서 뭐함???
-
+        List<AgentDetailVO> agentDetailVOList = checkDocumentAgentByAgentDTO(documentAgentDTO);
+        if(agentDetailVOList == null){
+            documentAnalysisResultDTO.getDescriptionTitleList().add("확인되지 않은 중개인");
+            documentAnalysisResultDTO.getDescriptionContentList()
+                    .add("거래 기록이나 정보가 존재하지 않은 중개인입니다. 거래시 추가적인 확인이나" +
+                            "주의가 필요합니다." + "<br></br>");
+            documentAnalysisResultDTO.setScore(documentAnalysisResultDTO.getScore() - (15));
+        }
     }
 
     // 등기부 등본 체크리스트를 확인해서 알려줌
