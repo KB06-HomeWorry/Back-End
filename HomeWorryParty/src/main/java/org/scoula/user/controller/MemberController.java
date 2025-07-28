@@ -2,7 +2,6 @@ package org.scoula.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.scoula.common.util.UploadFiles;
 import org.scoula.security.util.JwtProcessor;
 import org.scoula.user.dto.*;
 import org.scoula.user.service.PasswordResetService;
@@ -10,10 +9,6 @@ import org.scoula.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-
-//backend 보통 json/text로 vue로 리턴함.
 @Log4j2
 @RestController
 @RequiredArgsConstructor
@@ -60,38 +55,14 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-//    @PostMapping("/verify-password-check")
-//    public ResponseEntity<?> passwordVerifyCheck(@RequestBody VerifyPasswordDTO pdto){
-//        return ResponseEntity.ok(passwordResetService.passwordVerifyCheck(pdto.getPassword(), jwtProcessor.getUsername(pdto.getToken())));
-//    }
+    @PostMapping("/verify-password-check") // 비밀번호 일치 확인
+    public ResponseEntity<?> passwordVerifyCheck(@RequestBody VerifyPasswordDTO pdto){
+        return ResponseEntity.ok(passwordResetService.passwordVerifyCheck(pdto.getPassword(), jwtProcessor.getUsername(pdto.getToken())));
+    }
 
-    @PostMapping("/verify-password") // 비밀번호 일치 확인
+    @PostMapping("/verify-password") // 비밀번호 일치 확인 후 비밀번호 재설정 토큰 발급
     public ResponseEntity<?> passwordVerify(@RequestBody VerifyPasswordDTO pdto) {
         return ResponseEntity.ok().body(passwordResetService.passwordVerify(pdto.getPassword(), jwtProcessor.getUsername(pdto.getToken())));
     }
-
-    @GetMapping("/{username}/avatar")
-    public void getAvatar(@PathVariable String username,
-                          HttpServletResponse response) {
-        String avatarPath = "c:/upload/avatar/" + username + ".png";
-        File file = new File(avatarPath);
-        if (!file.exists()) {  // 아바타 등록이 없는 경우, 디폴트 아바타 이미지 사용
-            file = new File("C:/upload/avatar/unknown.png");
-        }
-
-        UploadFiles.downloadImage(response, file);
-    }
-
-    @PutMapping("/{username}")
-    public ResponseEntity<UserDTO> changeProfile(UserUpdateDTO member) {
-        return ResponseEntity.ok(service.update(member));
-    }
-
-    @PutMapping("/{username}/changepassword")
-    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDTO changePasswordDTO) {
-        service.changePassword(changePasswordDTO);
-        return ResponseEntity.ok().build();
-    }
-
 
 }

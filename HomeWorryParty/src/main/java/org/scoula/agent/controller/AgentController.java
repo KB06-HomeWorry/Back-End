@@ -18,7 +18,7 @@ import java.util.List;
 public class AgentController {
     private final AgentService service;
 
-    @GetMapping("/fetch") // openAPI 에서 중개사 정보 받아와 DB에 저장
+    @GetMapping(value = "/fetch", produces = "text/plain;charset=UTF-8") // openAPI 에서 중개사 정보 받아와 DB에 저장
     public ResponseEntity<String> fetch(){
         return ResponseEntity.ok().body(service.fetchAndSaveOffice());
     }

@@ -4,33 +4,28 @@ import org.scoula.user.dto.*;
 
 public interface UserService {
 
-    boolean checkDuplicate(String username);
+    boolean checkNameAndEmail(String username, String email); // 사용자 이름과 이메일이 일치하는지 체크
 
-    boolean checkNameAndEmail(String username, String email);
+    boolean existsByEmail(String email); // 이메일로 사용자가 이미 존재하는지 체크
 
-    boolean existsByEmail(String email);
+    boolean existsByToken(String token); // 비밀번호 재설정 토큰이 존재하는지 체크
 
-    boolean existsByToken(String token);
+    void savePasswordResetToken(PasswordResetTokenDTO passwordResetToken); // 비밀번호 재설정 토큰 저장
 
-    PasswordResetTokenDTO savePasswordResetToken(PasswordResetTokenDTO passwordResetToken);
+    UserDTO get(String username); // 사용자 이름으로 사용자 정보 검색
 
-    UserDTO get(String username);
+    PasswordResetTokenDTO getemail(String email); // 이메일로 비밀번호 재설정 토큰 발급 정보 검색
 
-    PasswordResetTokenDTO getemail(String email);
+    PasswordResetTokenDTO gettoken(String token); // 비밀번호 재설정 토큰으로 비밀번호 재설정 토큰 발급 정보 검색
 
-    PasswordResetTokenDTO gettoken(String token);
+    UserDTO getUserByEmail(String email); // 이메일로 사용자 정보 검색
 
-    UserDTO getUserByEmail(String email);
+    UserDTO join(UserJoinDTO member); // 사용자 정보 저장
 
-    UserDTO join(UserJoinDTO member);
+    boolean withdraw(String username); // 사용자 정보 삭제
 
-    boolean withdraw(String username);
+    void PasswordRewrite(UserDTO member); // 사용자 비밀번호 수정
 
-    UserDTO update(UserUpdateDTO member);
+    void deleteToken(String email); // 비밀번호 재설정 토큰 삭제
 
-    void PasswordRewrite(UserDTO member);
-
-    void deleteToken(String email);
-
-    void changePassword(ChangePasswordDTO changePassword);
 }
