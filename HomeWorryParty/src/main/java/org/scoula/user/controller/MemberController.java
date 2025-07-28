@@ -60,9 +60,9 @@ public class MemberController {
         return ResponseEntity.ok(passwordResetService.passwordVerifyCheck(pdto.getPassword(), jwtProcessor.getUsername(pdto.getToken())));
     }
 
-    @PostMapping("/verify-password") // 비밀번호 일치 확인 후 비밀번호 재설정 토큰 발급
-    public ResponseEntity<?> passwordVerify(@RequestBody VerifyPasswordDTO pdto) {
-        return ResponseEntity.ok().body(passwordResetService.passwordVerify(pdto.getPassword(), jwtProcessor.getUsername(pdto.getToken())));
+    @GetMapping("/verify-password/{token}") // 비밀번호 재설정 토큰 발급
+    public ResponseEntity<?> passwordVerify(@PathVariable String token) {
+        return ResponseEntity.ok().body(passwordResetService.passwordVerify(jwtProcessor.getUsername(token)));
     }
 
 }
