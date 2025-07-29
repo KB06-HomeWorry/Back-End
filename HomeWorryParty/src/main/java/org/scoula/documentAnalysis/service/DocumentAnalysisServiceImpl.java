@@ -40,6 +40,7 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService {
     }
 
     private void checkDocumentAgent(DocumentAgentDTO documentAgentDTO, DocumentAnalysisResultDTO documentAnalysisResultDTO) {
+        if(documentAgentDTO == null) return;
         // 여기서 뭐함???
         List<AgentDetailVO> agentDetailVOList = checkDocumentAgentByAgentDTO(documentAgentDTO);
         if (agentDetailVOList == null) {
@@ -137,7 +138,7 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService {
         if (percent > 5) {
             documentAnalysisResultDTO.getDescriptionTitleList().add("시세보다 싼 가격");
             documentAnalysisResultDTO.getDescriptionContentList()
-                    .add("시세보다 " + percent + "% 저렴하기에 거래시 불합리한 조건, 깡통 전세, 보증금 사기등의" +
+                    .add("시세보다 " + percent + "% 저렴하기에 거래시 불합리한 조건, 깡통 전세, 보증금 사기등의 " +
                             "문제가 발생할 수 있기에 거래시 주의가 필요합니다." + "<br></br>");
             documentAnalysisResultDTO.setScore(documentAnalysisResultDTO.getScore() - (percent * 2));
         }
