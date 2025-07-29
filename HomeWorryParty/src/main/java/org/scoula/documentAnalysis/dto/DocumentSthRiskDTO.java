@@ -12,8 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class DocumentSthRiskDTO {
-    private int optionCount;
-    private String price;
-    private List<String> selectedOptions;
+    // 매물의 시세와 평수로 위험도를 분석하기 위한 DTO
+    private Long price;
+    private Long monthlyPrice;
+    private Long size;
     private String type;
 }

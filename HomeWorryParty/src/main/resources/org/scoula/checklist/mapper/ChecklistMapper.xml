@@ -17,12 +17,10 @@
         <result property="riskWeight" column="risk_weight"/>
     </resultMap>
 
-
-
     <select id="get" parameterType="long" resultMap="checklistMap">
-        SELECT * FROM home_test.checklistquestion WHERE template_id = #{template_id}
+        SELECT *
+        FROM home_test.checklistquestion
+        WHERE template_id = #{template_id}
     </select>
-
-
 
 </mapper>
