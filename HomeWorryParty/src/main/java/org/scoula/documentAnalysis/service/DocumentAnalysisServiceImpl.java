@@ -10,6 +10,8 @@ import org.scoula.documentAnalysis.dto.*;
 import org.scoula.documentAnalysis.mapper.DocumentAnalysisMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Log4j2
@@ -114,6 +116,8 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService {
     // 중개 사무소 주소로 해당 중개 사무소 정보를 가져옴
     @Override
     public List<AgentDetailVO> checkDocumentAgentByAgentDTO(DocumentAgentDTO documentAgentDTO) {
+        if(documentAgentDTO == null) return new ArrayList<>();
+
         String houseAddress = "%" + documentAgentDTO.getAddress().substring(3);
         List<AgentDetailVO> agentDetailDTOS = agentMapper.findAgentByHouseAddress(houseAddress);
         log.info(agentDetailDTOS);
@@ -123,6 +127,8 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService {
     // 매물 주소로 관리하는 중개 사무소 정보를 가져옴
     @Override
     public List<AgentDetailVO> checkDocumentAgentByAddress(String houseAddress) {
+        if(houseAddress == null) return new ArrayList<>();
+
         List<AgentDetailVO> agentDetailDTOS = agentMapper.findAgentByHouseAddress(houseAddress);
         log.info(agentDetailDTOS);
 
@@ -135,6 +141,12 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService {
 
         int percent = Math.toIntExact(calPercent(documentSthRiskDTO, houseAddress));
         log.info("percent : " + percent);
+        if(percent < 0) {
+            documentAnalysisResultDTO.getDescriptionTitleList().add("데이터가 없는 유형의 매물");
+            documentAnalysisResultDTO.getDescriptionContentList()
+                    .add("해당 지역, 평수에 맞는 다른 매물이 탐색되지 않기 때문에 주의가 필요합니다." + "<br></br>");
+        }
+
         if (percent > 5) {
             documentAnalysisResultDTO.getDescriptionTitleList().add("시세보다 싼 가격");
             documentAnalysisResultDTO.getDescriptionContentList()
@@ -155,7 +167,7 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService {
                     documentSthRiskDTO.getSize() - 6,
                     documentSthRiskDTO.getSize() + 6);
             //log.info(price);
-            if (price == null) return 0L;
+            if (price == null) return -1L;
 
             price *= 10000;
             Long differ = price - documentSthRiskDTO.getPrice();
@@ -167,7 +179,7 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService {
                     documentSthRiskDTO.getSize() - 6,
                     documentSthRiskDTO.getSize() + 6);
             //log.info(averagePrice);
-            if (averagePrice == null) return 0L;
+            if (averagePrice == null) return -1L;
 
             Long differDeposit = averagePrice.getPrice() - documentSthRiskDTO.getPrice();
             Long differMonthly = averagePrice.getMonthlyRent() - documentSthRiskDTO.getMonthlyPrice();
@@ -180,7 +192,7 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService {
                     documentSthRiskDTO.getSize() - 6,
                     documentSthRiskDTO.getSize() + 6);
             //log.info(price);
-            if (price == null) return 0L;
+            if (price == null) return -1L;
 
             Long differ = price - documentSthRiskDTO.getPrice();
             if (differ > 0) {
