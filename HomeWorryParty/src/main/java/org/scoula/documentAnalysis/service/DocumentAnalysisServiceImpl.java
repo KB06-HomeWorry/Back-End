@@ -42,7 +42,7 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService {
     }
 
     private void checkDocumentAgent(DocumentAgentDTO documentAgentDTO, DocumentAnalysisResultDTO documentAnalysisResultDTO) {
-        if(documentAgentDTO == null) return;
+        if(documentAgentDTO.getAddress().isEmpty()) return;
         // 여기서 뭐함???
         List<AgentDetailVO> agentDetailVOList = checkDocumentAgentByAgentDTO(documentAgentDTO);
         if (agentDetailVOList == null) {
