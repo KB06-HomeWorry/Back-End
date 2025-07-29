@@ -1,10 +1,15 @@
 package org.scoula.agent.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.scoula.agent.domain.AgentDetailVO;
 import org.scoula.agent.domain.AgentReviewVO;
+import org.scoula.agent.domain.OfficeGeographyVO;
 import org.scoula.agent.dto.AgentDetailDTO;
 import org.scoula.agent.dto.AgentReviewDTO;
+import org.scoula.agent.dto.OfficeGeographyDTO;
 import org.scoula.agent.dto.TrustScoreDTO;
 import org.scoula.agent.mapper.AgentMapper;
 import org.scoula.agent.model.Office;
@@ -16,6 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -282,6 +292,82 @@ public class AgentService {
 
     // 중개사 리스트 조회
     public List<AgentDetailDTO> getAgentList(){
-        return mapper.getAgentList();
+        List<AgentDetailVO> vo = mapper.getAgentList();
+        List<AgentDetailDTO> list = new ArrayList<>();
+
+        for (AgentDetailVO arvo : vo) {
+            list.add(AgentDetailDTO.of(arvo));
+        }
+
+        return list;
+    }
+
+    @Transactional // 사무소 위치 정보 저장
+    public String saveOfficeGeography() {
+        String mapApiKey = "086b1f966a8f9d22e6b32b67ad24a5bc";
+        String apiUrl = "https://dapi.kakao.com/v2/local/search/address.json?query=";
+        List<AgentDetailDTO> list = getAgentList();
+        int count = 0;
+
+        try{
+        for (AgentDetailDTO dto : list) {
+            if (getOfficeGeography(dto.getOfficeId()) != null) {
+                continue;
+            }
+
+            URL url = new URL(apiUrl + URLEncoder.encode(dto.getAddress().trim(), "UTF-8"));
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Authorization", "KakaoAK " + mapApiKey);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            br.close();
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode root = objectMapper.readTree(sb.toString());
+
+            JsonNode documents = root.path("documents");
+            if (documents.isArray() && !documents.isEmpty()) {
+                JsonNode firstResult = documents.get(0);
+                String lng = firstResult.path("x").asText();
+                String lat = firstResult.path("y").asText();
+                String gu = firstResult.path("address").path("region_2depth_name").asText();
+                String dong = firstResult.path("address").path("region_3depth_name").asText();
+
+                OfficeGeographyDTO officeGeographyDTO = new OfficeGeographyDTO(dto.getOfficeId(), gu, dong, lat, lng);
+                mapper.saveOfficeGeography(officeGeographyDTO.toVO());
+                count++;
+            }
+        }} catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "총 " + count + "개의 데이터가 저장되었습니다.";
+    }
+
+    // 사무소 위치 정보 조회
+    public OfficeGeographyDTO getOfficeGeography(Long officeId){
+        OfficeGeographyVO vo = mapper.getOfficeGeography(officeId);
+
+        if (vo == null) {
+            return null;
+        }
+        return new OfficeGeographyDTO().of(vo);
+    }
+
+    // 사무소 위치 정보 목록 조회
+    public List<OfficeGeographyDTO> getOfficeGeographyList(){
+        List<OfficeGeographyDTO> list = new ArrayList<>();
+
+        for (OfficeGeographyVO vo : mapper.getOfficeGeographyList()){
+            list.add(new  OfficeGeographyDTO().of(vo));
+        }
+
+        return list;
     }
 }
