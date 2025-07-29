@@ -9,6 +9,9 @@ import org.scoula.agent.dto.TrustScoreDTO;
 import org.scoula.agent.mapper.AgentMapper;
 import org.scoula.agent.model.Office;
 import org.scoula.agent.model.OpenApiResponse;
+import org.scoula.security.util.JwtProcessor;
+import org.scoula.user.dto.UserDTO;
+import org.scoula.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -31,7 +34,10 @@ public class AgentService {
     private final String openApiURL = "http://openapi.seoul.go.kr:8088/" + apiKey + "/json/landBizInfo/";
     private static final int PAGE_SIZE = 1000;
 
+    final UserService userService;
+
     private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile("(0\\d{1,3}[-\\s]?\\d{3,4}[-\\s]?\\d{4})|(\\d{3,4}[-\\s]?\\d{4})");
+    private final JwtProcessor jwtProcessor;
 
     // OpenAPI 마지막 업데이트 날짜 반환
     public LocalDateTime getLastUpdateTime() {
@@ -229,9 +235,17 @@ public class AgentService {
         }
     }
 
-    // 중개사 리뷰 저장
+    @Transactional // 중개사 리뷰 저장
     public void writeAgentReview(AgentReviewDTO agentReviewDTO) {
+        UserDTO userDTO = userService.get(jwtProcessor.getUsername(agentReviewDTO.getUserToken()));
+
+        agentReviewDTO.setUserId(userDTO.getUserId());
+
         mapper.writeAgentReview(agentReviewDTO.toVO());
+
+        TrustScoreDTO trustScoreDTO = getAgentScore(agentReviewDTO.getOfficeId());
+
+        mapper.updateTrustScore(agentReviewDTO.getOfficeId(), trustScoreDTO.getTotalTrustScore());
     }
 
     // 중개사 신뢰지수 계산 및 반환
@@ -264,5 +278,10 @@ public class AgentService {
         totalAccountability = Math.round((totalAccountability / totalWeight + 10) * 1000 / 15) / 10.0;
 
         return new TrustScoreDTO(totalTrustScore, totalAccuracy, totalTransparency, totalProfessionalism, totalAccountability);
+    }
+
+    // 중개사 리스트 조회
+    public List<AgentDetailDTO> getAgentList(){
+        return mapper.getAgentList();
     }
 }
