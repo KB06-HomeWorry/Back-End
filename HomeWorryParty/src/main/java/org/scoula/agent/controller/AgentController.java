@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.scoula.agent.dto.AgentDetailDTO;
 import org.scoula.agent.dto.AgentReviewDTO;
+import org.scoula.agent.dto.OfficeGeographyDTO;
 import org.scoula.agent.dto.TrustScoreDTO;
 import org.scoula.agent.service.AgentService;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,11 @@ public class AgentController {
     @GetMapping(value = "/fetch", produces = "text/plain;charset=UTF-8") // openAPI 에서 중개사 정보 받아와 DB에 저장
     public ResponseEntity<String> fetch(){
         return ResponseEntity.ok().body(service.fetchAndSaveOffice());
+    }
+
+    @GetMapping(value = "/fetchGeo", produces = "text/plain;charset=UTF-8") // 사무소 위치 정보 저장
+    public ResponseEntity<?> fetchGeo(){
+        return ResponseEntity.ok().body(service.saveOfficeGeography());
     }
 
     @GetMapping("/list") // 중개사 전체 목록 조회
@@ -46,5 +52,15 @@ public class AgentController {
     @GetMapping("/trustScore/{officeId}") // 중개사 점수 조회
     public ResponseEntity<TrustScoreDTO> getAgentScore(@PathVariable Long officeId){
         return ResponseEntity.ok().body(service.getAgentScore(officeId));
+    }
+
+    @GetMapping("/geo/{officeId}")
+    public ResponseEntity<OfficeGeographyDTO> getOfficeGeo(@PathVariable Long officeId){
+        return ResponseEntity.ok().body(service.getOfficeGeography(officeId));
+    }
+
+    @GetMapping("/geo/list")
+    public ResponseEntity<List<OfficeGeographyDTO>> getOfficeGeoList(){
+        return ResponseEntity.ok().body(service.getOfficeGeographyList());
     }
 }
