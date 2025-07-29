@@ -20,6 +20,7 @@ public class ChecklistUserAnswerServiceImpl implements ChecklistUserAnswerServic
     private final ChecklistUserAnswerMapper checklistUserAnswerMapper;
     final ChecklistService questionService;
 
+
     @Override
     public List<ChecklistUserAnswerDTO> getAnswerList(Long templateId, long userId, List<ChecklistDTO> checklist) {
         log.info("getAnswerList " + templateId + " " + userId);
@@ -39,6 +40,7 @@ public class ChecklistUserAnswerServiceImpl implements ChecklistUserAnswerServic
                 .collect(Collectors.toList());
     }
 
+    // 사용자가 해당 문제를 푼 적이 없을때 해당 사용자의 정답 리스트를 새로 생성하는 로직
     @Override
     public Long makeAnswerMemory(Long checkListId, Long userId, Long templateId, List<ChecklistDTO> checklist) {
         log.info("체크하지 않는 내용 -> 새로 생성");
@@ -52,6 +54,7 @@ public class ChecklistUserAnswerServiceImpl implements ChecklistUserAnswerServic
         return checklistId;
     }
 
+    // 사용자가 해당 문제를 푼 적이 없을때 사용자의 checklist 문제 id를 생성하는 로직
     @Override
     public Long makeNewCheckListId(Long userId, Long templateId) {
         checklistUserAnswerMapper.insertCheckList(userId, templateId);
@@ -59,6 +62,7 @@ public class ChecklistUserAnswerServiceImpl implements ChecklistUserAnswerServic
         return checklistUserAnswerMapper.getCheckListId(userId, templateId);
     }
 
+    // 사용자의 정답을 DB에 저장하는 로직
     @Override
     public void saveAnswerList(List<ChecklistUserAnswerDTO> answerDTOList) {
         for (ChecklistUserAnswerDTO dto : answerDTOList) {

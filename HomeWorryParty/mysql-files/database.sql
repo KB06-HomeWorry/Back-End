@@ -1,354 +1,8 @@
-SET FOREIGN_KEY_CHECKS = 0;
-
-DROP TABLE IF EXISTS ScamRiskPhrase;
-DROP TABLE IF EXISTS ScamContractSample;
-DROP TABLE IF EXISTS Document;
-DROP TABLE IF EXISTS InfraInfo;
-DROP TABLE IF EXISTS AgentReview;
-DROP TABLE IF EXISTS RiskScoreMessage;
-DROP TABLE IF EXISTS ChecklistUserAnswer;
-DROP TABLE IF EXISTS Checklist;
-DROP TABLE IF EXISTS ChecklistQuestion;
-DROP TABLE IF EXISTS ChecklistTemplate;
-DROP TABLE IF EXISTS riskscoremessage;
-DROP TABLE IF EXISTS Deal;
-DROP TABLE IF EXISTS ListingOption;
-DROP TABLE IF EXISTS ListingPriceHistory;
-DROP TABLE IF EXISTS ListingDetail;
-DROP TABLE IF EXISTS ListingImage;
-DROP TABLE IF EXISTS Listing;
-DROP TABLE IF EXISTS AgentImage;
-DROP TABLE IF EXISTS Agent;
-DROP TABLE IF EXISTS AgencyOffice;
-DROP TABLE IF EXISTS user_member_auth;
-DROP TABLE IF EXISTS User;
-
-SET FOREIGN_KEY_CHECKS = 1;
-SET FOREIGN_KEY_CHECKS = 0;
-
--- 1. 사용자 (회원) 정보
-CREATE TABLE User
-(
-    user_id   BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '회원 고유번호 (PK)',
-    name      VARCHAR(50)  NOT NULL COMMENT '이름',
-    email     VARCHAR(100) NOT NULL UNIQUE COMMENT '이메일(로그인 ID)',
-    password  VARCHAR(200) NOT NULL COMMENT '비밀번호(암호화)',
-    phone     VARCHAR(20) COMMENT '연락처',
-    user_type VARCHAR(20) COMMENT '사용자 유형(일반, 중개사 등)'
-);
-
--- 2. 회원 권한 (1:N)
-CREATE TABLE user_member_auth
-(
-    auth_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '권한 고유번호 (PK)',
-    user_id BIGINT      NOT NULL COMMENT '연결된 회원 (FK)',
-    auth    VARCHAR(50) NOT NULL COMMENT '권한명 (예: ROLE_USER, ROLE_AGENT 등)',
-    FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE
-);
-
--- 3. 중개사 사무소
-CREATE TABLE AgencyOffice
-(
-    office_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '사무소 고유번호 (PK)',
-    name      VARCHAR(100) NOT NULL COMMENT '사무소명',
-    address   VARCHAR(255) COMMENT '주소',
-    lat       DOUBLE COMMENT '위도',
-    lng       DOUBLE COMMENT '경도',
-    phone     VARCHAR(20) COMMENT '연락처',
-    point     BIGINT COMMENT '우수중개사 신뢰 점수'
-);
-
--- 4. 공인중개사 정보
-CREATE TABLE Agent
-(
-    agent_id       BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '중개사 고유번호 (PK)',
-    office_id      BIGINT      NOT NULL COMMENT '소속 사무소 (FK)',
-    name           VARCHAR(50) NOT NULL COMMENT '중개사명',
-    license_number VARCHAR(50) NOT NULL UNIQUE COMMENT '공인중개사 등록번호',
-    profile_image  VARCHAR(255) COMMENT '프로필 이미지',
-    specialties    VARCHAR(200) COMMENT '전문분야(예: #아파트, #전세)',
-    description    TEXT COMMENT '자기소개글',
-    FOREIGN KEY (office_id) REFERENCES AgencyOffice (office_id) ON DELETE CASCADE
-);
-
--- 5. 중개사 이미지
-CREATE TABLE AgentImage
-(
-    image_id    BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '고유 이미지 번호 (PK)',
-    agent_id    BIGINT       NOT NULL COMMENT '연결 중개사 (FK)',
-    image_url   VARCHAR(255) NOT NULL COMMENT '이미지 파일 경로/URL',
-    description TEXT COMMENT '이미지 설명(선택)',
-    uploaded_at DATETIME COMMENT '업로드 일시',
-    FOREIGN KEY (agent_id) REFERENCES Agent (agent_id) ON DELETE CASCADE
-);
-
--- 6. 매물
-CREATE TABLE Listing
-(
-    listing_id  BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '매물 고유번호 (PK)',
-    office_id   BIGINT NOT NULL COMMENT '소속 사무소 (FK)',
-    agent_id    BIGINT NOT NULL COMMENT '담당 중개사 (FK)',
-    address     VARCHAR(255) COMMENT '매물 주소',
-    lat         DOUBLE COMMENT '위도',
-    lng         DOUBLE COMMENT '경도',
-    price       BIGINT COMMENT '가격',
-    sale_type   VARCHAR(20) COMMENT '매매/전세/월세',
-    description TEXT COMMENT '매물 설명',
-    FOREIGN KEY (office_id) REFERENCES AgencyOffice (office_id) ON DELETE CASCADE,
-    FOREIGN KEY (agent_id) REFERENCES Agent (agent_id) ON DELETE CASCADE
-);
-
--- 7. 매물 이미지
-CREATE TABLE ListingImage
-(
-    image_id    BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '고유 이미지 번호 (PK)',
-    listing_id  BIGINT       NOT NULL COMMENT '연결된 매물 (FK)',
-    image_url   VARCHAR(255) NOT NULL COMMENT '이미지 파일 경로/URL',
-    uploaded_at DATETIME COMMENT '업로드 일시',
-    order_num   INT COMMENT '정렬 순서(썸네일/대표이미지 등)',
-    FOREIGN KEY (listing_id) REFERENCES Listing (listing_id) ON DELETE CASCADE
-);
-
--- 8. 매물 상세 정보
-CREATE TABLE ListingDetail
-(
-    detail_id      BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '상세정보 고유번호 (PK)',
-    listing_id     BIGINT NOT NULL COMMENT '연결된 매물 (FK)',
-    area_m2        FLOAT COMMENT '전용면적(㎡)',
-    floor          INT COMMENT '해당 층',
-    total_floor    INT COMMENT '전체 층수',
-    room_count     INT COMMENT '방 개수',
-    bath_count     INT COMMENT '욕실 개수',
-    built_year     INT COMMENT '건축년도',
-    heating_type   VARCHAR(50) COMMENT '난방 방식',
-    direction      VARCHAR(20) COMMENT '방향(남향 등)',
-    parking        BOOLEAN COMMENT '주차 가능 여부',
-    elevator       BOOLEAN COMMENT '엘리베이터 여부',
-    loan_available BOOLEAN COMMENT '대출 가능 여부',
-    management_fee INT COMMENT '관리비(월, 원)',
-    entrance_type  VARCHAR(20) COMMENT '현관구조',
-    FOREIGN KEY (listing_id) REFERENCES Listing (listing_id) ON DELETE CASCADE
-);
-
--- 9. 매물 가격 이력
-CREATE TABLE ListingPriceHistory
-(
-    price_id   BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '고유 가격 이력 번호 (PK)',
-    listing_id BIGINT NOT NULL COMMENT '연결된 매물 (FK)',
-    price      BIGINT COMMENT '가격(원)',
-    price_type VARCHAR(20) COMMENT '매매가/전세가/월세/실거래가 등',
-    start_date DATE COMMENT '적용 시작일',
-    end_date   DATE COMMENT '적용 종료일(NULL: 현재가)',
-    reg_date   DATETIME COMMENT '이력 등록일시',
-    note       TEXT COMMENT '비고/메모',
-    FOREIGN KEY (listing_id) REFERENCES Listing (listing_id) ON DELETE CASCADE
-);
-
--- 10. 매물 옵션
-CREATE TABLE ListingOption
-(
-    option_id   BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '옵션 고유번호 (PK)',
-    listing_id  BIGINT NOT NULL COMMENT '연결된 매물 (FK)',
-    option_name VARCHAR(50) COMMENT '옵션명(예: 에어컨)',
-    included    BOOLEAN COMMENT '포함 여부',
-    FOREIGN KEY (listing_id) REFERENCES Listing (listing_id) ON DELETE CASCADE
-);
-
--- 11. 거래(실거래) 이력
-CREATE TABLE Deal
-(
-    deal_id     BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '거래 고유번호 (PK)',
-    rcpt_yr     INT COMMENT '접수연도',
-    cgg_nm      VARCHAR(50) COMMENT '자치구명',
-    stdg_nm     VARCHAR(100) COMMENT '법정동명',
-    lotno_se_nm VARCHAR(20) COMMENT '지번구분명',
-    mno         INT COMMENT '본번',
-    sno         INT COMMENT '부번',
-    bldg_nm     VARCHAR(255) COMMENT '건물명',
-    ctrt_day    DATE COMMENT '계약일',
-    thing_amt   BIGINT COMMENT '물건금액(만원)',
-    arch_area   DOUBLE COMMENT '건물면적(㎡)',
-    land_area   DOUBLE COMMENT '토지면적(㎡)',
-    flr         VARCHAR(10) COMMENT '층',
-    arch_yr     INT COMMENT '건축년도',
-    bldg_usg    VARCHAR(50) COMMENT '건물용도'
-);
-
--- 12. 체크리스트 템플릿(질문 세트)
-CREATE TABLE ChecklistTemplate
-(
-    template_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '템플릿 고유번호 (PK)',
-    name        VARCHAR(50) NOT NULL COMMENT '템플릿명',
-    sale_type   VARCHAR(20) NOT NULL COMMENT '매매/전세',
-    stage       VARCHAR(20) NOT NULL COMMENT '입금 전/입금 후 등'
-);
-
--- 13. 체크리스트 질문(템플릿별)
-CREATE TABLE ChecklistQuestion
-(
-    question_id   BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '질문 고유번호 (PK)',
-    template_id   BIGINT NOT NULL COMMENT '소속 템플릿 (FK)',
-    content       TEXT   NOT NULL COMMENT '질문 내용',
-    effectiveness TEXT COMMENT '질문 효과',
-    necessity_title     TEXT COMMENT '없을때 안좋은 점',
-    necessity_content     TEXT COMMENT '없을때 안좋은 점',
-    order_num     INT COMMENT '질문 순서',
-    risk_weight   INT COMMENT '위험도 가중치',
-    FOREIGN KEY (template_id) REFERENCES ChecklistTemplate (template_id) ON DELETE CASCADE
-);
-
--- 14. 체크리스트 실행 이력(사용자별)
-CREATE TABLE Checklist
-(
-    checklist_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '체크리스트 고유번호 (PK)',
-    user_id      BIGINT NOT NULL COMMENT '사용자 (FK)',
-    template_id  BIGINT NOT NULL COMMENT '사용 템플릿 (FK)',
-    FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE,
-    FOREIGN KEY (template_id) REFERENCES ChecklistTemplate (template_id) ON DELETE CASCADE
-);
-
--- 15. 체크리스트 답변(사용자별 질문별)
-CREATE TABLE ChecklistUserAnswer
-(
-    answer_id    BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '답변 고유번호 (PK)',
-    checklist_id BIGINT NOT NULL COMMENT '체크리스트 이력 (FK)',
-    question_id  BIGINT NOT NULL COMMENT '질문 (FK)',
-    user_id      BIGINT NOT NULL COMMENT '사용자 (FK)',
-    answer       BOOLEAN COMMENT '답변 내용',
-    FOREIGN KEY (checklist_id) REFERENCES Checklist (checklist_id) ON DELETE CASCADE,
-    FOREIGN KEY (question_id) REFERENCES ChecklistQuestion (question_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE
-);
-
--- 점수/등급별 안내문구/설명/이미지 관리 테이블
-CREATE TABLE RiskScoreMessage
-(
-    grade       VARCHAR(20) NOT NULL,-- 등급 (예: Low/Medium/High)
-    template_id BIGINT      NOT NULL, -- 사용 템플릿 (ChecklistTemplate.template_id)
-    min_score   FLOAT, -- 등급별 최소 점수
-    max_score   FLOAT, -- 등급별 최대 점수
-    message     TEXT, -- 사용자 안내문구
-    description TEXT, -- 상세 설명
-    image_url   VARCHAR(255), -- 안내 이미지(아이콘/배너 등) URL
-    PRIMARY KEY (grade, template_id), -- 복합 기본키: 등급 + 템플릿ID
-    CONSTRAINT fk_riskscore_template
-        FOREIGN KEY (template_id)
-            REFERENCES ChecklistTemplate (template_id)
-            ON DELETE CASCADE
-);
-
--- 17. 중개사 리뷰
-CREATE TABLE AgentReview
-(
-    review_id  BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '리뷰 고유번호 (PK)',
-    agent_id   BIGINT NOT NULL COMMENT '중개사 (FK)',
-    user_id    BIGINT NOT NULL COMMENT '사용자 (FK)',
-    rating     INT COMMENT '평점(1~5)',
-    content    TEXT COMMENT '리뷰 내용',
-    created_at DATETIME COMMENT '작성 일시',
-    FOREIGN KEY (agent_id) REFERENCES Agent (agent_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE
-);
-
--- 18. 인프라 정보
-CREATE TABLE InfraInfo
-(
-    infra_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '인프라 고유번호 (PK)',
-    name     VARCHAR(50) COMMENT '인프라명',
-    type     VARCHAR(30) COMMENT 'CCTV/편의시설/치안시설 등',
-    address  VARCHAR(255) COMMENT '주소',
-    lat      DOUBLE COMMENT '위도',
-    lng      DOUBLE COMMENT '경도',
-    detail   TEXT COMMENT '세부 설명'
-);
-
--- 19. 계약서/서류 파일 업로드 및 AI 분석 결과
-CREATE TABLE Document
-(
-    document_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '서류 고유번호 (PK)',
-    user_id     BIGINT NOT NULL COMMENT '업로드한 회원 (FK)',
-    doc_type    VARCHAR(30) COMMENT '서류 종류',
-    file_url    VARCHAR(255) COMMENT '파일 경로',
-    uploaded_at DATETIME COMMENT '업로드 일시',
-    FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE
-);
-
--- 20. 사기 계약서 샘플(전문)
-CREATE TABLE ScamContractSample
-(
-    sample_id   BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '샘플 고유번호 (PK)',
-    name        VARCHAR(100) COMMENT '샘플명',
-    content     TEXT COMMENT '계약서 전문',
-    description TEXT COMMENT '설명',
-    created_at  DATETIME COMMENT '생성 일시'
-);
-
--- 21. 사기 위험 문구/패턴
-CREATE TABLE ScamRiskPhrase
-(
-    phrase_id   BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '문구 고유번호 (PK)',
-    phrase      VARCHAR(255) COMMENT '위험 문구',
-    sample_id   BIGINT NOT NULL COMMENT '연결 샘플 (FK)',
-    risk_level  FLOAT COMMENT '위험도',
-    description TEXT COMMENT '설명',
-    created_at  DATETIME COMMENT '생성 일시',
-    FOREIGN KEY (sample_id) REFERENCES ScamContractSample (sample_id) ON DELETE CASCADE
-);
-
 SET FOREIGN_KEY_CHECKS = 1;
 -- 1. 회원
-INSERT INTO User (name, email, password, phone, user_type)
-VALUES ('홍길동', 'gildong@example.com', 'encrypted_pw1', '010-1111-2222', '일반'),
-       ('김중개', 'agentkim@example.com', 'encrypted_pw2', '010-3333-4444', '중개사');
 
--- 2. 권한
-INSERT INTO user_member_auth (user_id, auth)
-VALUES (1, 'ROLE_USER'),
-       (2, 'ROLE_AGENT');
 
--- 3. 중개사 사무소
-INSERT INTO AgencyOffice (name, address, lat, lng, phone, point)
-VALUES ('꿈에그린공인중개사사무소', '서울특별시 강남구 테헤란로 123', 37.5013, 127.0396, '02-555-5555', 95);
-
--- 4. 중개사
-INSERT INTO Agent (office_id, name, license_number, profile_image, specialties, description)
-VALUES (1, '김중개', 'A-2024-00001', '/images/agent/kim.jpg', '#아파트,#전세', '20년 경력의 강남 전문 중개사입니다.');
-
--- 5. 중개사 이미지
-INSERT INTO AgentImage (agent_id, image_url, description, uploaded_at)
-VALUES (1, '/images/agent/kim_cert1.jpg', '공인중개사 자격증', NOW());
-
--- 6. 매물
-INSERT INTO Listing (office_id, agent_id, address, lat, lng, price, sale_type, description)
-VALUES (1, 1, '서울특별시 강남구 역삼동 123-45', 37.4981, 127.0276, 900000000, '매매', '강남역 도보 3분 거리 신축 아파트 매물입니다.');
-
--- 7. 매물 이미지
-INSERT INTO ListingImage (listing_id, image_url, uploaded_at, order_num)
-VALUES (1, '/images/listing/apt1_1.jpg', NOW(), 1),
-       (1, '/images/listing/apt1_2.jpg', NOW(), 2);
-
--- 8. 매물 상세
-INSERT INTO ListingDetail (listing_id, area_m2, floor, total_floor, room_count, bath_count, built_year, heating_type,
-                           direction, parking, elevator, loan_available, management_fee, entrance_type)
-VALUES (1, 84.32, 10, 20, 3, 2, 2022, '개별난방', '남향', TRUE, TRUE, TRUE, 180000, '계단식');
-
--- 9. 매물 가격 이력
-INSERT INTO ListingPriceHistory (listing_id, price, price_type, start_date, end_date, reg_date, note)
-VALUES (1, 920000000, '매매가', '2024-04-01', '2024-05-10', '2024-04-01 09:00:00', '최초 등록가'),
-       (1, 900000000, '매매가', '2024-05-11', NULL, NOW(), '가격 인하');
-
--- 10. 매물 옵션
-INSERT INTO ListingOption (listing_id, option_name, included)
-VALUES (1, '에어컨', TRUE),
-       (1, '냉장고', TRUE),
-       (1, '세탁기', FALSE);
-
--- 11. 실거래 이력
-INSERT INTO Deal (rcpt_yr, cgg_nm, stdg_nm, lotno_se_nm, mno, sno, bldg_nm, ctrt_day, thing_amt, arch_area, land_area,
-                  flr, arch_yr, bldg_usg)
-VALUES (2024, '강남구', '역삼동', '본번', 123, 45, '현대아파트', '2024-05-02', 92000, 84.32, 45.0, '10', 2022, '공동주택');
-
--- 11. 체크리스트 템플릿
+-- 9. 체크리스트 템플릿
 INSERT INTO ChecklistTemplate (name, sale_type, stage)
 VALUES ('매매 계약 전 체크리스트', '매매', '계약 전'),
        ('매매 중도금 납부 체크리스트', '매매', '중도금 납부'),
@@ -359,7 +13,7 @@ VALUES ('매매 계약 전 체크리스트', '매매', '계약 전'),
        ('임대차 잔금 및 입주 체크리스트', '전/월세', '잔금 및 입주'),
        ('임대차 입주 후 체크리스트', '전/월세', '입주 후');
 
--- 11. 체크리스트 질문
+-- 10. 체크리스트 질문
 -- [매매] 계약 전 (template_id=1)
 INSERT INTO ChecklistQuestion (template_id, content, effectiveness, order_num, risk_weight, necessity_title, necessity_content)
 VALUES (1, '등기부등본을 확인했습니까?', '소유자와 권리관계를 사전에 확인하여 예기치 않은 법적 문제를 막습니다.', 1, 15,
@@ -502,7 +156,7 @@ VALUES (8, '전입신고와 확정일자를 완료했습니까?', '보증금에 
        (8, '계약 및 입금 내역을 정리했습니까?', '문서 정리를 통해 향후 분쟁에 대비합니다.', 5, 9,
         '계약 내역 미정리','계약, 입금 내역을 정리하지 않으면 추후 분쟁, 입금 누락, 조건 불이행 등 다양한 문제가 발생할 수 있습니다.<br></br>계약 및 입금 내역을 철저히 정리하면 분쟁 발생 시 신속한 대응과 피해 구제가 가능합니다.');
 
--- 14. 체크리스트 실행 이력
+-- 11. 체크리스트 실행 이력
 INSERT INTO Checklist (user_id, template_id)
 VALUES (1, 1), -- user 1, 매매 계약 전
        (2, 2), -- user 2, 매매 중도금 납부
@@ -599,226 +253,126 @@ VALUES (10, 23, 2, TRUE),
        (10, 28, 2, TRUE),
        (10, 29, 2, TRUE);
 
--- 16. 점수/등급별 안내문구
+-- 12. 점수/등급별 안내문구
 -- 매매 계약 전 체크리스트 (template_id = 1)
 INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message, description, image_url)
-VALUES ('Low', 1, 0, 39, '위험 낮음', '계약 전 체크리스트 위험 신호가 적지만 여전히 주의가 필요합니다.', '/images/risk_low.png'),
-       ('Medium', 1, 40, 59, '주의 필요', '일부 위험 요소가 있으니 꼼꼼히 확인하세요.', '/images/risk_medium.png'),
-       ('High', 1, 60, 79, '위험 높음', '여러 위험 신호가 있으니 전문가 상담이 필요합니다.', '/images/risk_high.png'),
-       ('VeryHigh', 1, 80, 100, '거래 주의', '위험 요소가 매우 많으니 거래를 신중히 결정하세요.', '/images/risk_veryhigh.png');
+VALUES ('Low', 1, 0, 39, '위험 낮음', '계약 전 체크리스트 위험 신호가 적지만 여전히 주의가 필요합니다.', '/src/assets/icons/risk_low.png'),
+       ('Medium', 1, 40, 59, '주의 필요', '일부 위험 요소가 있으니 꼼꼼히 확인하세요.', '/src/assets/icons/risk_medium.png'),
+       ('High', 1, 60, 79, '위험 높음', '여러 위험 신호가 있으니 전문가 상담이 필요합니다.', '/src/assets/icons/risk_high.png'),
+       ('VeryHigh', 1, 80, 100, '거래 주의', '위험 요소가 매우 많으니 거래를 신중히 결정하세요.', '/src/assets/icons/risk_veryhigh.png');
 
 -- 매매 중도금 납부 체크리스트 (template_id = 2)
 INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message, description, image_url)
-VALUES ('Low', 2, 0, 39, '위험 낮음', '중도금 납부 단계에서 위험 신호가 적지만 여전히 주의가 필요합니다.', '/images/risk_low.png'),
-       ('Medium', 2, 40, 59, '주의 필요', '중도금 납부 시 일부 주의사항을 확인하세요.', '/images/risk_medium.png'),
-       ('High', 2, 60, 79, '위험 높음', '중도금 납부 시 다수 위험 요소가 있습니다.', '/images/risk_high.png'),
-       ('VeryHigh', 2, 80, 100, '거래 주의', '중도금 납부 단계에서 매우 높은 위험이 감지됩니다.', '/images/risk_veryhigh.png');
+VALUES ('Low', 2, 0, 39, '위험 낮음', '중도금 납부 단계에서 위험 신호가 적지만 여전히 주의가 필요합니다.', '/src/assets/icons/risk_low.png'),
+       ('Medium', 2, 40, 59, '주의 필요', '중도금 납부 시 일부 주의사항을 확인하세요.', '/src/assets/icons/risk_medium.png'),
+       ('High', 2, 60, 79, '위험 높음', '중도금 납부 시 다수 위험 요소가 있습니다.', '/src/assets/icons/risk_high.png'),
+       ('VeryHigh', 2, 80, 100, '거래 주의', '중도금 납부 단계에서 매우 높은 위험이 감지됩니다.', '/src/assets/icons/risk_veryhigh.png');
 
 -- 매매 잔금 및 입주 체크리스트 (template_id = 3)
 INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message, description, image_url)
-VALUES ('Low', 3, 0, 39, '위험 낮음', '잔금 및 입주 단계에서 위험 신호가 적지만 여전히 주의가 필요합니다.', '/images/risk_low.png'),
-       ('Medium', 3, 40, 59, '주의 필요', '잔금/입주 시 몇 가지 주의사항이 필요합니다.', '/images/risk_medium.png'),
-       ('High', 3, 60, 79, '위험 높음', '잔금/입주 시 여러 위험 신호가 있습니다.', '/images/risk_high.png'),
-       ('VeryHigh', 3, 80, 100, '거래 주의', '잔금/입주 단계에서 매우 높은 위험이 감지됩니다.', '/images/risk_veryhigh.png');
+VALUES ('Low', 3, 0, 39, '위험 낮음', '잔금 및 입주 단계에서 위험 신호가 적지만 여전히 주의가 필요합니다.', '/src/assets/icons/risk_low.png'),
+       ('Medium', 3, 40, 59, '주의 필요', '잔금/입주 시 몇 가지 주의사항이 필요합니다.', '/src/assets/icons/risk_medium.png'),
+       ('High', 3, 60, 79, '위험 높음', '잔금/입주 시 여러 위험 신호가 있습니다.', '/src/assets/icons/risk_high.png'),
+       ('VeryHigh', 3, 80, 100, '거래 주의', '잔금/입주 단계에서 매우 높은 위험이 감지됩니다.', '/src/assets/icons/risk_veryhigh.png');
 
 -- 매매 입주 후 체크리스트 (template_id = 4)
 INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message, description, image_url)
-VALUES ('Low', 4, 0, 39, '위험 낮음', '입주 후 위험 신호가 적지만 여전히 주의가 필요합니다.', '/images/risk_low.png'),
-       ('Medium', 4, 40, 59, '주의 필요', '입주 후 일부 점검이 필요합니다.', '/images/risk_medium.png'),
-       ('High', 4, 60, 79, '위험 높음', '입주 후 다수 위험 요소가 있습니다.', '/images/risk_high.png'),
-       ('VeryHigh', 4, 80, 100, '거래 주의', '입주 후 단계에서 매우 높은 위험이 감지됩니다.', '/images/risk_veryhigh.png');
+VALUES ('Low', 4, 0, 39, '위험 낮음', '입주 후 위험 신호가 적지만 여전히 주의가 필요합니다.', '/src/assets/icons/risk_low.png'),
+       ('Medium', 4, 40, 59, '주의 필요', '입주 후 일부 점검이 필요합니다.', '/src/assets/icons/risk_medium.png'),
+       ('High', 4, 60, 79, '위험 높음', '입주 후 다수 위험 요소가 있습니다.', '/src/assets/icons/risk_high.png'),
+       ('VeryHigh', 4, 80, 100, '거래 주의', '입주 후 단계에서 매우 높은 위험이 감지됩니다.', '/src/assets/icons/risk_veryhigh.png');
 
 -- 임대차 계약 전 체크리스트 (template_id = 5)
 INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message, description, image_url)
-VALUES ('Low', 5, 0, 39, '위험 낮음', '임대차 계약 전 단계에서 위험 신호가 적지만 여전히 주의가 필요합니다.', '/images/risk_low.png'),
-       ('Medium', 5, 40, 59, '주의 필요', '임대차 계약 전 단계에서 일부 주의사항이 있습니다.', '/images/risk_medium.png'),
-       ('High', 5, 60, 79, '위험 높음', '임대차 계약 전 단계에서 위험 신호가 감지됩니다.', '/images/risk_high.png'),
-       ('VeryHigh', 5, 80, 100, '거래 주의', '임대차 계약 전 단계에서 매우 높은 위험이 감지됩니다.', '/images/risk_veryhigh.png');
+VALUES ('Low', 5, 0, 39, '위험 낮음', '임대차 계약 전 단계에서 위험 신호가 적지만 여전히 주의가 필요합니다.', '/src/assets/icons/risk_low.png'),
+       ('Medium', 5, 40, 59, '주의 필요', '임대차 계약 전 단계에서 일부 주의사항이 있습니다.', '/src/assets/icons/risk_medium.png'),
+       ('High', 5, 60, 79, '위험 높음', '임대차 계약 전 단계에서 위험 신호가 감지됩니다.', '/src/assets/icons/risk_high.png'),
+       ('VeryHigh', 5, 80, 100, '거래 주의', '임대차 계약 전 단계에서 매우 높은 위험이 감지됩니다.', '/src/assets/icons/risk_veryhigh.png');
 
 -- 임대차 중도금 납부 체크리스트 (template_id = 6)
 INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message, description, image_url)
-VALUES ('Low', 6, 0, 39, '위험 낮음', '임대차 중도금 납부 단계에서 위험 신호가 적지만 여전히 주의가 필요합니다.', '/images/risk_low.png'),
-       ('Medium', 6, 40, 59, '주의 필요', '임대차 중도금 납부 시 주의사항이 있습니다.', '/images/risk_medium.png'),
-       ('High', 6, 60, 79, '위험 높음', '임대차 중도금 납부 단계에서 여러 위험 요소가 있습니다.', '/images/risk_high.png'),
-       ('VeryHigh', 6, 80, 100, '거래 주의', '임대차 중도금 납부 단계에서 매우 높은 위험이 감지됩니다.', '/images/risk_veryhigh.png');
+VALUES ('Low', 6, 0, 39, '위험 낮음', '임대차 중도금 납부 단계에서 위험 신호가 적지만 여전히 주의가 필요합니다.', '/src/assets/icons/risk_low.png'),
+       ('Medium', 6, 40, 59, '주의 필요', '임대차 중도금 납부 시 주의사항이 있습니다.', '/src/assets/icons/risk_medium.png'),
+       ('High', 6, 60, 79, '위험 높음', '임대차 중도금 납부 단계에서 여러 위험 요소가 있습니다.', '/src/assets/icons/risk_high.png'),
+       ('VeryHigh', 6, 80, 100, '거래 주의', '임대차 중도금 납부 단계에서 매우 높은 위험이 감지됩니다.', '/src/assets/icons/risk_veryhigh.png');
 
 -- 임대차 잔금 및 입주 체크리스트 (template_id = 7)
 INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message, description, image_url)
-VALUES ('Low', 7, 0, 39, '위험 낮음', '임대차 잔금 및 입주 단계에서 위험 신호가 적지만 여전히 주의가 필요합니다.', '/images/risk_low.png'),
-       ('Medium', 7, 40, 59, '주의 필요', '임대차 잔금 및 입주 단계에서 주의사항이 필요합니다.', '/images/risk_medium.png'),
-       ('High', 7, 60, 79, '위험 높음', '임대차 잔금 및 입주 단계에서 다수 위험 신호가 있습니다.', '/images/risk_high.png'),
-       ('VeryHigh', 7, 80, 100, '거래 주의', '임대차 잔금 및 입주 단계에서 매우 높은 위험이 감지됩니다.', '/images/risk_veryhigh.png');
+VALUES ('Low', 7, 0, 39, '위험 낮음', '임대차 잔금 및 입주 단계에서 위험 신호가 적지만 여전히 주의가 필요합니다.', '/src/assets/icons/risk_low.png'),
+       ('Medium', 7, 40, 59, '주의 필요', '임대차 잔금 및 입주 단계에서 주의사항이 필요합니다.', '/src/assets/icons/risk_medium.png'),
+       ('High', 7, 60, 79, '위험 높음', '임대차 잔금 및 입주 단계에서 다수 위험 신호가 있습니다.', '/src/assets/icons/risk_high.png'),
+       ('VeryHigh', 7, 80, 100, '거래 주의', '임대차 잔금 및 입주 단계에서 매우 높은 위험이 감지됩니다.', '/src/assets/icons/risk_veryhigh.png');
 
 -- 임대차 입주 후 체크리스트 (template_id = 8)
 INSERT INTO RiskScoreMessage (grade, template_id, min_score, max_score, message, description, image_url)
-VALUES ('Low', 8, 0, 39, '위험 낮음', '임대차 입주 후 특별한 위험 신호가 적습니다.', '/images/risk_low.png'),
-       ('Medium', 8, 40, 59, '주의 필요', '임대차 입주 후 일부 점검이 필요합니다.', '/images/risk_medium.png'),
-       ('High', 8, 60, 79, '위험 높음', '임대차 입주 후 여러 위험 요소가 있습니다.', '/images/risk_high.png'),
-       ('VeryHigh', 8, 80, 100, '거래 주의', '임대차 입주 후 단계에서 매우 높은 위험이 감지됩니다.', '/images/risk_veryhigh.png');
+VALUES ('Low', 8, 0, 39, '위험 낮음', '임대차 입주 후 특별한 위험 신호가 적습니다.', '/src/assets/icons/risk_low.png'),
+       ('Medium', 8, 40, 59, '주의 필요', '임대차 입주 후 일부 점검이 필요합니다.', '/src/assets/icons/risk_medium.png'),
+       ('High', 8, 60, 79, '위험 높음', '임대차 입주 후 여러 위험 요소가 있습니다.', '/src/assets/icons/risk_high.png'),
+       ('VeryHigh', 8, 80, 100, '거래 주의', '임대차 입주 후 단계에서 매우 높은 위험이 감지됩니다.', '/src/assets/icons/risk_veryhigh.png');
 
-
--- 17. 중개사 리뷰
-INSERT INTO AgentReview (agent_id, user_id, rating, content, created_at)
-VALUES (1, 1, 5, '친절하고 신속한 중개! 만족합니다.', NOW());
-
--- 18. 인프라 정보
+-- 13. 인프라 정보
 INSERT INTO InfraInfo (name, type, address, lat, lng, detail)
 VALUES ('서울역 CCTV', 'CCTV', '서울특별시 중구', 37.5547, 126.9706, '서울역 광장 주요 CCTV'),
        ('강남초등학교', '교육시설', '서울특별시 강남구', 37.4957, 127.0622, '강남구 대표 초등학교');
 
--- 19. 계약서/서류 업로드
+-- 14. 계약서/서류 업로드
 INSERT INTO Document (user_id, doc_type, file_url, uploaded_at)
 VALUES (1, '전세계약서', '/docs/lease_2024_05.pdf', NOW());
 
--- 20. 사기 계약서 샘플
+-- 15. 사기 계약서 샘플
 INSERT INTO ScamContractSample (name, content, description, created_at)
 VALUES ('가짜 계약서 샘플1', '여기에 사기 계약서 전문이 들어갑니다.', '전세사기 유형 샘플', NOW());
 
--- 21. 사기 위험 문구/패턴
+-- 16. 사기 위험 문구/패턴
 INSERT INTO ScamRiskPhrase (phrase, sample_id, risk_level, description, created_at)
 VALUES ('입주 전 반드시 잔금 입금 요청', 1, 8.5, '계약서에 명시된 비정상 입금 요구', NOW());
 
 
-SELECT * FROM home_test.checklistquestion WHERE template_id = 2;
-
-drop table illegal_building_check;
-use home_test;
-drop table illegal_building_judge;
-CREATE TABLE illegal_building_judge (
-                                        id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '내부 식별자',
-                                        plat_plc VARCHAR(255) COMMENT '대지위치',
-                                        sgg_cd_nm VARCHAR(50) COMMENT '시군구코드명',
-                                        stdg_cd_nm VARCHAR(50) COMMENT '법정동코드명',
-                                        bdrg_sn VARCHAR(30) NOT NULL UNIQUE COMMENT '건축물대장일련번호',
-
-                                        ldgr_se_cd_nm VARCHAR(20) COMMENT '대장구분코드명',
-                                        ldgr_kind_cd_nm VARCHAR(20) COMMENT '대장종류코드명',
-
-                                        mn_usg_cd_nm VARCHAR(50) COMMENT '주용도코드명',
-                                        etc_usg_cn VARCHAR(255) COMMENT '기타용도내용',
-
-                                        bdcvrt DECIMAL(5,2) COMMENT '건폐율',
-                                        gfa DECIMAL(18,2) COMMENT '연면적',
-                                        grnd_nofl INT COMMENT '지상층수',
-                                        udgd_nofl INT COMMENT '지하층수',
-
-                                        prmsn_ymd CHAR(15) COMMENT '허가일자(YYYYMMDD)',
-                                        use_aprv_ymd CHAR(15) COMMENT '사용승인일자(YYYYMMDD)',
-
-                                        rser_design_aplcn_yn CHAR(1) COMMENT '내진설계적용여부(Y/N)',
-                                        roof_cd_nm VARCHAR(50) COMMENT '지붕코드명',
-                                        etc_roof_nm VARCHAR(255) COMMENT '기타지붕명',
-
-                                        judge_result VARCHAR(50) COMMENT '불법여부(자동판정결과)',
-                                        judge_reason VARCHAR(300) COMMENT '불법 사유/근거'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='불법 건축물 판정에 필요한 최소 정보 테이블';
+delete from openapiagentsupdate where updated_key = 1;
 
 
-DROP TABLE IF EXISTS ListingOption;
-DROP TABLE IF EXISTS ListingPriceHistory;
-DROP TABLE IF EXISTS ListingDetail;
-DROP TABLE IF EXISTS ListingImage;
+select *
+from listing join agent
+where
+    listing.address like '%광진구 화양동%'
+    and listing.agency like agent.office_name and
+    (SUBSTRING(
+             listing.address,
+             9,
+             CASE
+                 WHEN SUBSTRING(listing.address, 9, 2) = '능동' THEN 2
+                 ELSE 3
+                 END
+     )  like
+     SUBSTRING(
+             agent.address,
+             CHAR_LENGTH(agent.address) - LOCATE('(', REVERSE(agent.address)) + 2,
+             CASE
+                 WHEN SUBSTRING(
+                              agent.address,
+                              CHAR_LENGTH(agent.address) - LOCATE('(', REVERSE(agent.address)) + 2,
+                              2
+                      ) = '능동' THEN 2
+                 ELSE 3
+                 END
+     )
+    or substring(agent.address, LOCATE('동', agent.address)-2, 3) is null)
+;
 
-DROP TABLE IF EXISTS Listing;
-DROP TABLE IF EXISTS PriceTrend;
-
-CREATE TABLE Listing (
-                         id INT PRIMARY KEY,
-                         listing VARCHAR(100) NOT NULL,
-                         rental_condition VARCHAR(50),
-                         details TEXT,
-                         agency VARCHAR(255),
-                         address VARCHAR(255),
-                         latitude DOUBLE,
-                         longitude DOUBLE,
-                         contract_type VARCHAR(10),
-                         deposit INT,
-                         monthly_rent INT,
-                         property_type VARCHAR(50),
-                         area VARCHAR(50),
-                         floor VARCHAR(20),
-                         direction VARCHAR(20)
-);
-
-CREATE TABLE PriceTrend (
-                            id INT AUTO_INCREMENT PRIMARY KEY,
-                            year INT,
-                            district_code VARCHAR(10),
-                            district_name VARCHAR(50),
-                            dong_code VARCHAR(10),
-                            dong_name VARCHAR(50),
-                            lot_type_code VARCHAR(10),
-                            lot_type VARCHAR(20),
-                            main_no VARCHAR(10),
-                            sub_no VARCHAR(10),
-                            building_name VARCHAR(255),
-                            contract_day VARCHAR(10),
-                            price BIGINT,
-                            arch_area FLOAT,
-                            land_area FLOAT,
-                            floor VARCHAR(10),
-                            built_year LONG,
-                            housing_type VARCHAR(50),
-                            deal_type VARCHAR(50),
-                            address TEXT,
-                            latitude DOUBLE,
-                            longitude DOUBLE
-);
+select details,
+       REGEXP_SUBSTR(details, '[0-9]+(?=m)') AS area_main
+from listing;
 
 
-LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/listing.csv'
-    INTO TABLE listing
-    FIELDS TERMINATED BY ','
-    ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 ROWS
-    (id, listing, rental_condition, details, agency, address, latitude, longitude,
-     contract_type, deposit, monthly_rent, property_type, area, floor, direction);
+select *
+from listing
+where REGEXP_SUBSTR(details, '[0-9]+(?=m)') between 14 and 26
+    and address like '%광진구 화양동%';
 
-LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/PriceTrend.csv'
-    INTO TABLE PriceTrend
-    FIELDS TERMINATED BY ','
-    ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 ROWS
-    (id, year, district_code, district_name, dong_code, dong_name, lot_type_code,
-     lot_type, main_no, sub_no, building_name, contract_day, price, arch_area,
-     land_area, floor, built_year, housing_type, deal_type, address, latitude, longitude);
-
-
-
-SELECT * FROM illegal_building_judge WHERE plat_plc like '%광진구 화양동%';
-
-SELECT * FROM illegal_building_judge WHERE plat_plc like '%금천구 시흥동 984-33';
-
-select avg(deposit) from listing where address like '%금천구%' and monthly_rent = 0;
-
-#
-select avg(deposit), avg(monthly_rent) from listing where address like '%광진구 자양동%';
-
-# 전세
-select avg(deposit) from listing where address like '%광진구 자양동%' and monthly_rent = 0;
-select deposit from listing where address like '%광진구 자양동%' and monthly_rent = 0;
-
-# 월세
-select avg(deposit), avg(monthly_rent) from listing where address like '%광진구 자양동%' and monthly_rent != 0;
-
-# 매매
-select avg(price) from pricetrend where address like '%광진구 자양동%';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+select *
+from pricetrend
+where land_area between 14 and 26;
+# 5 -> 12개
+# 4 -> 12개
+# 3 -> 9개
+# 2 -> 8개

@@ -23,6 +23,11 @@ public class AgentController {
         return ResponseEntity.ok().body(service.fetchAndSaveOffice());
     }
 
+    @GetMapping("/list") // 중개사 전체 목록 조회
+    public ResponseEntity<List<AgentDetailDTO>> getList(){
+        return ResponseEntity.ok().body(service.getAgentList());
+    }
+
     @GetMapping("/{officeId}") // 중개사 상세정보 조회
     public ResponseEntity<AgentDetailDTO> getAgentDetail(@PathVariable Long officeId){
         return ResponseEntity.ok().body(service.getAgentDetail(officeId));

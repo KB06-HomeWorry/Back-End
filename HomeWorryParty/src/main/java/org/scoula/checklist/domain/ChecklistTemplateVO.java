@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ChecklistTemplateVO {
+    // 체크리스트 문제의 유형별 이름과 단계를 가져오는 VO
 
     private long templateId;
     private String templateName;

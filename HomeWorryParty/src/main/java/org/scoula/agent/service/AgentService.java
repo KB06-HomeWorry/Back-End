@@ -40,10 +40,10 @@ public class AgentService {
     private final JwtProcessor jwtProcessor;
 
     // OpenAPI 마지막 업데이트 날짜 반환
-    public LocalDateTime getLastUpdateTime(){
+    public LocalDateTime getLastUpdateTime() {
         LocalDateTime updateTime = mapper.findUpdatedAt();
 
-        if (updateTime == null){
+        if (updateTime == null) {
             return LocalDateTime.of(1970, 1, 1, 0, 0, 0);
         } else {
             return updateTime;
@@ -51,9 +51,9 @@ public class AgentService {
     }
 
     @Transactional // OpenAPI 데이터 저장
-    public String fetchAndSaveOffice(){
+    public String fetchAndSaveOffice() {
 
-        if (ChronoUnit.HOURS.between(getLastUpdateTime(), LocalDateTime.now()) <= 24){
+        if (ChronoUnit.HOURS.between(getLastUpdateTime(), LocalDateTime.now()) <= 24) {
             return "마지막 업데이트로부터 하루가 지나지 않아 업데이트를 종료합니다.";
         }
 
@@ -69,14 +69,14 @@ public class AgentService {
             try {
                 OpenApiResponse apiResponse = restTemplate.getForObject(url, OpenApiResponse.class);
 
-                if (apiResponse ==  null || apiResponse.getLandBizInfo() == null) {
+                if (apiResponse == null || apiResponse.getLandBizInfo() == null) {
                     System.out.println("API 응답이 비어있거나 landBizInfo가 없습니다. 페이지네이션을 종료합니다.");
                     break;
                 }
 
                 OpenApiResponse.LandBizInfo landBizInfo = apiResponse.getLandBizInfo();
 
-                if (firstFetch){
+                if (firstFetch) {
                     totalDataCount = landBizInfo.getListTotalCount();
                     System.out.println("총 예상 데이터 건수: " + totalDataCount);
                     firstFetch = false;
@@ -110,7 +110,7 @@ public class AgentService {
                 }
 
                 startIndex += PAGE_SIZE;
-                if (offices.size() < PAGE_SIZE){
+                if (offices.size() < PAGE_SIZE) {
                     System.out.println("현재 페이지의 데이터 수가 PAGE_SIZE보다 작습니다. 마지막 페이지로 간주하여 종료합니다.");
                     break;
                 }
@@ -151,7 +151,7 @@ public class AgentService {
     }
 
     // 전화번호 정규화
-    private String cleanAndStandardizePhone(String originalPhone){
+    private String cleanAndStandardizePhone(String originalPhone) {
         if (originalPhone == null || originalPhone.trim().isEmpty()) {
             return null;
         }
@@ -187,9 +187,9 @@ public class AgentService {
                 // 국번과 뒷번호 사이에 하이픈이 없는 경우 추가
                 if (!extractedNumber.contains("-")) {
                     if (digitsOnly.length() == 7) { // 3자리 국번 + 4자리 번호
-                        extractedNumber = digitsOnly.substring(0,3) + "-" + digitsOnly.substring(3,7);
+                        extractedNumber = digitsOnly.substring(0, 3) + "-" + digitsOnly.substring(3, 7);
                     } else { // 4자리 국번 + 4자리 번호
-                        extractedNumber = digitsOnly.substring(0,4) + "-" + digitsOnly.substring(4,8);
+                        extractedNumber = digitsOnly.substring(0, 4) + "-" + digitsOnly.substring(4, 8);
                     }
                 }
                 return "02-" + extractedNumber;
@@ -222,7 +222,7 @@ public class AgentService {
     }
 
     // 시간 가중치 계산
-    public int calcTimeWeight(LocalDateTime created){
+    public int calcTimeWeight(LocalDateTime created) {
         long days = ChronoUnit.DAYS.between(LocalDateTime.now(), created);
         if (days <= 30) {
             return 10;
@@ -230,16 +230,22 @@ public class AgentService {
             return 7;
         } else if (days <= 180) {
             return 4;
-        } else {return 1;}
+        } else {
+            return 1;
+        }
     }
 
-    // 중개사 리뷰 저장
+    @Transactional // 중개사 리뷰 저장
     public void writeAgentReview(AgentReviewDTO agentReviewDTO) {
         UserDTO userDTO = userService.get(jwtProcessor.getUsername(agentReviewDTO.getUserToken()));
 
         agentReviewDTO.setUserId(userDTO.getUserId());
 
         mapper.writeAgentReview(agentReviewDTO.toVO());
+
+        TrustScoreDTO trustScoreDTO = getAgentScore(agentReviewDTO.getOfficeId());
+
+        mapper.updateTrustScore(agentReviewDTO.getOfficeId(), trustScoreDTO.getTotalTrustScore());
     }
 
     // 중개사 신뢰지수 계산 및 반환
@@ -250,7 +256,7 @@ public class AgentService {
         double totalProfessionalism = 0;
         double totalAccountability = 0;
 
-        for (AgentReviewVO vo : mapper.getAgentReviews(officeId)){
+        for (AgentReviewVO vo : mapper.getAgentReviews(officeId)) {
             int timeWeight = calcTimeWeight(vo.getCreatedAt());
 
             totalWeight += timeWeight;
@@ -272,5 +278,10 @@ public class AgentService {
         totalAccountability = Math.round((totalAccountability / totalWeight + 10) * 1000 / 15) / 10.0;
 
         return new TrustScoreDTO(totalTrustScore, totalAccuracy, totalTransparency, totalProfessionalism, totalAccountability);
+    }
+
+    // 중개사 리스트 조회
+    public List<AgentDetailDTO> getAgentList(){
+        return mapper.getAgentList();
     }
 }
