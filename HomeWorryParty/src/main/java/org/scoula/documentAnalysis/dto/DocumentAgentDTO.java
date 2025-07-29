@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class DocumentAgentDTO {
+    // 중개사 정보 DTO
     private String address;
     private String agentRegisterNumber;
 }

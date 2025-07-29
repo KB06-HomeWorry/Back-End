@@ -2,23 +2,32 @@ package org.scoula.documentAnalysis.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.scoula.agent.domain.AgentDetailVO;
+import org.scoula.agent.mapper.AgentMapper;
 import org.scoula.documentAnalysis.domain.IllegalBuildingCheckVO;
 import org.scoula.documentAnalysis.domain.MonthlyRentVO;
 import org.scoula.documentAnalysis.dto.*;
 import org.scoula.documentAnalysis.mapper.DocumentAnalysisMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 @Log4j2
 @Service
 @RequiredArgsConstructor
-public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
+public class DocumentAnalysisServiceImpl implements DocumentAnalysisService {
     private final DocumentAnalysisMapper documentAnalysisMapper;
+    private final AgentMapper agentMapper;
 
+    // 불법 건축물 데이터를 추가하기위한 클래스
     @Override
     public void insertIllegalBuildingData(IllegalBuildingCheckDTO illegalBuildingCheckDTO) {
         documentAnalysisMapper.insert(IllegalBuildingCheckDTO.toVO(illegalBuildingCheckDTO));
     }
 
+    // front에서 받은 데이터를 통해 분석 후 결과를 반환함
     @Override
     public DocumentAnalysisResultDTO analysis(DocumentAnalysisDTO answerDTOList) {
         DocumentAnalysisResultDTO documentAnalysisResultDTO = new DocumentAnalysisResultDTO();
@@ -32,9 +41,23 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
         return documentAnalysisResultDTO;
     }
 
-    public void checkCertified(int registerCertifiedCount, DocumentAnalysisResultDTO documentAnalysisResultDTO){
+    private void checkDocumentAgent(DocumentAgentDTO documentAgentDTO, DocumentAnalysisResultDTO documentAnalysisResultDTO) {
+        if(documentAgentDTO.getAddress().isEmpty()) return;
+        // 여기서 뭐함???
+        List<AgentDetailVO> agentDetailVOList = checkDocumentAgentByAgentDTO(documentAgentDTO);
+        if (agentDetailVOList == null) {
+            documentAnalysisResultDTO.getDescriptionTitleList().add("확인되지 않은 중개인");
+            documentAnalysisResultDTO.getDescriptionContentList()
+                    .add("거래 기록이나 정보가 존재하지 않은 중개인입니다. 거래시 추가적인 확인이나" +
+                            "주의가 필요합니다." + "<br></br>");
+            documentAnalysisResultDTO.setScore(documentAnalysisResultDTO.getScore() - (15));
+        }
+    }
 
-        if(registerCertifiedCount < 7){
+    // 등기부 등본 체크리스트를 확인해서 알려줌
+    public void checkCertified(int registerCertifiedCount, DocumentAnalysisResultDTO documentAnalysisResultDTO) {
+
+        if (registerCertifiedCount < 7) {
             documentAnalysisResultDTO.setScore(documentAnalysisResultDTO.getScore()
                     - (registerCertifiedCount * 4));
             documentAnalysisResultDTO.getDescriptionTitleList().add("등기부등본 서류 확인 미흡");
@@ -68,16 +91,18 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
             );
         }
     }
-    public void checkHouseAddress(String houseAddress, DocumentAnalysisResultDTO documentAnalysisResultDTO){
-        if(houseAddress.isEmpty())return;
 
-        log.info(houseAddress.substring(3));
-        IllegalBuildingCheckVO illegalBuildingCheckVO = documentAnalysisMapper.findByAddress("%"+houseAddress.substring(3));
-        log.info(illegalBuildingCheckVO);
+    // 주소를 통해 해당 주소의 건물이 불법 건축물인지를 판단
+    public void checkHouseAddress(String houseAddress, DocumentAnalysisResultDTO documentAnalysisResultDTO) {
+        if (houseAddress.isEmpty()) return;
+        houseAddress = "%" + houseAddress.substring(3);
 
+        log.info(houseAddress);
+        IllegalBuildingCheckVO illegalBuildingCheckVO = documentAnalysisMapper.findByAddress(houseAddress);
+        //log.info(illegalBuildingCheckVO);
 
-        if(illegalBuildingCheckVO != null){
-            log.info("불법 건축물 걸렸다!");
+        if (illegalBuildingCheckVO != null) {
+            //log.info("불법 건축물 걸렸다!");
             String[] dangerPoint = illegalBuildingCheckVO.getJudgeReason().split("<br></br>");
 
             documentAnalysisResultDTO.setScore(documentAnalysisResultDTO.getScore()
@@ -88,94 +113,94 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService{
 
     }
 
-    public void checkDocumentAgent(DocumentAgentDTO documentAgentDTO, DocumentAnalysisResultDTO documentAnalysisResultDTO){
+    // 중개 사무소 주소로 해당 중개 사무소 정보를 가져옴
+    @Override
+    public List<AgentDetailVO> checkDocumentAgentByAgentDTO(DocumentAgentDTO documentAgentDTO) {
+        if(documentAgentDTO == null) return new ArrayList<>();
 
+        String houseAddress = "%" + documentAgentDTO.getAddress().substring(3);
+        List<AgentDetailVO> agentDetailDTOS = agentMapper.findAgentByHouseAddress(houseAddress);
+        log.info(agentDetailDTOS);
+        return agentDetailDTOS;
     }
 
-    public void checkDocumentSthRisk(DocumentSthRiskDTO documentSthRiskDTO, String houseAddress, DocumentAnalysisResultDTO documentAnalysisResultDTO){
-        if(houseAddress.isEmpty() || documentSthRiskDTO.getPrice().isEmpty())return;
+    // 매물 주소로 관리하는 중개 사무소 정보를 가져옴
+    @Override
+    public List<AgentDetailVO> checkDocumentAgentByAddress(String houseAddress) {
+        if(houseAddress == null) return new ArrayList<>();
 
-        String[] tempString = houseAddress.split(" ");
-        String address = "%" + tempString[1] + " " + tempString[2] + "%";
+        List<AgentDetailVO> agentDetailDTOS = agentMapper.findAgentByHouseAddress(houseAddress);
+        log.info(agentDetailDTOS);
 
-        //        documentSthRiskDTO.getPrice()를 파싱해서 금액을 분석
-        MonthlyRentVO myPrice = new MonthlyRentVO();
-        String[] priceList = documentSthRiskDTO.getPrice().split(" ");
-        if(documentSthRiskDTO.getType().equals("월세")){
-            myPrice.setDeposit(Long.valueOf(priceList[1]));
-            myPrice.setMonthlyFee(Long.valueOf(priceList[3]));
-        }else{
+        return agentDetailDTOS;
+    }
 
+    // 중개사무소 정보나 매물 주소로 해당 매물의 시세를 비교해서 알려주는 로직
+    public void checkDocumentSthRisk(DocumentSthRiskDTO documentSthRiskDTO, String houseAddress, DocumentAnalysisResultDTO documentAnalysisResultDTO) {
+        if (houseAddress.isEmpty() || documentSthRiskDTO == null) return;
 
-            Long uk = Long.valueOf(priceList[0].substring(0, priceList[0].length() - 1));
-            uk *= 100000000;
-            Long cheon = Long.valueOf(priceList[1].substring(0, priceList[1].length() - 1));
-            cheon *= 10000000;
-            myPrice.setDeposit(uk + cheon);
-        }
-        log.info(documentSthRiskDTO.getType() + "   " + myPrice);
-
-        int percent = Math.toIntExact(calPercent(documentSthRiskDTO, address, myPrice));
+        int percent = Math.toIntExact(calPercent(documentSthRiskDTO, houseAddress));
         log.info("percent : " + percent);
-        if(percent > 5){
+        if(percent < 0) {
+            documentAnalysisResultDTO.getDescriptionTitleList().add("데이터가 없는 유형의 매물");
+            documentAnalysisResultDTO.getDescriptionContentList()
+                    .add("해당 지역, 평수에 맞는 다른 매물이 탐색되지 않기 때문에 주의가 필요합니다." + "<br></br>");
+        }
+
+        if (percent > 5) {
             documentAnalysisResultDTO.getDescriptionTitleList().add("시세보다 싼 가격");
             documentAnalysisResultDTO.getDescriptionContentList()
-                    .add("시세보다 " + percent + "% 저렴하기에 거래시 불합리한 조건, 깡통 전세, 보증금 사기등의" +
+                    .add("시세보다 " + percent + "% 저렴하기에 거래시 불합리한 조건, 깡통 전세, 보증금 사기등의 " +
                             "문제가 발생할 수 있기에 거래시 주의가 필요합니다." + "<br></br>");
-            documentAnalysisResultDTO.setScore(documentAnalysisResultDTO.getScore() - (percent*2));
+            documentAnalysisResultDTO.setScore(documentAnalysisResultDTO.getScore() - (percent * 2));
         }
-
-        if(documentSthRiskDTO.getOptionCount() >= 5){
-            documentAnalysisResultDTO.getDescriptionTitleList().add("평균보다 많은 옵션");
-            documentAnalysisResultDTO.getDescriptionContentList()
-                    .add("비슷한 구역, 비슷한 가격의 매물들 보다 많은 옵션을 가지고 있습니다. " +
-                            "계약서나 매물의 위험이 있을 수 있기에 주의가 필요합니다." + "<br></br>");
-            documentAnalysisResultDTO.setScore(documentAnalysisResultDTO.getScore() - (percent*2));
-        }
-
-
     }
 
-    private Long calPercent(DocumentSthRiskDTO documentSthRiskDTO, String address, MonthlyRentVO myPrice) {
+    // 전세, 월세, 매매 별로 해당 주소의 시세와 내가 사려는 매물의 가격을 비교해서 가격차이를 퍼센트로 반환
+    private Long calPercent(DocumentSthRiskDTO documentSthRiskDTO, String address) {
         Long percent = 0L;
-        log.info(documentSthRiskDTO);
+        String[] temp = address.split(" ");
+        address = "%" + temp[1] + " " + temp[2] + "%";
 
-        if(documentSthRiskDTO.getType().equals("전세")){
-            log.info("전세");
-            Long price = documentAnalysisMapper.getWholeRent(address);
-            if(price == null) return 0L;
-            log.info(price);
+        if (documentSthRiskDTO.getType().equals("전세")) {
+            Long price = documentAnalysisMapper.getWholeRent(address,
+                    documentSthRiskDTO.getSize() - 6,
+                    documentSthRiskDTO.getSize() + 6);
+            //log.info(price);
+            if (price == null) return -1L;
 
             price *= 10000;
-            log.info("평균 가격 : " + price);
-            Long differ = price - myPrice.getDeposit();
-            if(differ > 0){
+            Long differ = price - documentSthRiskDTO.getPrice();
+            if (differ > 0) {
                 percent = differ * 100 / price;
             }
-        }else if(documentSthRiskDTO.getType().equals("월세")){
-            MonthlyRentVO averagePrice = documentAnalysisMapper.getMonthRent(address);
-            if(averagePrice.getDeposit() == null) return 0L;
+        } else if (documentSthRiskDTO.getType().equals("월세")) {
+            MonthlyRentVO averagePrice = documentAnalysisMapper.getMonthRent(address,
+                    documentSthRiskDTO.getSize() - 6,
+                    documentSthRiskDTO.getSize() + 6);
+            //log.info(averagePrice);
+            if (averagePrice == null) return -1L;
 
-            log.info("평균 가격 : " + averagePrice);
-            Long differDeposit = averagePrice.getDeposit() - myPrice.getDeposit();
-            Long differMonthly = averagePrice.getMonthlyFee() - myPrice.getMonthlyFee();
-            if(differDeposit > 0)   percent = differDeposit * 100 / averagePrice.getDeposit();
+            Long differDeposit = averagePrice.getPrice() - documentSthRiskDTO.getPrice();
+            Long differMonthly = averagePrice.getMonthlyRent() - documentSthRiskDTO.getMonthlyPrice();
+            if (differDeposit > 0) percent = differDeposit * 100 / documentSthRiskDTO.getPrice();
 
-            if(differMonthly > 0)  percent =
-                    Math.max(differMonthly * 100 / averagePrice.getMonthlyFee(), percent);
-        }else if(documentSthRiskDTO.getType().equals("매매")){
-            Long price = documentAnalysisMapper.getBuy(address);
-            if(price == null) return 0L;
+            if (differMonthly > 0) percent =
+                    Math.max(differMonthly * 100 / averagePrice.getMonthlyRent(), percent);
+        } else if (documentSthRiskDTO.getType().equals("매매")) {
+            Long price = documentAnalysisMapper.getBuy(address,
+                    documentSthRiskDTO.getSize() - 6,
+                    documentSthRiskDTO.getSize() + 6);
+            //log.info(price);
+            if (price == null) return -1L;
 
-            Long differ = price - myPrice.getDeposit();
-            if(differ > 0){
+            Long differ = price - documentSthRiskDTO.getPrice();
+            if (differ > 0) {
                 percent = differ * 100 / price;
             }
-            log.info("평균 가격 : " + price);
         }
 
         return percent;
     }
-
 
 }

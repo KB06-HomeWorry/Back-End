@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class DangerResultDTO {
+    // 체크리스트 위험도 분석 결과를 반환하기 위한 DTO
     private String grade;          // 등급(예: Low/Medium/High)
     private long templateId;
     private float minScore;        // 등급별 최소 점수
