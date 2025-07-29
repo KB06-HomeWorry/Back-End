@@ -233,13 +233,17 @@ public class AgentService {
         } else {return 1;}
     }
 
-    // 중개사 리뷰 저장
+    @Transactional // 중개사 리뷰 저장
     public void writeAgentReview(AgentReviewDTO agentReviewDTO) {
         UserDTO userDTO = userService.get(jwtProcessor.getUsername(agentReviewDTO.getUserToken()));
 
         agentReviewDTO.setUserId(userDTO.getUserId());
 
         mapper.writeAgentReview(agentReviewDTO.toVO());
+
+        TrustScoreDTO trustScoreDTO = getAgentScore(agentReviewDTO.getOfficeId());
+
+        mapper.updateTrustScore(agentReviewDTO.getOfficeId(), trustScoreDTO.getTotalTrustScore());
     }
 
     // 중개사 신뢰지수 계산 및 반환
@@ -272,5 +276,10 @@ public class AgentService {
         totalAccountability = Math.round((totalAccountability / totalWeight + 10) * 1000 / 15) / 10.0;
 
         return new TrustScoreDTO(totalTrustScore, totalAccuracy, totalTransparency, totalProfessionalism, totalAccountability);
+    }
+
+    // 중개사 리스트 조회
+    public List<AgentDetailDTO> getAgentList(){
+        return mapper.getAgentList();
     }
 }
