@@ -30,9 +30,11 @@
                answer,
                risk_weight,
                effectiveness
-        from checklistuseranswer join checklistquestion
-                 on checklistuseranswer.question_id = checklistquestion.question_id
-        where template_id = #{templateId} and user_id = #{userId};
+        from checklistuseranswer
+                 join checklistquestion
+                      on checklistuseranswer.question_id = checklistquestion.question_id
+        where template_id = #{templateId}
+          and user_id = #{userId};
     </select>
 
     <select id="getMessageList" resultType="org.scoula.dangerResult.domain.DangerResultVO" resultMap="dangerResultMap">

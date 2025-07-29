@@ -13,13 +13,13 @@
         <result property="templateStage" column="stage"/>
     </resultMap>
 
-
-
     <!-- 1. 회원 단건 조회 (username) -->
     <select id="findByTypeAndStage" parameterType="string" resultMap="checklistMap">
-        SELECT * FROM home_test.checklisttemplate WHERE sale_type = #{type} and stage = #{stage}
+        SELECT *
+        FROM home_test.checklisttemplate
+        WHERE sale_type = #{type}
+          and stage = #{stage}
     </select>
-
 
 
 </mapper>

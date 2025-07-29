@@ -32,7 +32,4 @@ public class IllegalBuildingCheckVO {
     private String etcRoofNm;     // 기타지붕명
     private String judgeResult;     // 불법여부(자동판정결과)
     private String judgeReason;     // 불법 사유/근거
-
-
-
 }

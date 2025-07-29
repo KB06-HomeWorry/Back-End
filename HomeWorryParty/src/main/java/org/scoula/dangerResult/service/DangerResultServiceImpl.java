@@ -18,7 +18,7 @@ import java.util.List;
 public class DangerResultServiceImpl implements DangerResultService {
 
     private final DangerResultMapper dangerResultMapper;
-    private final ChecklistService  checklistService;
+    private final ChecklistService checklistService;
 
     // 사용자의 정답을 불러오고 체크리스트의 정답과 비교해서 점수를 매기는 로직
     @Override
@@ -31,11 +31,11 @@ public class DangerResultServiceImpl implements DangerResultService {
         List<String> descriptionContentList = new ArrayList<>();
 
         int score = 100;
-        if(!answerDTOList.isEmpty()){
+        if (!answerDTOList.isEmpty()) {
             for (int i = 0; i < answerDTOList.size(); i++) {
-                if(answerDTOList.get(i).getAnswer() == 1){
+                if (answerDTOList.get(i).getAnswer() == 1) {
                     score -= answerDTOList.get(i).getRiskWeight();
-                }else{
+                } else {
                     descriptionTitleList.add(checklistDTOList.get(i).getNecessity_title());
                     descriptionContentList.add(checklistDTOList.get(i).getNecessity_content());
                 }
@@ -58,7 +58,7 @@ public class DangerResultServiceImpl implements DangerResultService {
 
 
         for (DangerResultVO dangerResultVO : dangerResultVOList) {
-            if(score >= dangerResultVO.getMinScore() && score <= dangerResultVO.getMaxScore()){
+            if (score >= dangerResultVO.getMinScore() && score <= dangerResultVO.getMaxScore()) {
                 findDangerResultVO.copy(dangerResultVO);
             }
             System.out.println(dangerResultVO);

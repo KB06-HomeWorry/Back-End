@@ -14,7 +14,7 @@ public interface DocumentAnalysisMapper {
     int insert(IllegalBuildingCheckVO illegalBuildingCheckVO);
 
     // 단건 조회
-    IllegalBuildingCheckVO findByAddress(String  address);
+    IllegalBuildingCheckVO findByAddress(String address);
 
     // 전체 목록 조회
     List<IllegalBuildingCheckVO> findAll();
@@ -33,8 +33,6 @@ public interface DocumentAnalysisMapper {
     Long getBuy(@Param("address") String address,
                 @Param("minSize") Long minSize,
                 @Param("maxSize") Long maxSize);
-
-
 
     // (선택) 조건 검색 등 다양한 쿼리도 필요시 추가 가능
 }

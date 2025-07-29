@@ -11,10 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class DangerAnswerVO {
     // 문제별 사용자의 정답과 점수를 가져오기 위한 VO
-
     private Long dangerAnswerId;         // answer_id 컬럼과 매핑
     private int answer;     // answer 컬럼과 매핑
     private int riskWeight; // risk_weight 컬럼과 매핑
     private String effectiveness;
-
 }

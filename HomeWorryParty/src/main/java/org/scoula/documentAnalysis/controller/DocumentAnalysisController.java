@@ -20,14 +20,13 @@ import java.util.List;
 @RequestMapping("/analysis")
 public class DocumentAnalysisController {
 
-    final DocumentAnalysisService  documentAnalysisService;
+    final DocumentAnalysisService documentAnalysisService;
 
     // 서류 분석 데이터를 받아서 서류 분석 결과를 돌려준다.
     @PostMapping("")
-    public ResponseEntity<DangerResultDTO>  getDangerResult(
+    public ResponseEntity<DangerResultDTO> getDangerResult(
             @RequestBody DocumentAnalysisDTO answerDTOList
-    ){
-
+    ) {
         log.info(answerDTOList);
         DocumentAnalysisResultDTO documentAnalysisResultDTO =
                 documentAnalysisService.analysis(answerDTOList);
@@ -45,22 +44,11 @@ public class DocumentAnalysisController {
 
     // 사용자에게 받아서 해당 주소를 관리하는 중개사무소의 정보를 넘겨준다.
     @GetMapping("/agent/address")
-    public ResponseEntity<List<AgentDetailVO>>  getChargeAgentByAddress(
+    public ResponseEntity<List<AgentDetailVO>> getChargeAgentByAddress(
             @RequestParam String houseAddress
-    ){
+    ) {
         List<AgentDetailVO> agentDetailVOList = documentAnalysisService.checkDocumentAgentByAddress(houseAddress);
 
         return ResponseEntity.ok(agentDetailVOList);
     }
-
-//    @PostMapping("/agent/agentDTO")
-//    public ResponseEntity<List<AgentDetailVO>>  getChargeAgentByAgentDTO(
-//            @RequestBody DocumentAgentDTO documentAgentDTO
-//            ){
-//        List<AgentDetailVO> agentDetailVOList = documentAnalysisService.checkDocumentAgentByAgentDTO(documentAgentDTO);
-//
-//        return ResponseEntity.ok(agentDetailVOList);
-//    }
-//
-
 }

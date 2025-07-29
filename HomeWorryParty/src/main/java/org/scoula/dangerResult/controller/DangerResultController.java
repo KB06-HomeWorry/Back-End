@@ -21,11 +21,11 @@ public class DangerResultController {
 
     // 타입과 단계, 유저 정보를 받아서 분석 후 체크리스트 위험도 결과를 front에 반환하는 객체
     @GetMapping("")
-    public ResponseEntity<DangerResultDTO>  getDangerResult(
+    public ResponseEntity<DangerResultDTO> getDangerResult(
             @RequestParam String type,
             @RequestParam String stage,
             @RequestParam Long user_id
-    ){
+    ) {
         log.info("getDangerResult");
         Long templateId = checklistService.getChecklistTemplate(type, stage).getTemplateId();
         DangerResultVO dangerResultVO = dangerResultService.analysisDangerResult(templateId, user_id);
@@ -43,5 +43,4 @@ public class DangerResultController {
 
         return ResponseEntity.ok(dangerResultDTO);
     }
-
 }

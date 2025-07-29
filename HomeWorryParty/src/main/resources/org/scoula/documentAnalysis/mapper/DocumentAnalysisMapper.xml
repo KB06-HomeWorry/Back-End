@@ -84,11 +84,11 @@
 
     <!-- 매매 -->
     <select id="getBuy" resultType="java.lang.Long">
-    select avg(price)
-    from pricetrend
-    where address like #{address}
-      and land_area between #{minSize} and #{maxSize};
-</select>
+        select avg(price)
+        from pricetrend
+        where address like #{address}
+          and land_area between #{minSize} and #{maxSize};
+    </select>
 
 
 

@@ -13,7 +13,6 @@ import java.util.List;
 @Builder
 public class DangerResultVO {
     // 위험도 카드를 위한 내용을 가져오는 VO
-
     private String grade;
     private long templateId;
     private float minScore;
