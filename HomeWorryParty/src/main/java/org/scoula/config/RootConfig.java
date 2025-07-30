@@ -32,6 +32,8 @@ import javax.sql.DataSource;
         "org.scoula.checklist.mapper",
         "org.scoula.dangerResult.mapper",
         "org.scoula.documentAnalysis.mapper",
+        "org.scoula.listing.mapper",
+        "org.scoula.pricetrend.mapper",
 })
 @ComponentScan(basePackages = {
         "org.scoula.user.service",
@@ -40,6 +42,8 @@ import javax.sql.DataSource;
         "org.scoula.documentAnalysis.service",
         "org.scoula.user.config",
         "org.scoula.agent.service",
+        "org.scoula.listing.service",
+        "org.scoula.pricetrend.service",
 })
 @EnableTransactionManagement
 @Log4j2
