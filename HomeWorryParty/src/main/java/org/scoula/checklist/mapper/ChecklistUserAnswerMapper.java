@@ -25,4 +25,6 @@ public interface ChecklistUserAnswerMapper {
             @Param("questionId") Long questionId,
             @Param("userId") Long userId
     );
+
+    List<Long> findTopFiveFalse();
 }

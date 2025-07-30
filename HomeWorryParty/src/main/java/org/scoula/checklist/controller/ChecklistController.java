@@ -60,4 +60,14 @@ public class ChecklistController {
             return ResponseEntity.status(500).build();
         }
     }
+
+    @GetMapping("/answers/five")
+    public List<Long> getTopFiveAnswers(){
+        log.info("상위 5개 보여주기");
+
+        List<Long> answers = answerService.getTopFiveQuestion();
+        log.info(answers);
+
+        return answers;
+    }
 }

@@ -121,6 +121,8 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService {
         String houseAddress = "%" + documentAgentDTO.getAddress().substring(3);
         List<AgentDetailVO> agentDetailDTOS = agentMapper.findAgentByHouseAddress(houseAddress);
         log.info(agentDetailDTOS);
+        if(agentDetailDTOS.isEmpty()) return null;
+
         return agentDetailDTOS;
     }
 
@@ -129,7 +131,8 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService {
     public List<AgentDetailVO> checkDocumentAgentByAddress(String houseAddress) {
         if(houseAddress == null) return new ArrayList<>();
 
-        List<AgentDetailVO> agentDetailDTOS = agentMapper.findAgentByHouseAddress(houseAddress);
+        List<AgentDetailVO> agentDetailDTOS = agentMapper.findAgentByHouseAddress(
+                "%" + houseAddress.substring(3));
         log.info(agentDetailDTOS);
 
         return agentDetailDTOS;

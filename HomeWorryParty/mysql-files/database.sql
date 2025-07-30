@@ -330,12 +330,16 @@ VALUES ('입주 전 반드시 잔금 입금 요청', 1, 8.5, '계약서에 명�
 
 delete from openapiagentsupdate where updated_key = 1;
 
+select *
+from listing join agent
+where
+    listing.agency like agent.office_name;
+
 
 select *
 from listing join agent
 where
-    listing.address like '%광진구 화양동%'
-    and listing.agency like agent.office_name and
+    listing.agency like agent.office_name and
     (SUBSTRING(
              listing.address,
              9,
@@ -376,3 +380,7 @@ where land_area between 14 and 26;
 # 4 -> 12개
 # 3 -> 9개
 # 2 -> 8개
+
+select question_id, count(user_id) as count from checklistuseranswer where answer = 0
+group by question_id
+order by count desc limit 5;

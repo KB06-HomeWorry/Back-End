@@ -13,4 +13,5 @@ public class DocumentAgentDTO {
     // 중개사 정보 DTO
     private String address;
     private String agentRegisterNumber;
+    private String agentName;
 }
