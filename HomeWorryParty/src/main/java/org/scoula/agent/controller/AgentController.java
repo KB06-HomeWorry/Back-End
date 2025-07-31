@@ -2,11 +2,9 @@ package org.scoula.agent.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.scoula.agent.dto.AgentDetailDTO;
-import org.scoula.agent.dto.AgentReviewDTO;
-import org.scoula.agent.dto.OfficeGeographyDTO;
-import org.scoula.agent.dto.TrustScoreDTO;
+import org.scoula.agent.dto.*;
 import org.scoula.agent.service.AgentService;
+import org.scoula.security.util.JwtProcessor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AgentController {
     private final AgentService service;
+    private final JwtProcessor jwtProcessor;
 
     @GetMapping(value = "/fetch", produces = "text/plain;charset=UTF-8") // openAPI 에서 중개사 정보 받아와 DB에 저장
     public ResponseEntity<String> fetch(){
@@ -54,13 +53,33 @@ public class AgentController {
         return ResponseEntity.ok().body(service.getAgentScore(officeId));
     }
 
-    @GetMapping("/geo/{officeId}")
+    @GetMapping("/geo/{officeId}") // 사무소 위치 정보 조회
     public ResponseEntity<OfficeGeographyDTO> getOfficeGeo(@PathVariable Long officeId){
         return ResponseEntity.ok().body(service.getOfficeGeography(officeId));
     }
 
-    @GetMapping("/geo/list")
+    @GetMapping("/geo/list") // 사무소 위치 정보 목록 조회
     public ResponseEntity<List<OfficeGeographyDTO>> getOfficeGeoList(){
         return ResponseEntity.ok().body(service.getOfficeGeographyList());
+    }
+
+    @GetMapping("/{userToken}/favorite") // 사무소 북마크 목록 조회
+    public ResponseEntity<List<AgentBookmarkDTO>> getAgentBookmark(@PathVariable String userToken){
+        return ResponseEntity.ok().body(service.getAgentBookmark(jwtProcessor.getUsername(userToken)));
+    }
+
+    @GetMapping("/{userToken}/isFavorite/{officeId}") // 북마크 여부 조회
+    public ResponseEntity<Boolean> IsFavorite(@PathVariable String userToken, @PathVariable Long officeId){
+        return ResponseEntity.ok().body(service.IsFavorite(jwtProcessor.getUsername(userToken), officeId));
+    }
+
+    @GetMapping("/{userToken}/favorite/{officeId}") // 북마크 추가
+    public ResponseEntity<?> saveFavorite(@PathVariable String userToken, @PathVariable Long officeId){
+        return ResponseEntity.ok().body(service.saveAgentBookmark(jwtProcessor.getUsername(userToken), officeId));
+    }
+
+    @DeleteMapping("/{userToken}/favorite/{officeId}") // 북마크 삭제
+    public void deleteFavorite(@PathVariable String userToken, @PathVariable Long officeId){
+        service.deleteAgentBookmark(jwtProcessor.getUsername(userToken), officeId);
     }
 }

@@ -1,6 +1,7 @@
 package org.scoula.agent.mapper;
 
 import org.apache.ibatis.annotations.Param;
+import org.scoula.agent.domain.AgentBookmarkVO;
 import org.scoula.agent.domain.AgentDetailVO;
 import org.scoula.agent.domain.AgentReviewVO;
 import org.scoula.agent.domain.OfficeGeographyVO;
@@ -28,11 +29,19 @@ public interface AgentMapper {
 
     List<AgentDetailVO> getAgentList(); // 중개사무소 리스트 조회
 
-    void updateTrustScore(@Param("officeId") Long officeId,@Param("trustScore") double trustScore); // 중개사무소 신뢰점수 업데이트
+    void updateTrustScore(@Param("officeId") Long officeId, @Param("trustScore") double trustScore); // 중개사무소 신뢰점수 업데이트
 
     void saveOfficeGeography(OfficeGeographyVO officeGeographyVO); // 중개사무소 위치 정보 저장
 
     OfficeGeographyVO getOfficeGeography(Long officeId); // 중개사무소 위치 정보 조회
 
     List<OfficeGeographyVO> getOfficeGeographyList(); // 중개사무소 위치 정보 목록 조회
+
+    List<AgentBookmarkVO> getAgentBookmark(Long userId); // 중개사 북마크 목록 조회
+    
+    Long IsFavorite(@Param("userId") Long userId, @Param("officeId") Long officeId); // 중개사 북마크 여부 조회
+    
+    int saveAgentBookmark(@Param("userId") Long userId, @Param("officeId") Long officeId); // 중개사 북마크 설정
+    
+    void deleteAgentBookmark(@Param("userId") Long userId, @Param("officeId") Long officeId); // 중개사 북마크 해제
 }
