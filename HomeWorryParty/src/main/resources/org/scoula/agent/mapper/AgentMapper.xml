@@ -41,6 +41,14 @@
         <result property="lng" column="lng"/>
     </resultMap>
 
+    <!-- ResultMap: AgentBookmarkVO -->
+    <resultMap id="AgentBookmarkMap" type="org.scoula.agent.domain.AgentBookmarkVO">
+        <id property="officeId" column="office_id"/>
+        <result property="officeName" column="office_name"/>
+        <result property="address" column="address"/>
+        <result property="profileImage" column="profile_image"/>
+    </resultMap>
+
     <!-- 1. 중개사무소 정보 추가 -->
     <insert id="save" parameterType="org.scoula.agent.model.Office" useGeneratedKeys="true" keyProperty="userId">
         INSERT INTO agent (office_id, address, license_number, agent_name, office_name, phone)
@@ -155,4 +163,33 @@
     <select id="getOfficeGeographyList" resultMap="OfficeGeographyMap">
         SELECT * FROM officegeography
     </select>
+
+    <!--  14. 중개사 북마크 목록 조회  -->
+    <select id="getAgentBookmark" parameterType="Long" resultMap="AgentBookmarkMap">
+        SELECT a.office_id AS office_id, a.address AS address, a.profile_image AS profile_image, a.office_name AS office_name
+        FROM AgentBookmark b LEFT JOIN Agent a
+        ON b.office_id = a.office_id
+        WHERE b.user_id = #{userId}
+    </select>
+
+    <!--  15. 중개사 북마크 여부 조회  -->
+    <select id="IsFavorite" resultType="Long">
+        SELECT user_id
+        FROM AgentBookmark
+        WHERE user_id = #{userId}
+            AND office_id = #{officeId}
+    </select>
+
+    <!--  16. 중개사 북마크 설정  -->
+    <insert id="saveAgentBookmark">
+        INSERT INTO AgentBookmark (user_id, office_id)
+        VALUES (#{userId}, #{officeId})
+    </insert>
+
+    <!--  17. 중개사 북마크 해제  -->
+    <delete id="deleteAgentBookmark">
+        DELETE FROM AgentBookmark
+        WHERE user_id = #{userId}
+            AND office_id = #{officeId}
+    </delete>
 </mapper>

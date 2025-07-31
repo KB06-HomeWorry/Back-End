@@ -4,13 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.scoula.agent.domain.AgentBookmarkVO;
 import org.scoula.agent.domain.AgentDetailVO;
 import org.scoula.agent.domain.AgentReviewVO;
 import org.scoula.agent.domain.OfficeGeographyVO;
-import org.scoula.agent.dto.AgentDetailDTO;
-import org.scoula.agent.dto.AgentReviewDTO;
-import org.scoula.agent.dto.OfficeGeographyDTO;
-import org.scoula.agent.dto.TrustScoreDTO;
+import org.scoula.agent.dto.*;
 import org.scoula.agent.mapper.AgentMapper;
 import org.scoula.agent.model.Office;
 import org.scoula.agent.model.OpenApiResponse;
@@ -369,5 +367,38 @@ public class AgentService {
         }
 
         return list;
+    }
+
+    // 사무소 북마크 목록 조회
+    public List<AgentBookmarkDTO> getAgentBookmark(String username){
+        UserDTO user = userService.get(username);
+        List<AgentBookmarkDTO> list = new ArrayList<>();
+        List<AgentBookmarkVO> abvo = mapper.getAgentBookmark(user.getUserId());
+
+        if (abvo != null && !abvo.isEmpty()) {
+            for (AgentBookmarkVO vo : abvo){
+                list.add(new AgentBookmarkDTO().of(vo));
+            }
+        }
+
+        return list;
+    }
+
+    // 사무소 북마크 여부 조회
+    public Boolean IsFavorite(String username, Long officeId){
+        UserDTO user = userService.get(username);
+        return mapper.IsFavorite(user.getUserId(), officeId) != null;
+    }
+
+    // 사무소 북마크 등록
+    public int saveAgentBookmark(String username, Long officeId){
+        UserDTO user = userService.get(username);
+        return mapper.saveAgentBookmark(user.getUserId(), officeId);
+    }
+
+    // 사무소 북마크 해제
+    public void deleteAgentBookmark(String username, Long officeId){
+        UserDTO user = userService.get(username);
+        mapper.deleteAgentBookmark(user.getUserId(), officeId);
     }
 }
