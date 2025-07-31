@@ -29,6 +29,13 @@
         WHERE name = #{username}
     </select>
 
+    <!--  1.5 유저 아이디로 유저 검색  -->
+    <select id="findById" parameterType="Long" resultMap="userMap">
+        SELECT *
+        FROM user
+        WHERE user_id = #{userId}
+    </select>
+
     <!--  2. 이메일로 유저 검색  -->
     <select id="findByemail" parameterType="string" resultMap="userMap">
         SELECT *
@@ -87,9 +94,9 @@
     </update>
 
     <!--  10. 회원 탈퇴  -->
-    <delete id="withdraw" parameterType="string">
+    <delete id="withdraw" parameterType="Long">
         DELETE
         from user
-        where name = #{username}
+        where user_id = #{userId}
     </delete>
 </mapper>

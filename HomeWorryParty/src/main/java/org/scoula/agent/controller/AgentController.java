@@ -65,21 +65,21 @@ public class AgentController {
 
     @GetMapping("/{userToken}/favorite") // 사무소 북마크 목록 조회
     public ResponseEntity<List<AgentBookmarkDTO>> getAgentBookmark(@PathVariable String userToken){
-        return ResponseEntity.ok().body(service.getAgentBookmark(jwtProcessor.getUsername(userToken)));
+        return ResponseEntity.ok().body(service.getAgentBookmark(jwtProcessor.getUserId(userToken)));
     }
 
     @GetMapping("/{userToken}/isFavorite/{officeId}") // 북마크 여부 조회
     public ResponseEntity<Boolean> IsFavorite(@PathVariable String userToken, @PathVariable Long officeId){
-        return ResponseEntity.ok().body(service.IsFavorite(jwtProcessor.getUsername(userToken), officeId));
+        return ResponseEntity.ok().body(service.IsFavorite(jwtProcessor.getUserId(userToken), officeId));
     }
 
     @GetMapping("/{userToken}/favorite/{officeId}") // 북마크 추가
     public ResponseEntity<?> saveFavorite(@PathVariable String userToken, @PathVariable Long officeId){
-        return ResponseEntity.ok().body(service.saveAgentBookmark(jwtProcessor.getUsername(userToken), officeId));
+        return ResponseEntity.ok().body(service.saveAgentBookmark(jwtProcessor.getUserId(userToken), officeId));
     }
 
     @DeleteMapping("/{userToken}/favorite/{officeId}") // 북마크 삭제
     public void deleteFavorite(@PathVariable String userToken, @PathVariable Long officeId){
-        service.deleteAgentBookmark(jwtProcessor.getUsername(userToken), officeId);
+        service.deleteAgentBookmark(jwtProcessor.getUserId(userToken), officeId);
     }
 }

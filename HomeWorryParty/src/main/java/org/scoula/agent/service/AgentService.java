@@ -13,8 +13,6 @@ import org.scoula.agent.mapper.AgentMapper;
 import org.scoula.agent.model.Office;
 import org.scoula.agent.model.OpenApiResponse;
 import org.scoula.security.util.JwtProcessor;
-import org.scoula.user.dto.UserDTO;
-import org.scoula.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -41,8 +39,6 @@ public class AgentService {
     private final String apiKey = "6e427a636e6361723130354547546359";
     private final String openApiURL = "http://openapi.seoul.go.kr:8088/" + apiKey + "/json/landBizInfo/";
     private static final int PAGE_SIZE = 1000;
-
-    final UserService userService;
 
     private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile("(0\\d{1,3}[-\\s]?\\d{3,4}[-\\s]?\\d{4})|(\\d{3,4}[-\\s]?\\d{4})");
     private final JwtProcessor jwtProcessor;
@@ -245,9 +241,7 @@ public class AgentService {
 
     @Transactional // 중개사 리뷰 저장
     public void writeAgentReview(AgentReviewDTO agentReviewDTO) {
-        UserDTO userDTO = userService.get(jwtProcessor.getUsername(agentReviewDTO.getUserToken()));
-
-        agentReviewDTO.setUserId(userDTO.getUserId());
+        agentReviewDTO.setUserId(jwtProcessor.getUserId(agentReviewDTO.getUserToken()));
 
         mapper.writeAgentReview(agentReviewDTO.toVO());
 
@@ -370,10 +364,9 @@ public class AgentService {
     }
 
     // 사무소 북마크 목록 조회
-    public List<AgentBookmarkDTO> getAgentBookmark(String username){
-        UserDTO user = userService.get(username);
+    public List<AgentBookmarkDTO> getAgentBookmark(Long userId){
         List<AgentBookmarkDTO> list = new ArrayList<>();
-        List<AgentBookmarkVO> abvo = mapper.getAgentBookmark(user.getUserId());
+        List<AgentBookmarkVO> abvo = mapper.getAgentBookmark(userId);
 
         if (abvo != null && !abvo.isEmpty()) {
             for (AgentBookmarkVO vo : abvo){
@@ -385,20 +378,17 @@ public class AgentService {
     }
 
     // 사무소 북마크 여부 조회
-    public Boolean IsFavorite(String username, Long officeId){
-        UserDTO user = userService.get(username);
-        return mapper.IsFavorite(user.getUserId(), officeId) != null;
+    public Boolean IsFavorite(Long userId, Long officeId){
+        return mapper.IsFavorite(userId, officeId) != null;
     }
 
     // 사무소 북마크 등록
-    public int saveAgentBookmark(String username, Long officeId){
-        UserDTO user = userService.get(username);
-        return mapper.saveAgentBookmark(user.getUserId(), officeId);
+    public int saveAgentBookmark(Long userId, Long officeId){
+        return mapper.saveAgentBookmark(userId, officeId);
     }
 
     // 사무소 북마크 해제
-    public void deleteAgentBookmark(String username, Long officeId){
-        UserDTO user = userService.get(username);
-        mapper.deleteAgentBookmark(user.getUserId(), officeId);
+    public void deleteAgentBookmark(Long userId, Long officeId){
+        mapper.deleteAgentBookmark(userId, officeId);
     }
 }

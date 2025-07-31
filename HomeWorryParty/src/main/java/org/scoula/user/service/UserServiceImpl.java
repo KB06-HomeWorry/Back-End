@@ -65,6 +65,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDTO getUserById(Long userId) {
+        UserVO member = Optional.ofNullable(mapper.findById(userId))
+                .orElseThrow(NoSuchElementException::new);
+        return UserDTO.of(member);
+    }
+
+    @Override
     public PasswordResetTokenDTO getemail(String email) {
         PasswordResetTokenVO prt = Optional.ofNullable(mapper.getemail(email))
                 .orElseThrow(NoSuchElementException::new);
@@ -90,8 +97,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean withdraw(String username) {
-        return mapper.withdraw(username) == 1;
+    public boolean withdraw(Long userId) {
+        return mapper.withdraw(userId) == 1;
     }
 
     @Override

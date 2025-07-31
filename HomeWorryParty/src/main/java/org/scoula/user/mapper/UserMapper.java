@@ -9,11 +9,13 @@ public interface UserMapper {
 
     UserVO findByemail(String email); // 사용자 이메일로 사용자 정보 검색
 
+    UserVO findById(Long userId); // 사용자 아이디로 사용자 정보 검색
+
     PasswordResetTokenVO findByToken(String token); // 비밀번호 재설정 토큰으로 토큰 발급 정보 검색
 
     PasswordResetTokenVO getemail(String email); // 사용자 이메일로 토큰 발급 정보 검색
 
-    int withdraw(String username); // 회원 정보 삭제
+    int withdraw(Long userId); // 회원 정보 삭제
 
     int insertPRT(PasswordResetTokenVO passwordResetTokenVO); // 비밀번호 재설정 토큰 생성
 
