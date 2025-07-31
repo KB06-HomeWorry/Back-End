@@ -3,6 +3,7 @@ package org.scoula.security.handler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.scoula.security.account.domain.CustomUser;
+import org.scoula.security.account.domain.UserVO;
 import org.scoula.security.account.dto.AuthResultDTO;
 import org.scoula.security.account.dto.UserInfoDTO;
 import org.scoula.security.util.JsonResponse;
@@ -23,14 +24,10 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final JwtProcessor jwtProcessor;
 
     private AuthResultDTO makeAuthResult(CustomUser user) {
+        UserVO vo = user.getMember();
 
-        //JsonResponse로 보낼 값들 만ㄷ르어야함.
-        //성공했으므로  Authentication객체가 이미 만들어져서
-        //SecuriyContextHolder에 들어가 있음.
-        String username = user.getUsername();
-        // 토큰 생성
-        String token = jwtProcessor.generateToken(username);
-        // 토큰 + 사용자 기본 정보 (사용자명, ...)를 묶어서 AuthResultDTO 구성
+        String token = jwtProcessor.generateToken(vo.getUsername(), vo.getUserId(), vo.getEmail());
+
         return new AuthResultDTO(token, UserInfoDTO.of(user.getMember()));
     }
 

@@ -14,6 +14,8 @@ public interface UserService {
 
     UserDTO get(String username); // 사용자 이름으로 사용자 정보 검색
 
+    UserDTO getUserById(Long userId); // 유저 아이디로 사용자 정보 검색
+
     PasswordResetTokenDTO getemail(String email); // 이메일로 비밀번호 재설정 토큰 발급 정보 검색
 
     PasswordResetTokenDTO gettoken(String token); // 비밀번호 재설정 토큰으로 비밀번호 재설정 토큰 발급 정보 검색
@@ -22,7 +24,7 @@ public interface UserService {
 
     UserDTO join(UserJoinDTO member); // 사용자 정보 저장
 
-    boolean withdraw(String username); // 사용자 정보 삭제
+    boolean withdraw(Long userId); // 사용자 정보 삭제
 
     void PasswordRewrite(UserDTO member); // 사용자 비밀번호 수정
 

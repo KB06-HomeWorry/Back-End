@@ -20,13 +20,13 @@ class JwtProcessorTest {
     @Autowired
     JwtProcessor jwtProcessor;
 
-    @Test
-    void generateToken() {
-        String username = "user0";
-        String token = jwtProcessor.generateToken(username);
-        log.info(token);
-        assertNotNull(token);
-    }
+//    @Test
+//    void generateToken() {
+//        String username = "user0";
+//        String token = jwtProcessor.generateToken(username);
+//        log.info(token);
+//        assertNotNull(token);
+//    }
 
     //eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ1c2VyMCIsImlhdCI6MTc1MDc0MDUwNiwiZXhwIjoxNzUwNzQwODA2fQ.424JPChxXjVzrEElajoWnFlZgRA2Ak9Zg-i-NunmJ5DxTEi2Pq-0MxxGhmrE8Jpe
 

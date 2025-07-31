@@ -36,12 +36,12 @@ public class MemberController {
 
     @GetMapping("/getprofile/{token}") // 마이페이지 유저 정보 조회
     public ResponseEntity<UserDTO> getProfile(@PathVariable String token) {
-        return ResponseEntity.ok().body(service.get(jwtProcessor.getUsername(token)));
+        return ResponseEntity.ok().body(service.getUserById(jwtProcessor.getUserId(token)));
     }
 
     @DeleteMapping("/withdraw/{token}") // 회원 탈퇴
     public ResponseEntity<?> withdraw(@PathVariable String token) {
-        return ResponseEntity.ok().body(service.withdraw(jwtProcessor.getUsername(token)));
+        return ResponseEntity.ok().body(service.withdraw(jwtProcessor.getUserId(token)));
     }
 
     @GetMapping("/resetpassword/{email}") // 비밀번호 변경 이메일 보내기
@@ -57,12 +57,11 @@ public class MemberController {
 
     @PostMapping("/verify-password-check") // 비밀번호 일치 확인
     public ResponseEntity<?> passwordVerifyCheck(@RequestBody VerifyPasswordDTO pdto){
-        return ResponseEntity.ok(passwordResetService.passwordVerifyCheck(pdto.getPassword(), jwtProcessor.getUsername(pdto.getToken())));
+        return ResponseEntity.ok(passwordResetService.passwordVerifyCheck(pdto.getPassword(), jwtProcessor.getUserId(pdto.getToken())));
     }
 
     @GetMapping("/verify-password/{token}") // 비밀번호 재설정 토큰 발급
     public ResponseEntity<?> passwordVerify(@PathVariable String token) {
-        return ResponseEntity.ok().body(passwordResetService.passwordVerify(jwtProcessor.getUsername(token)));
+        return ResponseEntity.ok().body(passwordResetService.passwordVerify(jwtProcessor.getUserId(token)));
     }
-
 }

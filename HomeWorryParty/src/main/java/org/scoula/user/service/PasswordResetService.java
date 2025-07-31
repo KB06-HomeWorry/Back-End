@@ -47,14 +47,14 @@ public class PasswordResetService {
         return userService.getemail(userEmail);
     }
 
-    public Boolean passwordVerifyCheck(String password, String username) { // 사용자 이름과 비밀번호가 일치하는지 확인
-        UserDTO member = userService.get(username);
+    public Boolean passwordVerifyCheck(String password, Long userId) { // 사용자 이름과 비밀번호가 일치하는지 확인
+        UserDTO member = userService.getUserById(userId);
 
         return passwordEncoder.matches(password, member.getPassword());
     }
 
-    public String passwordVerify(String username) { // 비밀번호 재설정 토큰을 발급하고 토큰 정보 반환
-        UserDTO member = userService.get(username);
+    public String passwordVerify(Long userId) { // 비밀번호 재설정 토큰을 발급하고 토큰 정보 반환
+        UserDTO member = userService.getUserById(userId);
 
         String resetToken = generateResetToken();
 
