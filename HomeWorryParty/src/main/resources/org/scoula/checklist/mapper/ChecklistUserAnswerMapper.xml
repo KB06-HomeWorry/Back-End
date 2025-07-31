@@ -36,4 +36,11 @@
           AND user_id = #{userId}
     </update>
 
+    <select id="findTopFiveFalse" resultType="Long">
+        select question_id from checklistuseranswer where answer = 0
+        group by question_id
+        order by count(user_id) desc
+        limit 5;
+    </select>
+
 </mapper>

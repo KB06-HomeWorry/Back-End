@@ -71,4 +71,9 @@ public class ChecklistUserAnswerServiceImpl implements ChecklistUserAnswerServic
                     dto.getAnswer(), dto.getQuestionId(), dto.getUserId());
         }
     }
+
+    @Override
+    public List<Long> getTopFiveQuestion() {
+        return checklistUserAnswerMapper.findTopFiveFalse();
+    }
 }

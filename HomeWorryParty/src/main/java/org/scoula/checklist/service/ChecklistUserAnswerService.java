@@ -12,4 +12,6 @@ public interface ChecklistUserAnswerService {
     Long makeNewCheckListId(Long userId, Long templateId);
 
     void saveAnswerList(List<ChecklistUserAnswerDTO> answerDTOList);
+
+    List<Long> getTopFiveQuestion();
 }
