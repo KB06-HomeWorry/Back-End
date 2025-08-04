@@ -384,3 +384,46 @@ where land_area between 14 and 26;
 select question_id, count(user_id) as count from checklistuseranswer where answer = 0
 group by question_id
 order by count desc limit 5;
+
+drop table home_test.illegal_building_check;
+
+select *
+from agent where address like "%광진구 아차산로 345 108호(자양동, 래미안프리미어팰리스)";
+
+select office_id, address, license_number, agent_name, office_name, profile_image, phone,
+       specialties, description, total_score from agent where address like '%광진구 아차산로 345 108호(자양동, 래미안프리미어팰리스)';
+
+select * from illegal_building_judge where plat_plc like "%광진구%";
+
+CREATE TABLE illegal_building_judge (
+                                        id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '내부 PK (AUTO_INCREMENT)',
+
+                                        plat_plc VARCHAR(255) COMMENT '대지위치',
+                                        sgg_cd_nm VARCHAR(50) COMMENT '시군구코드명',
+                                        stdg_cd_nm VARCHAR(50) COMMENT '법정동코드명',
+                                        bdrg_sn VARCHAR(50) COMMENT '건축물대장일련번호',
+
+                                        ldgr_se_cd_nm VARCHAR(20) COMMENT '대장구분코드명',
+                                        ldgr_kind_cd_nm VARCHAR(20) COMMENT '대장종류코드명',
+
+                                        mn_usg_cd_nm VARCHAR(50) COMMENT '주용도코드명',
+                                        etc_usg_cn VARCHAR(255) COMMENT '기타용도내용',
+
+                                        bdcvrt DECIMAL(5,2) COMMENT '건폐율',
+                                        gfa DECIMAL(18,2) COMMENT '연면적',
+                                        grnd_nofl INT COMMENT '지상층수',
+                                        udgd_nofl INT COMMENT '지하층수',
+
+                                        prmsn_ymd CHAR(8) COMMENT '허가일자 (YYYYMMDD)',
+                                        use_aprv_ymd CHAR(8) COMMENT '사용승인일자 (YYYYMMDD)',
+                                        rser_design_aplcn_yn CHAR(1) COMMENT '내진설계적용여부(Y/N)',
+
+                                        roof_cd_nm VARCHAR(50) COMMENT '지붕코드명',
+                                        etc_roof_nm VARCHAR(100) COMMENT '기타지붕명',
+
+                                        judge_result VARCHAR(50) COMMENT '판단 결과',
+                                        judge_reason TEXT COMMENT '판단 사유',
+
+                                        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일자',
+                                        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일자'
+);
