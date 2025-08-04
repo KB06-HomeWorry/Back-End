@@ -19,6 +19,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -40,14 +41,13 @@ class DocumentAnalysisControllerTest {
 
         while (true) {
             // URL 세팅
-            StringBuilder urlBuilder = new StringBuilder("http://openapi.seoul.go.kr:8088");
-            urlBuilder.append("/" + URLEncoder.encode("454247417168796e33354265726f77","UTF-8")); // 인증키
-            urlBuilder.append("/" + URLEncoder.encode("json","UTF-8")); // 타입
-            urlBuilder.append("/" + URLEncoder.encode("vBigDjrTitle","UTF-8")); // 서비스명
-            urlBuilder.append("/" + URLEncoder.encode(String.valueOf(start),"UTF-8")); // 시작
-            urlBuilder.append("/" + URLEncoder.encode(String.valueOf(end),"UTF-8"));   // 종료
+            String urlBuilder = "http://openapi.seoul.go.kr:8088" + "/" + URLEncoder.encode("454247417168796e33354265726f77", StandardCharsets.UTF_8) + // 인증키
+                    "/" + URLEncoder.encode("json", StandardCharsets.UTF_8) + // 타입
+                    "/" + URLEncoder.encode("vBigDjrTitle", StandardCharsets.UTF_8) + // 서비스명
+                    "/" + URLEncoder.encode(String.valueOf(start), StandardCharsets.UTF_8) + // 시작
+                    "/" + URLEncoder.encode(String.valueOf(end), StandardCharsets.UTF_8);   // 종료
 
-            URL url = new URL(urlBuilder.toString());
+            URL url = new URL(urlBuilder);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Content-type", "application/xml");

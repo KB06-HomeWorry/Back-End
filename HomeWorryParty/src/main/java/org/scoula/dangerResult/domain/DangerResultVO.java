@@ -29,7 +29,7 @@ public class DangerResultVO {
         this.maxScore = dangerResultVO.getMaxScore();
         this.descriptionTitleList = dangerResultVO.getDescriptionTitleList();
         this.descriptionContentList = dangerResultVO.getDescriptionContentList();
-        this.message = new String(dangerResultVO.getMessage());
-        this.imageUrl = new String(dangerResultVO.getImageUrl());
+        this.message = dangerResultVO.getMessage();
+        this.imageUrl = dangerResultVO.getImageUrl();
     }
 }

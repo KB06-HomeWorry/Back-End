@@ -179,6 +179,19 @@
         WHERE user_id = #{userId}
             AND office_id = #{officeId}
     </select>
+    <select id="findAgentByAgentAddress" resultType="org.scoula.agent.domain.AgentDetailVO">
+        select office_id,
+            address,
+            license_number,
+            agent_name,
+            office_name,
+            profile_image,
+            phone,
+            specialties,
+            description,
+            total_score from agent
+        where address like #{agentAddress}
+    </select>
 
     <!--  16. 중개사 북마크 설정  -->
     <insert id="saveAgentBookmark">

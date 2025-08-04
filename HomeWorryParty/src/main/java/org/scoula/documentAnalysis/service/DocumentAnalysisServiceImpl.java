@@ -32,20 +32,29 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService {
     public DocumentAnalysisResultDTO analysis(DocumentAnalysisDTO answerDTOList) {
         DocumentAnalysisResultDTO documentAnalysisResultDTO = new DocumentAnalysisResultDTO();
 
-        checkCertified(answerDTOList.getRegisterCertifiedCount(), documentAnalysisResultDTO);
+
         checkHouseAddress(answerDTOList.getHouseAddress(), documentAnalysisResultDTO);
         checkDocumentAgent(answerDTOList.getDocumentAgentDTO(), documentAnalysisResultDTO);
         checkDocumentSthRisk(answerDTOList.getDocumentSthRiskDTO(), answerDTOList.getHouseAddress(), documentAnalysisResultDTO);
+        checkCertified(answerDTOList.getRegisterCertifiedCount(), documentAnalysisResultDTO);
 
         documentAnalysisResultDTO.setResultData();
         return documentAnalysisResultDTO;
     }
 
     private void checkDocumentAgent(DocumentAgentDTO documentAgentDTO, DocumentAnalysisResultDTO documentAnalysisResultDTO) {
-        if(documentAgentDTO.getAddress().isEmpty()) return;
-        // 여기서 뭐함???
+        if(documentAgentDTO.getAddress().isEmpty()) {
+            documentAnalysisResultDTO.getDescriptionTitleList().add("확인되지 않은 중개인");
+            documentAnalysisResultDTO.getDescriptionContentList()
+                    .add("중개인의 정보를 확인하기 위한 정보가 없습니다. 다시 검사를 실행하거나 중개인에 대한 " +
+                            "주의가 필요합니다.");
+            documentAnalysisResultDTO.setScore(documentAnalysisResultDTO.getScore() - (15));
+        }
+        log.info("Check Document Agent : " + documentAgentDTO.getAddress());
+
         List<AgentDetailVO> agentDetailVOList = checkDocumentAgentByAgentDTO(documentAgentDTO);
-        if (agentDetailVOList == null) {
+        log.info(agentDetailVOList.toString());
+        if (agentDetailVOList.isEmpty()) {
             documentAnalysisResultDTO.getDescriptionTitleList().add("확인되지 않은 중개인");
             documentAnalysisResultDTO.getDescriptionContentList()
                     .add("거래 기록이나 정보가 존재하지 않은 중개인입니다. 거래시 추가적인 확인이나" +
@@ -114,10 +123,10 @@ public class DocumentAnalysisServiceImpl implements DocumentAnalysisService {
     public List<AgentDetailVO> checkDocumentAgentByAgentDTO(DocumentAgentDTO documentAgentDTO) {
         if(documentAgentDTO == null) return new ArrayList<>();
 
-        String houseAddress = "%" + documentAgentDTO.getAddress().substring(3);
-        List<AgentDetailVO> agentDetailDTOS = agentMapper.findAgentByHouseAddress(houseAddress);
+        String agentAddress = "%" + documentAgentDTO.getAddress().substring(5);
+        List<AgentDetailVO> agentDetailDTOS = agentMapper.findAgentByAgentAddress(agentAddress);
         log.info(agentDetailDTOS);
-        if(agentDetailDTOS.isEmpty()) return null;
+        if(agentDetailDTOS.isEmpty()) return new ArrayList<>();
 
         return agentDetailDTOS;
     }

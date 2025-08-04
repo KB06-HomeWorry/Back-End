@@ -44,4 +44,6 @@ public interface AgentMapper {
     int saveAgentBookmark(@Param("userId") Long userId, @Param("officeId") Long officeId); // 중개사 북마크 설정
     
     void deleteAgentBookmark(@Param("userId") Long userId, @Param("officeId") Long officeId); // 중개사 북마크 해제
+
+    List<AgentDetailVO> findAgentByAgentAddress(@Param("agentAddress") String agentAddress);
 }
