@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.scoula.quiz.mapper.QuizMapper">
+
+    <!-- ResultMap: QuizVO -->
+    <resultMap id="QuizMap" type="org.scoula.quiz.domain.QuizVO">
+        <id property="quizId" column="quiz_id"/>
+        <result property="type" column="type"/>
+        <result property="question" column="question"/>
+        <result property="level" column="level"/>
+        <result property="choices" column="choices"/>
+        <result property="explanation" column="explanation"/>
+        <result property="correctAnswer" column="correctAnswer"/>
+    </resultMap>
+
+    <!--  1. 퀴즈 목록 조회  -->
+    <select id="getQuizList" resultMap="QuizMap">
+        SELECT * FROM QuizData
+    </select>
+</mapper>
