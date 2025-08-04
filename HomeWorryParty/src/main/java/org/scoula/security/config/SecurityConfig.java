@@ -134,14 +134,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedHandler(accessDeniedHandler);
 
         http
-                .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS).permitAll()
-                .antMatchers(HttpMethod.PUT, "/api/member", "/api/member/*/changepassword").authenticated()
-                .antMatchers(HttpMethod.POST, "/api/board/**").authenticated()
-                .antMatchers(HttpMethod.PUT, "/api/board/**").authenticated()
-                .antMatchers(HttpMethod.DELETE, "/api/board/**").authenticated()
-                // 일단 모든 접근 허용
-                .anyRequest().permitAll();
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET, "/checklist/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/checklist/answers").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/dangerResult").authenticated()
+                        .anyRequest().permitAll()
+                )
+                        .formLogin(form -> form
+                                .loginPage("/auth/login")
+                                .permitAll()
+                        );
+
 
         http.formLogin()
                 .loginPage("/security/login")
