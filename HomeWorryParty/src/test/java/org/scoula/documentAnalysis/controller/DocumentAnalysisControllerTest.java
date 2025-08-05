@@ -132,23 +132,23 @@ class DocumentAnalysisControllerTest {
      * (실무에서는 보통 판정 사유까지 반환해주는 것이 좋음)
      */
     public boolean checkIllegal(IllegalBuildingCheckDTO dto) {
-        StringBuilder sb = new StringBuilder();
-        String judgeReason = "";
+        List<String> reasons = new java.util.ArrayList<>();
 
         // 1. 대장구분/종류에 '위반', '불법', '임시'가 포함되면 불법
         String[] keywords = {"위반", "불법", "임시"};
         if (dto.getLdgrSeCdNm() != null) {
             for (String keyword : keywords) {
                 if (dto.getLdgrSeCdNm().contains(keyword)) {
-                    sb.append("대장구분명에 '").append(keyword).append("' 포함").append("<br></br>");
+                    reasons.add("대장구분명에 <span style='color: red;'>'" + keyword + "'</span> 포함");
                     dto.setJudgeResult("불법 의심");
                 }
             }
         }
+
         if (dto.getLdgrKindCdNm() != null) {
             for (String keyword : keywords) {
                 if (dto.getLdgrKindCdNm().contains(keyword)) {
-                    sb.append("대장구분명에 '").append(keyword).append("' 포함").append("<br></br>");
+                    reasons.add("대장종류명에 <span style='color: red;'>'" + keyword + "'</span> 포함");
                     dto.setJudgeResult("불법 의심");
                 }
             }
@@ -156,21 +156,20 @@ class DocumentAnalysisControllerTest {
 
         // 2. 건폐율 기준 초과 (100% 넘으면 불법 의심, 실제 기준은 용도지역별 별도 처리 가능)
         if (dto.getBdcvrt() != null && dto.getBdcvrt() > 100.0) {
-            dto.setJudgeReason("건폐율 100% 초과");
-            sb.append("건폐율 100% 초과").append("<br></br>");
+            reasons.add("건폐율 100% 초과");
             dto.setJudgeResult("불법 의심");
         }
 
         // 3. 연면적이 비정상적으로 큰 경우(예: 99,999㎡ 초과)
         if (dto.getGfa() != null && dto.getGfa() > 99999) {
-            sb.append("연면적 99,999㎡ 초과(비정상)").append("<br></br>");
+            reasons.add("연면적 99,999㎡ 초과(비정상)");
             dto.setJudgeResult("불법 의심");
         }
 
         // 4. 허가일자/사용승인일자가 모두 없으면 무허가로 간주
         if ((dto.getPrmsnYmd() == null || dto.getPrmsnYmd().isBlank())
                 && (dto.getUseAprvYmd() == null || dto.getUseAprvYmd().isBlank())) {
-            sb.append("허가일자/사용승인일자 없음").append("<br></br>");
+            reasons.add("허가일자 / 사용승인일자 없음");
             dto.setJudgeResult("불법 의심");
         }
 
@@ -179,7 +178,7 @@ class DocumentAnalysisControllerTest {
         if (dto.getMnUsgCdNm() != null) {
             for (String kw : illegalUsages) {
                 if (dto.getMnUsgCdNm().contains(kw)) {
-                    sb.append("주용도에 '").append(kw).append("' 포함").append("<br></br>");
+                    reasons.add("주용도에 <span style='color: red;'>'" + kw + "'</span> 포함");
                     dto.setJudgeResult("불법 의심");
                 }
             }
@@ -187,52 +186,53 @@ class DocumentAnalysisControllerTest {
         if (dto.getEtcUsgCn() != null) {
             for (String kw : illegalUsages) {
                 if (dto.getEtcUsgCn().contains(kw)) {
-                    sb.append("기타용도에 '").append(kw).append("' 포함").append("<br></br>");
+                    reasons.add("기타용도에 <span style='color: red;'>'" + kw + "'</span> 포함");
                     dto.setJudgeResult("불법 의심");
                 }
             }
         }
 
         // 6. 내진설계 미적용 (Y/N, 실제는 법적 의무대상일 때만 적용. 단순 N이면 의심)
-        if (dto.getRserDesignAplcnYn() != null && dto.getRserDesignAplcnYn().equalsIgnoreCase("N")) {
-            sb.append("내진설계 미적용").append("<br></br>");
+        if ("N".equalsIgnoreCase(dto.getRserDesignAplcnYn())) {
+            reasons.add("내진설계 미적용");
             dto.setJudgeResult("불법 의심");
         }
 
-        // 8. 지붕 정보에 불법/임시/비정상 유형 포함 시 불법 의심
+        // 7. 지붕 정보에 불법/임시/비정상 유형 포함 시 불법 의심
         String[] illegalRoofs = {"임시", "가설", "비닐", "천막", "슬레이트", "불법", "위반"};
-
         if (dto.getRoofCdNm() != null) {
             for (String kw : illegalRoofs) {
                 if (dto.getRoofCdNm().contains(kw)) {
-                    sb.append("지붕구조에 '").append(kw).append("' 포함").append("<br></br>");
+                    reasons.add("지붕 구조에 <span style='color: red;'>'" + kw + "'</span> 포함");
                     dto.setJudgeResult("불법 의심");
                 }
             }
-        }else{
-            sb.append("지붕 구조 데이터 누락").append("<br></br>");
+        } else {
+            reasons.add("지붕 구조 데이터 누락");
             dto.setJudgeResult("불법 의심");
         }
 
         if (dto.getEtcRoofNm() != null) {
             for (String kw : illegalRoofs) {
                 if (dto.getEtcRoofNm().contains(kw)) {
-                    sb.append("기타지붕명에 '").append(kw).append("' 포함").append("<br></br>");
+                    reasons.add("기타 지붕명에 <span style='color: red;'>'" + kw + "'</span> 포함");
                     dto.setJudgeResult("불법 의심");
                 }
             }
         }
 
-        judgeReason = sb.toString();
-        if(!judgeReason.isEmpty()){
+        if (!reasons.isEmpty()) {
+            // 불법 사유가 2개 이상일 때만 <br> 추가
+            String judgeReason = reasons.size() >= 2
+                    ? String.join("<br>", reasons)
+                    : reasons.get(0);
             dto.setJudgeReason(judgeReason);
             return true;
         }
 
         // 모든 조건에 해당되지 않으면 정상
-        dto.setJudgeReason("정상(불법 아님)");
         dto.setJudgeResult("정상");
+        dto.setJudgeReason("정상(불법 아님)");
         return false;
     }
-
 }
