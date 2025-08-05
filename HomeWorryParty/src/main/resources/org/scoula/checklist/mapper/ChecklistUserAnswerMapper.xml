@@ -6,38 +6,38 @@
 <mapper namespace="org.scoula.checklist.mapper.ChecklistUserAnswerMapper">
 
     <insert id="insertAnswerList">
-        INSERT INTO home_test.checklistuseranswer(checklist_id, question_id, user_id, answer)
+        INSERT INTO ChecklistUserAnswer(checklist_id, question_id, user_id, answer)
         VALUES (#{checklistId}, #{questionId}, #{userId}, false)
     </insert>
 
     <select id="findByChecklistIdAndUserId" resultType="org.scoula.checklist.domain.ChecklistUserAnswerVO">
         SELECT *
-        FROM home_test.checklistuseranswer
+        FROM ChecklistUserAnswer
         WHERE checklist_id = #{checklistId}
           AND user_id = #{userId}
     </select>
 
     <select id="getCheckListId" resultType="java.lang.Long">
         SELECT checklist_id
-        FROM home_test.checklist
+        FROM Checklist
         WHERE user_id = #{userId}
           AND template_id = #{templateId}
     </select>
 
     <insert id="insertCheckList">
-        Insert Into home_test.checklist(user_id, template_id)
+        Insert Into Checklist(user_id, template_id)
         VALUES (#{userId}, #{templateId})
     </insert>
 
     <update id="updateAnswer">
-        UPDATE home_test.checklistuseranswer
+        UPDATE ChecklistUserAnswer
         SET answer = #{answer}
         WHERE question_id = #{questionId}
           AND user_id = #{userId}
     </update>
 
     <select id="findTopFiveFalse" resultType="Long">
-        select question_id from checklistuseranswer where answer = 0
+        select question_id from ChecklistUserAnswer where answer = 0
         group by question_id
         order by count(user_id) desc
         limit 5;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.scoula.config.RootConfig;
 import org.scoula.documentAnalysis.dto.IllegalBuildingCheckDTO;
 import org.scoula.documentAnalysis.service.DocumentAnalysisServiceImpl;
@@ -11,7 +12,9 @@ import org.scoula.security.config.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,6 +29,7 @@ import java.util.Map;
 @WebAppConfiguration // ← 이 줄을 꼭 추가하세요!
 @ExtendWith(SpringExtension.class) // 꼭 추가!
 @ContextConfiguration(classes = {RootConfig.class, SecurityConfig.class})
+@Transactional
 class DocumentAnalysisControllerTest {
 
     @Autowired
