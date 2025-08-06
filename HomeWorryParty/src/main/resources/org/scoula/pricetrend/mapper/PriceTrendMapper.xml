@@ -6,17 +6,17 @@
     <mapper namespace="org.scoula.pricetrend.mapper.PriceTrendMapper">
 
         <delete id="delete">
-            delete from pricetrend where no = #{id}
+            delete from PriceTrend where no = #{id}
         </delete>
 
             <select id="getList" resultType="org.scoula.pricetrend.domain.PriceTrendVO">
     <![CDATA[
-                select * from pricetrend order by id
+                select * from PriceTrend order by id
                 ]]>
     </select>
 
         <select id="get" resultType="org.scoula.pricetrend.domain.PriceTrendVO">
-            select * from pricetrend where id = #{id}
+            select * from PriceTrend where id = #{id}
         </select>
 
     </mapper>

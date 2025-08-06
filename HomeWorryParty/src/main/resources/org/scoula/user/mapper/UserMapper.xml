@@ -25,28 +25,28 @@
     <!-- 1. 유저명으로 유저 검색 -->
     <select id="get" parameterType="string" resultMap="userMap">
         SELECT *
-        FROM user
+        FROM User
         WHERE name = #{username}
     </select>
 
     <!--  1.5 유저 아이디로 유저 검색  -->
     <select id="findById" parameterType="Long" resultMap="userMap">
         SELECT *
-        FROM user
+        FROM User
         WHERE user_id = #{userId}
     </select>
 
     <!--  2. 이메일로 유저 검색  -->
     <select id="findByemail" parameterType="string" resultMap="userMap">
         SELECT *
-        FROM user
+        FROM User
         WHERE email = #{email}
     </select>
 
     <!-- 3. 회원 정보 추가 -->
     <insert id="insertUser" parameterType="org.scoula.security.account.domain.UserVO" useGeneratedKeys="true"
             keyProperty="userId">
-        INSERT INTO user (name, email, password, phone, user_type)
+        INSERT INTO User (name, email, password, phone, user_type)
         VALUES (#{username}, #{email}, #{password}, #{phone}, #{userType})
     </insert>
 
@@ -73,7 +73,7 @@
 
     <!-- 7. 비밀번호 변경 -->
     <update id="passwordRewrite" parameterType="org.scoula.security.account.domain.UserVO">
-        UPDATE user
+        UPDATE User
         SET password = #{password}
         WHERE user_id = #{userId}
     </update>
@@ -81,7 +81,7 @@
     <!--  8. 비밀번호 재설정 토큰 삭제  -->
     <delete id="deleteToken" parameterType="string">
         DELETE
-        from passwordresettoken
+        from PasswordResetToken
         where email = #{email}
     </delete>
 
@@ -96,7 +96,7 @@
     <!--  10. 회원 탈퇴  -->
     <delete id="withdraw" parameterType="Long">
         DELETE
-        from user
+        from User
         where user_id = #{userId}
     </delete>
 </mapper>

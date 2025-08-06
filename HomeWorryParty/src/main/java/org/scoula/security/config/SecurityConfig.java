@@ -136,29 +136,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/checklist/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/checklist/answers").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/dangerResult").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/checklist/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/dangerResult/**").authenticated()
                         .anyRequest().permitAll()
-                )
-                        .formLogin(form -> form
-                                .loginPage("/auth/login")
-                                .permitAll()
-                        );
+                );
 
 
         http.formLogin()
-                .loginPage("/security/login")
-                .loginProcessingUrl("/security/login")
+                .loginPage("/api/auth/login")
+                .loginProcessingUrl("/api/auth/login")
                 .defaultSuccessUrl("/");
 
         http.logout()
-                .logoutUrl("/security/logout")
+                .logoutUrl("/api/auth/logout")
                 .invalidateHttpSession(true)
                 // 로그아웃설정시작
                 // POST: 로그아웃 호출 url
                 // 세션 invalidate
                 .deleteCookies("remember-me", "JSESSION-ID") // 삭제할 쿠키 목록
-                .logoutSuccessUrl("/security/logout");
+                .logoutSuccessUrl("/api/auth/logout");
         // GET: 로그아웃 이후이동할페이지
     }
 

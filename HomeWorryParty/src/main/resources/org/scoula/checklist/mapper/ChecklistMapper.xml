@@ -19,7 +19,7 @@
 
     <select id="get" parameterType="long" resultMap="checklistMap">
         SELECT *
-        FROM home_test.checklistquestion
+        FROM ChecklistQuestion
         WHERE template_id = #{template_id}
     </select>
 
