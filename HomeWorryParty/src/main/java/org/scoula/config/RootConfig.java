@@ -35,6 +35,7 @@ import javax.sql.DataSource;
         "org.scoula.listing.mapper",
         "org.scoula.pricetrend.mapper",
         "org.scoula.quiz.mapper",
+        "org.scoula.sectionGeo.mapper",
 })
 @ComponentScan(basePackages = {
         "org.scoula.user.service",
@@ -46,6 +47,7 @@ import javax.sql.DataSource;
         "org.scoula.listing.service",
         "org.scoula.pricetrend.service",
         "org.scoula.quiz.service",
+        "org.scoula.sectionGeo.service",
 })
 @EnableTransactionManagement
 @Log4j2

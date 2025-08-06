@@ -22,6 +22,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
         "org.scoula.listing.controller",
         "org.scoula.ai.controller",
         "org.scoula.quiz.controller",
+        "org.scoula.sectionGeo.controller",
 })
 @ComponentScan(basePackages = "org.scoula")
 public class ServletConfig implements WebMvcConfigurer {

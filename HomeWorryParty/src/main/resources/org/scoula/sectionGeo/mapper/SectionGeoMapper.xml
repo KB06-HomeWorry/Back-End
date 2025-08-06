@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.scoula.sectionGeo.mapper.SectionGeoMapper">
+    <select id="getDepth1" resultType="string">
+        SELECT DISTINCT city
+        FROM SectionGeography
+        ORDER BY city
+    </select>
+
+    <select id="getDepth2" parameterType="string" resultType="string">
+        SELECT DISTINCT gu
+        FROM SectionGeography
+        WHERE city = #{depth1}
+        ORDER BY gu
+    </select>
+
+    <select id="getDepth3" parameterType="string" resultType="string">
+        SELECT dong
+        FROM SectionGeography
+        WHERE city = #{depth1}
+          AND gu = #{depth2}
+        ORDER BY dong
+    </select>
+
+    <select id="getSectionGeoData" parameterType="string" resultType="org.scoula.sectionGeo.dto.SectionGeoDTO">
+        SELECT *
+        FROM SectionGeography
+        WHERE city = #{depth1}
+          AND gu = #{depth2}
+          AND dong = #{depth3}
+    </select>
+</mapper>

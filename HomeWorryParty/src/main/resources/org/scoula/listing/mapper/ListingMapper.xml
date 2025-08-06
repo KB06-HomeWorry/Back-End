@@ -1,23 +1,50 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-    <!DOCTYPE mapper
-            PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-            "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-    <mapper namespace="org.scoula.listing.mapper.ListingMapper">
-
-        <delete id="delete">
-            delete from listing where no = #{id}
-        </delete>
-
-
-            <select id="getList" resultType="org.scoula.listing.domain.ListingVO">
-    <![CDATA[
-                select * from listing order by id
-                ]]>
+<mapper namespace="org.scoula.listing.mapper.ListingMapper">
+    <!--  1. 매물 목록 조회  -->
+    <select id="getList" resultType="org.scoula.listing.domain.ListingVO">
+        select * from listing order by id
     </select>
 
-        <select id="get" resultType="org.scoula.listing.domain.ListingVO">
-            select * from listing where id = #{id}
-        </select>
+    <!--  2. 매물 단건 조회  -->
+    <select id="get" resultType="org.scoula.listing.domain.ListingVO">
+        select * from listing where id = #{id}
+    </select>
 
-    </mapper>
+    <!--  3. 매물 삭제  -->
+    <delete id="delete">
+        delete from listing where no = #{id}
+    </delete>
+
+    <!--  4. 매물 북마크 등록  -->
+    <insert id="saveFavorite">
+        INSERT INTO listingBookmark (user_id, listing_id)
+        VALUES (#{userId}, #{id})
+    </insert>
+
+    <!--  5. 매물 북마크 해제  -->
+    <delete id="deleteFavorite">
+        DELETE FROM listingBookmark
+        WHERE user_id = #{userId}
+            AND listing_id = #{id}
+    </delete>
+
+    <!--  6. 북마크한 매물 목록 조회  -->
+    <select id="getFavoriteList" resultType="org.scoula.listing.domain.ListingVO">
+        SELECT *
+        FROM listing l LEFT JOIN listingBookmark b
+        ON l.id = b.listing_id
+        WHERE b.user_id = #{userId}
+    </select>
+
+    <!--  7. 북마크 여부 조회  -->
+    <select id="isFavorite" resultType="int">
+        SELECT COUNT(*)
+        FROM listingBookmark
+        WHERE listing_id = #{id}
+            AND user_id = #{userId}
+    </select>
+</mapper>
