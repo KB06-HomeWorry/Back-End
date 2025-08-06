@@ -325,6 +325,7 @@ public class AgentService {
             JsonNode root = objectMapper.readTree(sb.toString());
 
             JsonNode documents = root.path("documents");
+            log.info("불러오기");
             if (documents.isArray() && !documents.isEmpty()) {
                 JsonNode firstResult = documents.get(0);
                 String lng = firstResult.path("x").asText();
@@ -332,6 +333,7 @@ public class AgentService {
                 String gu = firstResult.path("address").path("region_2depth_name").asText();
                 String dong = firstResult.path("address").path("region_3depth_name").asText();
 
+                log.info("저장");
                 OfficeGeographyDTO officeGeographyDTO = new OfficeGeographyDTO(dto.getOfficeId(), gu, dong, lat, lng);
                 mapper.saveOfficeGeography(officeGeographyDTO.toVO());
                 count++;
