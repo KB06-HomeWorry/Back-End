@@ -26,7 +26,7 @@ public class UserQuizStatusServiceImpl implements UserQuizStatusService {
     }
 
     @Override
-    public UserQuizStatusVO getQuizStatus(Long userId, Long quizId) {
-        return userQuizStatusMapper.selectUserQuizStatus(userId, quizId);
+    public List<UserQuizStatusVO> getCompletedQuizzes(Long userId) {
+        return userQuizStatusMapper.selectCompletedQuizzesByUserId(userId);
     }
 }

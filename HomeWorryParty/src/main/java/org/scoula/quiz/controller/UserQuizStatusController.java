@@ -24,8 +24,8 @@ public class UserQuizStatusController {
         return userQuizStatusService.getUserStatus(userId);
     }
 
-    @GetMapping("/{userId}/{quizId}")
-    public UserQuizStatusVO getQuizStatus(@PathVariable Long userId, @PathVariable Long quizId) {
-        return userQuizStatusService.getQuizStatus(userId, quizId);
+    @GetMapping("/{userId}/completed")
+    public List<UserQuizStatusVO> getCompletedQuizzes(@PathVariable Long userId) {
+        return userQuizStatusService.getCompletedQuizzes(userId);
     }
 }

@@ -9,5 +9,5 @@ public interface UserQuizStatusService {
 
     List<UserQuizStatusVO> getUserStatus(Long userId);
 
-    UserQuizStatusVO getQuizStatus(Long userId, Long quizId);
+    List<UserQuizStatusVO> getCompletedQuizzes(Long userId);
 }

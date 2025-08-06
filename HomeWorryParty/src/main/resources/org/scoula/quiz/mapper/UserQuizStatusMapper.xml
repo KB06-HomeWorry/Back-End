@@ -6,20 +6,27 @@
 
     <insert id="insertOrUpdateUserQuizStatus">
         INSERT INTO user_quiz_status (user_id, quiz_id, is_solved, is_correct, answer, solved_at)
-        VALUES (#{userId}, #{quizId}, #{isSolved}, #{isCorrect}, #{answer}, #{solvedAt})
-        ON DUPLICATE KEY UPDATE
-        is_solved = VALUES(is_solved),
-        is_correct = VALUES(is_correct),
-        answer = VALUES(answer),
-        solved_at = VALUES(solved_at)
+        VALUES (#{userId}, #{quizId}, #{isSolved}, #{isCorrect}, #{answer}, #{solvedAt}) ON DUPLICATE KEY
+        UPDATE
+            is_solved =
+        VALUES (is_solved), is_correct =
+        VALUES (is_correct), answer =
+        VALUES (answer), solved_at =
+        VALUES (solved_at)
     </insert>
 
-    <select id="selectUserQuizStatus" resultType="org.scoula.quiz.domain.UserQuizStatusVO">
-        SELECT * FROM user_quiz_status WHERE user_id = #{userId} AND quiz_id = #{quizId}
+    <select id="selectAllStatusByUserId" resultType="org.scoula.quiz.domain.UserQuizStatusVO">
+        SELECT *
+        FROM user_quiz_status
+        WHERE user_id = #{userId}
     </select>
 
-    <select id="selectAllStatusByUserId" resultType="org.scoula.quiz.domain.UserQuizStatusVO">
-        SELECT * FROM user_quiz_status WHERE user_id = #{userId}
+    <select id="selectCompletedQuizzesByUserId" resultType="org.scoula.quiz.domain.UserQuizStatusVO">
+        SELECT *
+        FROM user_quiz_status
+        WHERE user_id = #{userId}
+          AND is_solved = 1
+        ORDER BY RAND()
     </select>
 
 </mapper>
