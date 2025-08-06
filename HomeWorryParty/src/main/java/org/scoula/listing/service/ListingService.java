@@ -1,5 +1,6 @@
 package org.scoula.listing.service;
 
+import org.scoula.agent.dto.AgentDetailDTO;
 import org.scoula.listing.domain.ListingVO;
 
 import java.util.List;
@@ -18,4 +19,8 @@ public interface ListingService {
     boolean isFavorite(int id, long userId); // 북마크 여부 조회
     
     List<ListingVO> getFavoriteList(long userId); // 북마크한 매물 목록 조회
+    
+    AgentDetailDTO getAgency(int listingId); // 매물별 중개사 조회
+    
+    List<ListingVO> getAgencyList(long officeId); // 중개사별 매물 목록 조회
 }

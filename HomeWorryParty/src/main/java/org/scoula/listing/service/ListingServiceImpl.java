@@ -2,6 +2,8 @@ package org.scoula.listing.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.scoula.agent.domain.AgentDetailVO;
+import org.scoula.agent.dto.AgentDetailDTO;
 import org.scoula.listing.domain.ListingVO;
 import org.scoula.listing.mapper.ListingMapper;
 import org.springframework.stereotype.Service;
@@ -47,5 +49,21 @@ public class ListingServiceImpl implements ListingService {
     @Override // 북마크한 매물 목록 조회
     public List<ListingVO> getFavoriteList(long userId) {
         return mapper.getFavoriteList(userId);
+    }
+
+    @Override // 매물로 중개사 조회
+    public AgentDetailDTO getAgency(int listingId) {
+        List<AgentDetailVO> list = mapper.getAgency(listingId);
+
+        if (list.isEmpty()) {
+            return null;
+        } else {
+            return AgentDetailDTO.of(list.get(0));
+        }
+    }
+
+    @Override // 중개사별 매물 목록 조회
+    public List<ListingVO> getAgencyList(long officeId) {
+        return mapper.getAgencyList(officeId);
     }
 }

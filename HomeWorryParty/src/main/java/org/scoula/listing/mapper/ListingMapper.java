@@ -1,6 +1,7 @@
 package org.scoula.listing.mapper;
 
 import org.apache.ibatis.annotations.Param;
+import org.scoula.agent.domain.AgentDetailVO;
 import org.scoula.listing.domain.ListingVO;
 
 import java.util.List;
@@ -20,4 +21,8 @@ public interface ListingMapper {
     int isFavorite(@Param("id") int id, @Param("userId") long userId); // 북마크 여부 조회
     
     List<ListingVO> getFavoriteList(@Param("userId") long userId); // 북마크한 매물 목록 조회
+    
+    List<AgentDetailVO> getAgency(@Param("listingId") int listingId); // 매물별 중개사 리스트 조회
+    
+    List<ListingVO> getAgencyList(@Param("officeId") long officeId); // 중개사별 매물 리스트 조회
 }
