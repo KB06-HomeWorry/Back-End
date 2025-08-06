@@ -2,6 +2,7 @@ package org.scoula.listing.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.scoula.agent.dto.AgentDetailDTO;
 import org.scoula.listing.domain.ListingVO;
 import org.scoula.listing.service.ListingService;
 import org.scoula.security.util.JwtProcessor;
@@ -45,5 +46,15 @@ public class ListingApiController {
     @GetMapping("/favorite/{userToken}") // 북마크한 매물 목록 조회
     public ResponseEntity<List<ListingVO>> getFavoriteList(@PathVariable String userToken) {
         return ResponseEntity.ok().body(service.getFavoriteList(jwtProcessor.getUserId(userToken)));
+    }
+
+    @GetMapping("/getAgency/{listingId}") // 매물별 중개사 정보 조회
+    public ResponseEntity<AgentDetailDTO> getAgency(@PathVariable int listingId) {
+        return ResponseEntity.ok().body(service.getAgency(listingId));
+    }
+
+    @GetMapping("/getAgencyList/{officeId}") // 중개사별 매물 목록 조회
+    public ResponseEntity<List<ListingVO>> getAgencyList(@PathVariable long officeId) {
+        return ResponseEntity.ok().body(service.getAgencyList(officeId));
     }
 }

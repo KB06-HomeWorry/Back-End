@@ -47,4 +47,20 @@
         WHERE listing_id = #{id}
             AND user_id = #{userId}
     </select>
+
+<!--  8. 매물별 중개사 목록 조회  -->
+    <select id="getAgency" resultType="org.scoula.agent.domain.AgentDetailVO">
+        SELECT *
+        FROM agent a LEFT JOIN listing l
+        ON a.office_name = l.agency
+        WHERE l.id = #{listingId}
+    </select>
+
+<!--  9. 중개사별 매물 목록 조회  -->
+    <select id="getAgencyList" resultType="org.scoula.listing.domain.ListingVO">
+        SELECT *
+        FROM listing l LEFT JOIN agent a
+        ON l.agency = a.office_name
+        WHERE a.office_id = #{officeId}
+    </select>
 </mapper>
