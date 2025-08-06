@@ -5,7 +5,7 @@
 <mapper namespace="org.scoula.quiz.mapper.UserQuizStatusMapper">
 
     <insert id="insertOrUpdateUserQuizStatus">
-        INSERT INTO user_quiz_status (user_id, quiz_id, is_solved, is_correct, answer, solved_at)
+        INSERT INTO UserQuizStatus (user_id, quiz_id, is_solved, is_correct, answer, solved_at)
         VALUES (#{userId}, #{quizId}, #{isSolved}, #{isCorrect}, #{answer}, #{solvedAt}) ON DUPLICATE KEY
         UPDATE
             is_solved =
@@ -17,13 +17,13 @@
 
     <select id="selectAllStatusByUserId" resultType="org.scoula.quiz.domain.UserQuizStatusVO">
         SELECT *
-        FROM user_quiz_status
+        FROM UserQuizStatus
         WHERE user_id = #{userId}
     </select>
 
     <select id="selectCompletedQuizzesByUserId" resultType="org.scoula.quiz.domain.UserQuizStatusVO">
         SELECT *
-        FROM user_quiz_status
+        FROM UserQuizStatus
         WHERE user_id = #{userId}
           AND is_solved = 1
         ORDER BY RAND()
