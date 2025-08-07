@@ -427,3 +427,33 @@ CREATE TABLE illegal_building_judge (
                                         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일자',
                                         updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일자'
 );
+
+SHOW PROCESSLIST;
+
+SET GLOBAL max_connections = 300;
+
+SHOW VARIABLES LIKE 'max_connections';
+
+SHOW STATUS LIKE 'Threads_connected';
+SHOW FULL PROCESSLIST;
+
+
+-- 1. 오래된 Sleep 세션 확인
+SELECT ID, USER, HOST, DB, COMMAND, TIME, STATE
+FROM information_schema.PROCESSLIST
+WHERE COMMAND = 'Sleep'
+ORDER BY TIME DESC;
+
+-- 2. Sleep 300초 이상 세션 Kill
+SELECT CONCAT('KILL ', ID, ';') AS kill_cmd
+FROM information_schema.PROCESSLIST
+WHERE COMMAND = 'Sleep'
+  AND TIME > 300;
+
+-- Sleep 300초 이상인 세션 자동 종료
+SELECT CONCAT('KILL ',id,';')
+INTO OUTFILE '/tmp/kill_sleep.sql'
+FROM information_schema.PROCESSLIST
+WHERE COMMAND='Sleep' AND TIME>300;
+
+

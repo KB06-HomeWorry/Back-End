@@ -18,6 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -53,6 +54,7 @@ import javax.sql.DataSource;
 @Log4j2
 @EnableWebMvc
 @ComponentScan(basePackages = "org.scoula")
+@EnableScheduling // 스케줄러 활성화
 public class RootConfig {
     @Value("${jdbc.driver}")
     String driver;
@@ -73,6 +75,14 @@ public class RootConfig {
         config.setJdbcUrl(url);
         config.setUsername(username);
         config.setPassword(password);
+
+
+        config.setMaximumPoolSize(15);
+        config.setMinimumIdle(5);
+        config.setIdleTimeout(30000);
+        config.setMaxLifetime(600000);
+        config.setConnectionTimeout(10000);
+        config.setLeakDetectionThreshold(20000);
 
         HikariDataSource dataSource = new HikariDataSource(config);
         return dataSource;
