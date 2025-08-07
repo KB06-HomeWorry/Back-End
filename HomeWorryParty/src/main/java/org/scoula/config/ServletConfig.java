@@ -38,8 +38,11 @@ public class ServletConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/assets/**")
                 .addResourceLocations("/resources/assets/");
 
+        registry.addResourceHandler("/@/**")
+                .addResourceLocations("/resources/assets/");
+
         // index.html에 대한 캐시 방지
-        registry.addResourceHandler("/")
+        registry.addResourceHandler("/**")
                 .addResourceLocations("/resources/")
                 .setCachePeriod(0);
 
@@ -67,17 +70,8 @@ public class ServletConfig implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
         //registry.addViewController("/")
         //.setViewName("forward:/resources/index.html");
-    }
+    }    // 404 에러를 index.html로 리다이렉션하는 컨트롤러 추가
 
-    // 404 에러를 index.html로 리다이렉션하는 컨트롤러 추가
-    @Controller
-    public class SpaController {
-
-        @RequestMapping(value = "/{path:[^\\.]*}")
-        public String redirect() {
-            return "forward:/resources/index.html";
-        }
-    }
 
     //	Servlet 3.0 파일 업로드 사용시
     @Bean

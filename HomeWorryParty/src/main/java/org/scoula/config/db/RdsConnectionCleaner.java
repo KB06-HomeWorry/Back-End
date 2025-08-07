@@ -25,12 +25,12 @@ public class RdsConnectionCleaner {
     /**
      * 5분마다 오래된 Sleep 세션 종료
      */
-    @Scheduled(fixedDelay = 300000) // 5분마다 실행
+    @Scheduled(fixedDelay = 180000) // 5분마다 실행
     public void cleanOldSleepConnections() {
         String selectSql = """
             SELECT ID
             FROM information_schema.PROCESSLIST
-            WHERE COMMAND='Sleep' AND TIME > 300
+            WHERE COMMAND='Sleep' AND TIME > 200
         """;
 
         try (Connection conn = dataSource.getConnection();

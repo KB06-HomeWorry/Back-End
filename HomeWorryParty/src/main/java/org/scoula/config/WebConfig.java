@@ -2,6 +2,7 @@ package org.scoula.config;
 
 
 import org.scoula.security.config.SecurityConfig;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import javax.servlet.MultipartConfigElement;
@@ -43,5 +44,7 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
                 );
         registration.setMultipartConfig(multipartConfig);
     }
+
+
 
 }
