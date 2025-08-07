@@ -2,6 +2,7 @@ package org.scoula.pricetrend.service;
 
 import lombok.RequiredArgsConstructor;
 import org.scoula.pricetrend.domain.PriceTrendVO;
+import org.scoula.pricetrend.dto.MaxPriceDTO;
 import org.scoula.pricetrend.mapper.PriceTrendMapper;
 import org.springframework.stereotype.Service;
 
@@ -23,16 +24,16 @@ public class PriceTrendServiceImpl implements PriceTrendService {
         return mapper.get(no);
     }
 
-//    @Override
-//    public void create(BoardVO board) {
-//        mapper.create(board);
-//    }
-//
-//    @Override
-//    public BoardVO update(BoardVO board) {
-//        mapper.update(board);
-//        return get(board.getNo());
-//    }
+    @Override
+    public List<MaxPriceDTO> getMaximumValue() {
+        List<MaxPriceDTO> maxPrices = mapper.getMaximumValue();
+        for (MaxPriceDTO dto : maxPrices) {
+            long price = dto.getMaxPrice();
+            double priceInEok = price / 100000000.0;
+            dto.setFormattedPrice(String.format("%.1f억", priceInEok));
+        }
+        return maxPrices;
+    }
 
     @Override
     public PriceTrendVO delete(int no) {
