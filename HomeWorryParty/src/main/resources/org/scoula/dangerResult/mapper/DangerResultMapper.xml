@@ -39,7 +39,7 @@
 
     <select id="getMessageList" resultType="org.scoula.dangerResult.domain.DangerResultVO" resultMap="dangerResultMap">
         select *
-        from riskscoremessage
+        from RiskScoreMessage
         where template_id = #{templateId};
     </select>
 
