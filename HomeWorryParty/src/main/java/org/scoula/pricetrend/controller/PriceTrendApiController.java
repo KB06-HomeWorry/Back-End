@@ -3,6 +3,7 @@ package org.scoula.pricetrend.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.scoula.pricetrend.domain.PriceTrendVO;
+import org.scoula.pricetrend.dto.MaxPriceDTO;
 import org.scoula.pricetrend.service.PriceTrendService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,5 +27,9 @@ public class PriceTrendApiController {
     @GetMapping("/{id}")
     public ResponseEntity<PriceTrendVO> get(@PathVariable int id) {
         return ResponseEntity.ok(service.get(id));
+    }
+    @GetMapping("/max")
+    public ResponseEntity<List<MaxPriceDTO>> getMaximumValue() {
+        return ResponseEntity.ok(service.getMaximumValue());
     }
 }

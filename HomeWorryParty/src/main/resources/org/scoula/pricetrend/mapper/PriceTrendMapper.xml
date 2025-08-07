@@ -15,6 +15,19 @@
                 ]]>
     </select>
 
+    <select id="getMaximumValue" resultType="org.scoula.pricetrend.dto.MaxPriceDTO">
+    <![CDATA[
+        SELECT p.dong_name, p.price AS max_price, p.latitude, p.longitude
+        FROM pricetrend p
+                 JOIN (
+            SELECT dong_name, MAX(price) AS max_price
+            FROM pricetrend
+            GROUP BY dong_name
+        ) AS max_per_dong
+                      ON p.dong_name = max_per_dong.dong_name AND p.price = max_per_dong.max_price;
+                ]]>
+    </select>
+
         <select id="get" resultType="org.scoula.pricetrend.domain.PriceTrendVO">
             select * from PriceTrend where id = #{id}
         </select>
