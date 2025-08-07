@@ -3,6 +3,8 @@ package org.scoula.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -37,6 +39,14 @@ public class ServletConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/assets/**")
                 .addResourceLocations("/resources/assets/");
 
+        registry.addResourceHandler("/@/**")
+                .addResourceLocations("/resources/assets/");
+
+        // index.html에 대한 캐시 방지
+        registry.addResourceHandler("/**")
+                .addResourceLocations("/resources/")
+                .setCachePeriod(0);
+
         /// /////////////////////////////////////////////
 
         // Swagger UI 리소스를 위한 핸들러 설정
@@ -59,9 +69,10 @@ public class ServletConfig implements WebMvcConfigurer {
     //선언적 코드(java, properties, xml, yaml대체 가능)
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/")
-                .setViewName("forward:/resources/index.html");
-    }
+        //registry.addViewController("/")
+        //.setViewName("forward:/resources/index.html");
+    }    // 404 에러를 index.html로 리다이렉션하는 컨트롤러 추가
+
 
     //	Servlet 3.0 파일 업로드 사용시
     @Bean
