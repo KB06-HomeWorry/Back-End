@@ -59,7 +59,7 @@
 
     <!--  2. 중개사무소 정보 전체 추가  -->
     <insert id="saveAll" parameterType="java.util.List">
-        INSERT INTO agent (office_id, address, license_number, agent_name, office_name, phone)
+        INSERT INTO Agent (office_id, address, license_number, agent_name, office_name, phone)
         VALUES
             <foreach collection="Offices" item="office" separator=",">
                 (#{office.sysNo}, #{office.address}, #{office.number}, #{office.agentName}, #{office.officeName}, #{office.phone})
