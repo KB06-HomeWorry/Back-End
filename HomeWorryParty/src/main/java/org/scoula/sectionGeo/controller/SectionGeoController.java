@@ -2,6 +2,7 @@ package org.scoula.sectionGeo.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.scoula.sectionGeo.dto.SectionGeoDTO;
 import org.scoula.sectionGeo.service.SectionGeoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,5 +32,10 @@ public class SectionGeoController {
     @GetMapping("/{depth1}/{depth2}") // 3단계 행정구역 목록 조회 (읍, 면, 동)
     public ResponseEntity<List<String>> getDepth3(@PathVariable String depth1, @PathVariable String depth2){
         return ResponseEntity.ok().body(service.getDepth3(depth1, depth2));
+    }
+
+    @GetMapping("/{depth1}/{depth2}/{depth3}") // 행정구역 상세정보 조회
+    public ResponseEntity<SectionGeoDTO> getSectionGeoData(@PathVariable String depth1, @PathVariable String depth2, @PathVariable String depth3){
+        return ResponseEntity.ok().body(service.getSectionGeoData(depth1, depth2, depth3));
     }
 }
