@@ -23,6 +23,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -105,28 +107,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/assets/**", "/*", "/api/member/**",
-                // Swagger 관련url은보안에서제외
+                // Swagger 관련url은 보안에서제외
                 "/swagger-ui.html", "/webjars/**", "/swagger-resources/**", "/v2/api-docs"
         );
     }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-
         http
-                .cors()
-                .and()
-                .addFilterBefore(encodingFilter(), CsrfFilter.class) // 가장 먼저
+                .addFilterBefore(corsFilter(), ChannelProcessingFilter.class)
+                .addFilterBefore(encodingFilter(), CorsFilter.class)
                 .addFilterBefore(jwtUsernamePasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, JwtUsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(authenticationErrorFilter, JwtAuthenticationFilter.class);
-        // ① 만료된 토큰 예외 처리
-
-
-        http.httpBasic().disable() // 기본 HTTP 인증비활성화
-                .csrf().disable() // CSRF 비활성화
-                .formLogin().disable()  // formLogin 비활성화- 관련 필터 해제
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // 세션 생성 모드 설정
+                .addFilterBefore(authenticationErrorFilter, JwtAuthenticationFilter.class)
+                .cors().disable()
+                .csrf().disable()
+                .formLogin().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http
                 .exceptionHandling()
@@ -135,12 +132,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/ai/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/checklist/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/checklist/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/dangerResult/**").authenticated()
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 );
-
 
         http.formLogin()
                 .loginPage("/api/auth/login")
