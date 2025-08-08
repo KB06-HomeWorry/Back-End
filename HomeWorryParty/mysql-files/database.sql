@@ -337,9 +337,9 @@ where
 
 
 select *
-from listing join agent
+from listing join Agent
 where
-    listing.agency like agent.office_name and
+    listing.agency like Agent.office_name and
     (SUBSTRING(
              listing.address,
              9,
@@ -349,18 +349,18 @@ where
                  END
      )  like
      SUBSTRING(
-             agent.address,
-             CHAR_LENGTH(agent.address) - LOCATE('(', REVERSE(agent.address)) + 2,
+             Agent.address,
+             CHAR_LENGTH(Agent.address) - LOCATE('(', REVERSE(Agent.address)) + 2,
              CASE
                  WHEN SUBSTRING(
-                              agent.address,
-                              CHAR_LENGTH(agent.address) - LOCATE('(', REVERSE(agent.address)) + 2,
+                              Agent.address,
+                              CHAR_LENGTH(Agent.address) - LOCATE('(', REVERSE(Agent.address)) + 2,
                               2
                       ) = '능동' THEN 2
                  ELSE 3
                  END
      )
-    or substring(agent.address, LOCATE('동', agent.address)-2, 3) is null)
+    or substring(Agent.address, LOCATE('동', Agent.address)-2, 3) is null)
 ;
 
 select details,

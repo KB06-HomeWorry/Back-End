@@ -1,0 +1,1 @@
+import{W as i,d as e}from"./index-xNotGCl0.js";const c=i("analysis",()=>{const s=e(""),t=e({address:"",agentRegisterNumber:"",agentName:""}),r=e({type:"",price:0,monthlyPrice:0,size:0}),n=e(0),o=e({address:{},ownership:{},collateral:{}});return{houseAddress:s,middleAgent:t,sthRisk:r,registerCertifiedCount:n,checklistAnswers:o}});export{c as u};

@@ -1,0 +1,1 @@
+import{_ as e,c as s,t as o,o as a}from"./index-CyVIUGw0.js";const c={class:"auth-title titleBold32px"},_={__name:"AuthTitle",props:{title:String},setup(t){return(i,l)=>(a(),s("h2",c,o(t.title),1))}},n=e(_,[["__scopeId","data-v-ed6eacb9"]]);export{n as A};
