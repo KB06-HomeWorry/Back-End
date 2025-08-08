@@ -132,11 +132,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/ai/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/checklist/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/checklist/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/dangerResult/**").authenticated()
                         .anyRequest().permitAll()
                 );
 
