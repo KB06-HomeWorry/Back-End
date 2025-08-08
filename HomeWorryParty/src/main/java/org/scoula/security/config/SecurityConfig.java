@@ -137,7 +137,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .requestMatchers(HttpMethod.GET, "/checklist/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/checklist/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/dangerResult/**").authenticated()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 );
 
         http.formLogin()
