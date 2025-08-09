@@ -18,10 +18,10 @@
     <select id="getMaximumValue" resultType="org.scoula.pricetrend.dto.MaxPriceDTO">
     <![CDATA[
         SELECT p.dong_name, p.price AS max_price, p.latitude, p.longitude
-        FROM pricetrend p
+        FROM PriceTrend p
                  JOIN (
             SELECT dong_name, MAX(price) AS max_price
-            FROM pricetrend
+            FROM PriceTrend
             GROUP BY dong_name
         ) AS max_per_dong
                       ON p.dong_name = max_per_dong.dong_name AND p.price = max_per_dong.max_price;
