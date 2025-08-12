@@ -99,7 +99,7 @@ from tqdm import tqdm
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
-optimizer = AdamW(model.parameters(), lr=2e-5)
+optimizer = AdamW(model.parameters(), lr=3e-5)
 epochs = 20
 
 for epoch in range(epochs):
@@ -146,4 +146,3 @@ for sentence in test_sentences:
     print(f"입력 문장: {sentence}")
     print("사기" if result == 1 else "정상")
     print("-" * 50)
-
