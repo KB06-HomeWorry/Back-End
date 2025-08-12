@@ -89,6 +89,7 @@
     <!--  6. 중개사 리뷰 전체 조회  -->
     <select id="getAgentReviews" parameterType="Long" resultMap="AgentReviewMap">
         SELECT * FROM agentreview WHERE office_id = #{officeId}
+        ORDER BY created_at desc
     </select>
 
     <!--  7. 중개사 리뷰 작성  -->
