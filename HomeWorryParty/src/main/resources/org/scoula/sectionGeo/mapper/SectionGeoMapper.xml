@@ -7,7 +7,6 @@
     <select id="getDepth1" resultType="string">
         SELECT DISTINCT city
         FROM SectionGeography
-        ORDER BY city
     </select>
 
     <select id="getDepth2" parameterType="string" resultType="string">
