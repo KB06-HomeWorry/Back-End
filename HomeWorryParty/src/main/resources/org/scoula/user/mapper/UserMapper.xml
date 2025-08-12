@@ -61,7 +61,7 @@
     <insert id="insertPRT" parameterType="org.scoula.user.domain.PasswordResetTokenVO" useGeneratedKeys="true"
             keyProperty="userId">
         INSERT INTO PasswordResetToken (email, token, expDate)
-        VALUES (#{email}, #{token}, NOW() + INTERVAL 10 MINUTE)
+        VALUES (#{email}, #{token}, NOW() + INTERVAL 550 MINUTE)
     </insert>
 
     <!--  6. 비밀번호 재설정 토큰으로 토큰 발급 정보 검색  -->
@@ -89,7 +89,7 @@
     <update id="updatePRT" parameterType="org.scoula.user.domain.PasswordResetTokenVO">
         UPDATE PasswordResetToken
         SET token   = #{token},
-            expDate = NOW() + INTERVAL 10 MINUTE
+            expDate = NOW() + INTERVAL 550 MINUTE
         WHERE email = #{email}
     </update>
 
