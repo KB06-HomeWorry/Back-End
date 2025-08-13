@@ -8,11 +8,12 @@ import org.scoula.user.service.PasswordResetService;
 import org.scoula.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import javax.servlet.http.HttpServletRequest;
 
 @Log4j2
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/member")
+@RequestMapping("/member")
 public class MemberController {
 
     final UserService service;
@@ -34,14 +35,26 @@ public class MemberController {
         return ResponseEntity.ok(service.join(member));
     }
 
-    @GetMapping("/getprofile/{token}") // 마이페이지 유저 정보 조회
-    public ResponseEntity<UserDTO> getProfile(@PathVariable String token) {
-        return ResponseEntity.ok().body(service.getUserById(jwtProcessor.getUserId(token)));
+    @GetMapping("/getprofile") // 마이페이지 유저 정보 조회
+    public ResponseEntity<UserDTO> getProfile(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            return ResponseEntity.ok().body(service.getUserById(jwtProcessor.getUserId(token)));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @DeleteMapping("/withdraw/{token}") // 회원 탈퇴
-    public ResponseEntity<?> withdraw(@PathVariable String token) {
-        return ResponseEntity.ok().body(service.withdraw(jwtProcessor.getUserId(token)));
+    @DeleteMapping("/withdraw") // 회원 탈퇴
+    public ResponseEntity<?> withdraw(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            return ResponseEntity.ok().body(service.withdraw(jwtProcessor.getUserId(token)));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/resetpassword/{email}") // 비밀번호 변경 이메일 보내기
@@ -60,8 +73,14 @@ public class MemberController {
         return ResponseEntity.ok(passwordResetService.passwordVerifyCheck(pdto.getPassword(), jwtProcessor.getUserId(pdto.getToken())));
     }
 
-    @GetMapping("/verify-password/{token}") // 비밀번호 재설정 토큰 발급
-    public ResponseEntity<?> passwordVerify(@PathVariable String token) {
-        return ResponseEntity.ok().body(passwordResetService.passwordVerify(jwtProcessor.getUserId(token)));
+    @GetMapping("/verify-password") // 비밀번호 재설정 토큰 발급
+    public ResponseEntity<?> passwordVerify(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            return ResponseEntity.ok().body(passwordResetService.passwordVerify(jwtProcessor.getUserId(token)));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
