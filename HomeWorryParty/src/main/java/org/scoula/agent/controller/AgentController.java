@@ -8,10 +8,11 @@ import org.scoula.security.util.JwtProcessor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Log4j2
-@RequestMapping("/api/agent")
+@RequestMapping("/agent")
 @RestController
 @RequiredArgsConstructor
 public class AgentController {
@@ -63,23 +64,45 @@ public class AgentController {
         return ResponseEntity.ok().body(service.getOfficeGeographyList());
     }
 
-    @GetMapping("/{userToken}/favorite") // 사무소 북마크 목록 조회
-    public ResponseEntity<List<AgentBookmarkDTO>> getAgentBookmark(@PathVariable String userToken){
-        return ResponseEntity.ok().body(service.getAgentBookmark(jwtProcessor.getUserId(userToken)));
+    @GetMapping("/favorite") // 사무소 북마크 목록 조회
+    public ResponseEntity<List<AgentBookmarkDTO>> getAgentBookmark(HttpServletRequest request){
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")){
+            String jwt = authHeader.substring(7);
+            return ResponseEntity.ok().body(service.getAgentBookmark(jwtProcessor.getUserId(jwt)));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @GetMapping("/{userToken}/isFavorite/{officeId}") // 북마크 여부 조회
-    public ResponseEntity<Boolean> IsFavorite(@PathVariable String userToken, @PathVariable Long officeId){
-        return ResponseEntity.ok().body(service.IsFavorite(jwtProcessor.getUserId(userToken), officeId));
+    @GetMapping("/isFavorite/{officeId}") // 북마크 여부 조회
+    public ResponseEntity<Boolean> IsFavorite(@PathVariable Long officeId, HttpServletRequest request){
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")){
+            String jwt = authHeader.substring(7);
+            return ResponseEntity.ok().body(service.IsFavorite(jwtProcessor.getUserId(jwt), officeId));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @GetMapping("/{userToken}/favorite/{officeId}") // 북마크 추가
-    public ResponseEntity<?> saveFavorite(@PathVariable String userToken, @PathVariable Long officeId){
-        return ResponseEntity.ok().body(service.saveAgentBookmark(jwtProcessor.getUserId(userToken), officeId));
+    @GetMapping("/favorite/{officeId}") // 북마크 추가
+    public ResponseEntity<?> saveFavorite(@PathVariable Long officeId, HttpServletRequest request){
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")){
+            String jwt = authHeader.substring(7);
+            return ResponseEntity.ok().body(service.saveAgentBookmark(jwtProcessor.getUserId(jwt), officeId));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @DeleteMapping("/{userToken}/favorite/{officeId}") // 북마크 삭제
-    public void deleteFavorite(@PathVariable String userToken, @PathVariable Long officeId){
-        service.deleteAgentBookmark(jwtProcessor.getUserId(userToken), officeId);
+    @DeleteMapping("/favorite/{officeId}") // 북마크 삭제
+    public void deleteFavorite(@PathVariable Long officeId, HttpServletRequest request){
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")){
+            String jwt = authHeader.substring(7);
+            service.deleteAgentBookmark(jwtProcessor.getUserId(jwt), officeId);
+        }
     }
 }
