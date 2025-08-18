@@ -18,12 +18,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserDetailsMapper userDetailsMapper;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        String userEmail = username;
-        if(username.length() < 6){
-            userEmail = userDetailsMapper.getEmailByUsername(username);
-        }
-        UserVO userVO = userDetailsMapper.getByUserEmail(userEmail);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        UserVO userVO = userDetailsMapper.getByUserEmail(email);
         return new CustomUser(userVO);
     }
 }

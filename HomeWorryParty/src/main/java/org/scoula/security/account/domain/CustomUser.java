@@ -13,12 +13,12 @@ public class CustomUser extends User {
     private UserVO member;
 
     public CustomUser(UserVO userVO) {
-        super(userVO.getUsername(), userVO.getPassword(), userVO.getAuthList());
+        super(userVO.getEmail(), userVO.getPassword(), userVO.getAuthList());
         this.member = userVO;
     }
 
-    public CustomUser(String username, String password,
+    public CustomUser(String email, String password,
                       Collection<? extends GrantedAuthority> authorities) {
-        super(username, password, authorities);
+        super(email, password, authorities);
     }
 }
