@@ -19,9 +19,11 @@ from transformers import BertTokenizer,BertForSequenceClassification
 #GPU 사용
 #device = torch.device("cuda")
 
+# KoBERT 토크나이저와 모델 불러오기
 tokenizer = BertTokenizer.from_pretrained("monologg/kobert")
 model = BertForSequenceClassification.from_pretrained("monologg/kobert", num_labels=2)
 
+# 학습 데이터
 data=[ "임대인은 계약 기간 동안 임차인의 거주를 보장한다.",
       "임차인은 계약 종료 1개월 전 계약 갱신 여부를 통보한다.",
        "임차인의 요청이 있을 경우 임대인은 집 내부 점검을 사전 고지 후 진행한다.",
@@ -98,10 +100,11 @@ from tqdm import tqdm
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
-
+# Opimizer 학습
 optimizer = AdamW(model.parameters(), lr=3e-5)
 epochs = 20
 
+# 학습 루프
 for epoch in range(epochs):
     model.train()
     loop = tqdm(train_loader, leave=True)
@@ -120,6 +123,7 @@ for epoch in range(epochs):
         loop.set_description(f'Epoch {epoch+1}')
         loop.set_postfix(loss=loss.item())
 
+# predict 함수
 def predict(text):
     model.eval()
     inputs = tokenizer(text, return_tensors="pt", max_length=64, truncation=True, padding='max_length')
