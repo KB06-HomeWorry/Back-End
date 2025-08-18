@@ -3,10 +3,7 @@ package org.scoula.security.account.mapper;
 import org.scoula.security.account.domain.UserVO;
 
 public interface UserDetailsMapper {
+    UserVO getByUserEmail(String email); // 이메일로 유저 검색
 
-    //로그인처리할 때 db연동할 기능을 정의하면 됨.!
-    //username(id)주소 회원정보를 검색하자.!
-    UserVO getByUserEmail(String email);
-
-    String getEmailByUsername(String username);
+    String getEmailByUsername(String username); // 유저이름으로 이메일 검색
 }

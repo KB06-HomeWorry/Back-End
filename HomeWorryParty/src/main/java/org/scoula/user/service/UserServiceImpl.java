@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO join(UserJoinDTO dto) {
         UserVO member = dto.toVO();
 
-        member.setPassword(passwordEncoder.encode(member.getPassword())); // 비밀번호 암호화
+        member.setPassword(passwordEncoder.encode(member.getPassword()));
         mapper.insertUser(member);
 
         return getUserByEmail(member.getEmail());

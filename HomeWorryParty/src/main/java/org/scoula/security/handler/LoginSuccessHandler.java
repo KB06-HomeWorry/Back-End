@@ -34,10 +34,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-        // 인증 결과 Principal
         CustomUser user = (CustomUser) authentication.getPrincipal();
 
-        // 인증 성공 결과를 JSON으로 직접 응답
         AuthResultDTO result = makeAuthResult(user);
         JsonResponse.send(response, result);
     }

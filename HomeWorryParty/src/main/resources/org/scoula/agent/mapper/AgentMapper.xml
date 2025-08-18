@@ -181,6 +181,7 @@
             AND office_id = #{officeId}
     </select>
 
+    <!--  16. 주소로 중개사 조회  -->
     <select id="findAgentByAgentAddress" resultType="org.scoula.agent.domain.AgentDetailVO">
         select office_id,
             address,
@@ -195,13 +196,13 @@
         where address like #{agentAddress}
     </select>
 
-    <!--  16. 중개사 북마크 설정  -->
+    <!--  17. 중개사 북마크 설정  -->
     <insert id="saveAgentBookmark">
         INSERT INTO agentbookmark (user_id, office_id)
         VALUES (#{userId}, #{officeId})
     </insert>
 
-    <!--  17. 중개사 북마크 해제  -->
+    <!--  18. 중개사 북마크 해제  -->
     <delete id="deleteAgentBookmark">
         DELETE FROM agentbookmark
         WHERE user_id = #{userId}

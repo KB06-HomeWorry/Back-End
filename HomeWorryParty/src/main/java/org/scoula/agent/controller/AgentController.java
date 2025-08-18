@@ -44,7 +44,7 @@ public class AgentController {
         return ResponseEntity.ok().body(service.getAgentReviews(officeId));
     }
 
-    @PostMapping("reviews") // 리뷰 작성
+    @PostMapping("/reviews") // 리뷰 작성
     public void writeAgentReview(@RequestBody AgentReviewDTO agentReviewDTO){
         service.writeAgentReview(agentReviewDTO);
     }

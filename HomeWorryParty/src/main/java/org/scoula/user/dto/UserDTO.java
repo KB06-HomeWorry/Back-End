@@ -8,23 +8,23 @@ import org.scoula.security.account.domain.UserVO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class UserDTO {
-    private Long userId;         // user_id (PK)
-    private String name;         // 이름
-    private String email;        // 이메일
-    private String password;     // 비밀번호(암호화 권장)
-    private String phone;        // 휴대폰
-    private String userType;     // 사용자 유형(고객/중개사 등)
-    private Date regDate;        // 등록일 (있을 경우)
-    private Date updateDate;     // 수정일 (있을 경우)
+    private Long userId;
+    private String name;
+    private String email;
+    private String password;
+    private String phone;
+    private String userType;
+    private Date regDate;
+    private Date updateDate;
 
-    private MultipartFile avatar;    // 프로필 이미지 등(필요시)
+    private MultipartFile avatar;
 
-    // VO → DTO
     public static UserDTO of(UserVO u) {
         return UserDTO.builder()
                 .userId(u.getUserId())
@@ -38,7 +38,6 @@ public class UserDTO {
                 .build();
     }
 
-    // DTO → VO
     public UserVO toVO() {
         return UserVO.builder()
                 .userId(userId)
