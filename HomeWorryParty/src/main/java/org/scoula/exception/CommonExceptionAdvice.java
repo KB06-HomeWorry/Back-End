@@ -12,16 +12,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @Order(1)
 public class CommonExceptionAdvice {
 
-//    @ExceptionHandler(Exception.class)
-//    public String except(Exception ex, Model model) {
-//
-//        log.error("Exception ......." + ex.getMessage());
-//        model.addAttribute("exception", ex);
-//        log.error(model);
-//        return "error_page";
-//    }
-
-
     @ExceptionHandler(NoHandlerFoundException.class)
     public String handle404(NoHandlerFoundException ex) {
         log.error(ex);

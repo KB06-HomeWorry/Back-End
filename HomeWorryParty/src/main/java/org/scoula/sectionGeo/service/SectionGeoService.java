@@ -14,10 +14,6 @@ import java.util.List;
 public class SectionGeoService {
     private final SectionGeoMapper mapper;
 
-    // SGIS API 키
-    private static final String consumerKey = "0a38c79bda30482c9bb4";
-    private static final String consumerSecret = "0e6f7465fcc046f384e1";
-
     // 1단계 행정구역 목록 조회
     public List<String> getDepth1(){
         return mapper.getDepth1();

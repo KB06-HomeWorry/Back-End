@@ -12,8 +12,8 @@ import java.util.Date;
 
 @Component
 public class JwtProcessor {
-    static private final long TOKEN_VALID_MILISECOND = 1000L * 60 * 60; // 60분
-    private final String secretKey = "충분히긴임의의(랜덤한) 비밀키문자열배정";
+    static private final long TOKEN_VALID_MILISECOND = 1000L * 60 * 60000000; // 60분
+    private final String secretKey = "HomeWorryPartySecretKeyLongLongVersion256bitNeedToBuild";
     private final Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
     // JWT 생성

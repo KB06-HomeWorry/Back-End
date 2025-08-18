@@ -1,6 +1,5 @@
 package org.scoula.user.mapper;
 
-
 import org.scoula.security.account.domain.UserVO;
 import org.scoula.user.domain.PasswordResetTokenVO;
 

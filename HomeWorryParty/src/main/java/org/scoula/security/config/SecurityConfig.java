@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,10 +22,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -40,7 +37,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @MapperScan(basePackages = {"org.scoula.security.account.mapper"})
 @ComponentScan(basePackages = {"org.scoula.security"})
 @RequiredArgsConstructor
-
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
@@ -57,8 +53,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    //문자셋필터
-    // post방식의 전달시 body에 들어있는 값 한글 인코딩 필터
     public CharacterEncodingFilter encodingFilter() {
         CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
         encodingFilter.setEncoding("UTF-8");
@@ -66,14 +60,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return encodingFilter;
     }
 
-    // AuthenticationManager 빈 등록
     @Bean
-//    JWT 방식은 폼로그인과달리Spring Security의기 본인증필터를사용하지않고,
-//    클라이언트→ JWT 토큰→ 커스텀필터
-//    (OncePerRequestFilter 등) → SecurityContext 직접 설정
     public AuthenticationManager authenticationManager() throws Exception {
         return super.authenticationManager();
-
     }
 
     // cross origin 접근 허용
@@ -103,13 +92,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         };
     }
 
-    // 접근 제한무시경로설정–resource
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/assets/**", "/*", "/api/member/**",
-                // Swagger 관련url은 보안에서제외
-                "/swagger-ui.html", "/webjars/**", "/swagger-resources/**", "/v2/api-docs"
-        );
+        web.ignoring().antMatchers("/assets/**", "/*");
     }
 
     @Override
@@ -134,28 +119,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()
                 );
-
-        http.formLogin()
-                .loginPage("/api/auth/login")
-                .loginProcessingUrl("/api/auth/login")
-                .defaultSuccessUrl("/");
-
-        http.logout()
-                .logoutUrl("/api/auth/logout")
-                .invalidateHttpSession(true)
-                // 로그아웃설정시작
-                // POST: 로그아웃 호출 url
-                // 세션 invalidate
-                .deleteCookies("remember-me", "JSESSION-ID") // 삭제할 쿠키 목록
-                .logoutSuccessUrl("/api/auth/logout");
-        // GET: 로그아웃 이후이동할페이지
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth)
-            throws Exception {
-        log.info("configure .........................................");
-
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder());
     }

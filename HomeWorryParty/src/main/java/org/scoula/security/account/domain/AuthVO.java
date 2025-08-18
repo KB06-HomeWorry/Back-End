@@ -7,9 +7,8 @@ import org.springframework.security.core.GrantedAuthority;
 public class AuthVO implements GrantedAuthority {
 
     private Long authId;
-    private Long userId; //사용자 id
-    private String auth; //role, ROLE_ --> 여기까지 같아야함. 뒤에는 지정가능
-    //ROLE_ADMIN, ROLE_MEMBER(대문자)
+    private Long userId;
+    private String auth;
 
     @Override
     public String getAuthority() {

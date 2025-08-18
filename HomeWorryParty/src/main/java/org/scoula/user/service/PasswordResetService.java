@@ -6,8 +6,6 @@ import org.scoula.user.domain.PasswordRewriteVO;
 import org.scoula.user.dto.PasswordResetTokenDTO;
 import org.scoula.user.dto.PasswordRewriteDTO;
 import org.scoula.user.dto.UserDTO;
-import org.scoula.user.exception.PasswordMissmatchException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,21 +25,21 @@ public class PasswordResetService {
 
     @Transactional
     public PasswordResetTokenDTO PasswordReset(String userEmail) { // 비밀번호 재설정 이메일 발송
-        // 1. 해당 이메일을 가진 사용자가 있는지 확인
+        // 해당 이메일을 가진 사용자가 있는지 확인
          if (!userService.existsByEmail(userEmail)) {
              throw new RuntimeException("해당 이메일의 유저가 존재하지 않습니다.: " + userEmail);
          }
 
-        // 2. 임시 재설정 토큰 생성
+        // 임시 재설정 토큰 생성
         String resetToken = generateResetToken();
 
-        // 3. DB에 토큰 저장 (사용자 정보와 만료 시간을 함께 저장해야 함)
+        // DB에 토큰 저장
         userService.savePasswordResetToken(new PasswordResetTokenDTO(userEmail, resetToken, LocalDateTime.now()));
 
-        // 4. 재설정 링크 생성
+        // 재설정 링크 생성
         String resetLink = "http://localhost:5173/auth/change-password/" + resetToken;
 
-        // 5. 이메일 발송
+        // 이메일 발송
         sendPasswordResetEmail(userEmail, resetLink);
 
         return userService.getemail(userEmail);
@@ -67,24 +65,24 @@ public class PasswordResetService {
     public void PasswordRewrite(PasswordRewriteDTO dto){
         PasswordRewriteVO vo = dto.toVO();
 
-        // 1. 입력받은 토큰이 존재하는지를 확인
+        // 입력받은 토큰이 존재하는지를 확인
         if (!userService.existsByToken(vo.getToken())){
             throw new RuntimeException("토큰이 존재하지 않습니다: " + vo.getToken());
         }
 
-        // 2. 토큰이 만료되었는지 확인
+        // 토큰이 만료되었는지 확인
         PasswordResetTokenDTO prt = userService.gettoken(vo.getToken());
         LocalDateTime now = LocalDateTime.now();
         if (!prt.getExpDate().isAfter(now)){
             throw new RuntimeException("토큰이 만료되었습니다: " + prt.getExpDate());
         }
 
-        // 3. user db의 비밀번호 변경
+        // user db의 비밀번호 변경
         UserDTO user = userService.getUserByEmail(prt.getEmail());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         userService.PasswordRewrite(user);
 
-        // 4. 사용된 토큰 정보 db에서 삭제
+        // 사용된 토큰 정보 db에서 삭제
         userService.deleteToken(prt.getEmail());
 
     }
@@ -102,7 +100,6 @@ public class PasswordResetService {
         try {
             mailSender.send(message);
         } catch (Exception e) {
-            // 이메일 발송 실패 시 로깅 또는 예외 처리
             e.printStackTrace();
             throw new RuntimeException("이메일 발송에 실패했습니다.");
         }

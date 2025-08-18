@@ -39,23 +39,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        //1. 헤더에서 Authirization붙어있는 것을 추출하세요.
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        //2. 앞에서 추출한 값이 있는지, bearer로 시작하는지 체크하세요.
-        //   bearer뒤에 있는 jwt토큰 값을 추출합시다.
         if (bearerToken != null && bearerToken.startsWith(BEARER_PREFIX)) {
             String token = bearerToken.substring(BEARER_PREFIX.length());
-            //3. token에서 username추출한 후, db검색을 해서 회원정보를 구체적으로 가지고 오자.
-            //   db로 부터 잘 가지고 왔으면 Authentication객체 만들어서
-            //   ==> getAuthentication()
-            // Authentication SecurityContext
             Authentication authentication = getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-        //4. SecurityContextHolder에 넣어두면 어디서든 꺼내서 인증정보를 쓸 수 있음.
 
         super.doFilter(request, response, filterChain);
-
     }
 }
-

@@ -45,5 +45,5 @@ public interface AgentMapper {
     
     void deleteAgentBookmark(@Param("userId") Long userId, @Param("officeId") Long officeId); // 중개사 북마크 해제
 
-    List<AgentDetailVO> findAgentByAgentAddress(@Param("agentAddress") String agentAddress);
+    List<AgentDetailVO> findAgentByAgentAddress(@Param("agentAddress") String agentAddress); // 주소로 중개사 정보 조회
 }

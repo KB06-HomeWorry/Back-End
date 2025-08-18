@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.scoula.security.account.domain.UserVO;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
@@ -18,7 +17,6 @@ public class UserJoinDTO {
     private String phone;
     private String userType;
 
-//    private MultipartFile avatar;
 
     public UserVO toVO() {
         return UserVO.builder()
