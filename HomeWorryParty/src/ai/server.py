@@ -53,7 +53,7 @@ numeric_features = scaler.fit_transform(df[['deposit']])
 
 combined_features = np.hstack([tfidf_matrix.toarray(), numeric_features])
 
-def recommend_for_user(liked_ids, top_n=5):
+def recommend_for_user(liked_ids, top_n=6):
     liked_indices = []
     for pid in liked_ids:
         matches = df.index[df['id'] == pid].tolist()
@@ -79,7 +79,7 @@ class RecommendRequest(BaseModel):
 
 @app.post("/recommend")
 def recommend(request: RecommendRequest):
-    recommended_df = recommend_for_user(request.likedListings, top_n=5)
+    recommended_df = recommend_for_user(request.likedListings, top_n=6)
     print("Liked IDs:", request.likedListings)
     print("Recommended IDs:", recommended_df['id'].tolist())
     if recommended_df.empty:
