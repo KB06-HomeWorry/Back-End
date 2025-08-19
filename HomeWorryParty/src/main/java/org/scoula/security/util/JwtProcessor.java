@@ -12,7 +12,7 @@ import java.util.Date;
 
 @Component
 public class JwtProcessor {
-    static private final long TOKEN_VALID_MILISECOND = 1000L * 60 * 60000000; // 60분
+    static private final long TOKEN_VALID_MILISECOND = 1000L * 60 * 60; // 60분
     private final String secretKey = "HomeWorryPartySecretKeyLongLongVersion256bitNeedToBuild";
     private final Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
